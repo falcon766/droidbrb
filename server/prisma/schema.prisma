@@ -1,0 +1,279 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  username          String    @unique
+  password          String
+  firstName         String
+  lastName          String
+  bio               String?
+  avatar            String?
+  location          String?
+  expertise         Expertise @default(BEGINNER)
+  isVerified        Boolean   @default(false)
+  isPremium         Boolean   @default(false)
+  rating            Float     @default(0)
+  reviewCount       Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  ownedRobots       Robot[]   @relation("RobotOwner")
+  rentedRobots      Rental[]  @relation("RentalRenter")
+  receivedRentals   Rental[]  @relation("RentalOwner")
+  sentMessages      Message[] @relation("MessageSender")
+  receivedMessages  Message[] @relation("MessageReceiver")
+  posts             Post[]
+  comments          Comment[]
+  communityMemberships CommunityMember[]
+  events            Event[]
+  eventAttendees    EventAttendee[]
+  reviews           Review[]
+  receivedReviews   Review[]  @relation("ReviewReceiver")
+
+  @@map("users")
+}
+
+model Robot {
+  id                String    @id @default(cuid())
+  name              String
+  description       String
+  category          RobotCategory
+  brand             String?
+  model             String?
+  year              Int?
+  specifications    Json?
+  images            String[]
+  hourlyRate        Float?
+  dailyRate         Float?
+  weeklyRate        Float?
+  monthlyRate       Float?
+  location          String
+  latitude          Float?
+  longitude         Float?
+  isAvailable       Boolean   @default(true)
+  isVerified        Boolean   @default(false)
+  rating            Float     @default(0)
+  reviewCount       Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  ownerId           String
+  owner             User      @relation("RobotOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  rentals           Rental[]
+  reviews           Review[]
+
+  @@map("robots")
+}
+
+model Rental {
+  id                String    @id @default(cuid())
+  startDate         DateTime
+  endDate           DateTime
+  totalAmount       Float
+  status            RentalStatus @default(PENDING)
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  robotId           String
+  robot             Robot     @relation(fields: [robotId], references: [id], onDelete: Cascade)
+  renterId          String
+  renter            User      @relation("RentalRenter", fields: [renterId], references: [id], onDelete: Cascade)
+  ownerId           String
+  owner             User      @relation("RentalOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@map("rentals")
+}
+
+model Message {
+  id                String    @id @default(cuid())
+  content           String
+  isRead            Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  // Relations
+  senderId          String
+  sender            User      @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId        String
+  receiver          User      @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Community {
+  id                String    @id @default(cuid())
+  name              String
+  description       String
+  avatar            String?
+  location          String?
+  isPublic          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  members           CommunityMember[]
+  posts             Post[]
+  events            Event[]
+
+  @@map("communities")
+}
+
+model CommunityMember {
+  id                String    @id @default(cuid())
+  role              MemberRole @default(MEMBER)
+  joinedAt          DateTime  @default(now())
+
+  // Relations
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId       String
+  community         Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+  @@map("community_members")
+}
+
+model Post {
+  id                String    @id @default(cuid())
+  title             String
+  content           String
+  isPinned          Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  authorId          String
+  author            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  communityId       String?
+  community         Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  comments          Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id                String    @id @default(cuid())
+  content           String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  authorId          String
+  author            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId            String
+  post              Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Event {
+  id                String    @id @default(cuid())
+  title             String
+  description       String
+  startDate         DateTime
+  endDate           DateTime
+  location          String
+  latitude          Float?
+  longitude         Float?
+  maxAttendees      Int?
+  isPublic          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  organizerId       String
+  organizer         User      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  communityId       String?
+  community         Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  attendees         EventAttendee[]
+
+  @@map("events")
+}
+
+model EventAttendee {
+  id                String    @id @default(cuid())
+  status            AttendanceStatus @default(GOING)
+  createdAt         DateTime  @default(now())
+
+  // Relations
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId           String
+  event             Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("event_attendees")
+}
+
+model Review {
+  id                String    @id @default(cuid())
+  rating            Int
+  comment           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  reviewerId        String
+  reviewer          User      @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewedUserId    String
+  reviewedUser      User      @relation("ReviewReceiver", fields: [reviewedUserId], references: [id], onDelete: Cascade)
+  robotId           String?
+  robot             Robot?    @relation(fields: [robotId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewerId, reviewedUserId, robotId])
+  @@map("reviews")
+}
+
+// Enums
+enum Expertise {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum RobotCategory {
+  DRONE
+  HUMANOID
+  INDUSTRIAL
+  EDUCATIONAL
+  SERVICE
+  RESEARCH
+  HOBBY
+  OTHER
+}
+
+enum RentalStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum MemberRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+enum AttendanceStatus {
+  GOING
+  MAYBE
+  NOT_GOING
+} 
