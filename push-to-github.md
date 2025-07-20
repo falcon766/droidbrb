@@ -19,14 +19,14 @@
 
 3. **Create Repository and Push**:
    ```bash
-   gh repo create droidbrb-v3 --public --source=. --remote=origin --push
+   gh repo create droidbrb --public --source=. --remote=origin --push
    ```
 
 ### Option 2: Manual Setup
 
 1. **Create Repository on GitHub**:
    - Go to https://github.com/new
-   - Repository name: `droidbrb-v3`
+   - Repository name: `droidbrb`
    - Description: "Peer-to-peer platform connecting robotics enthusiasts to share, rent, and collaborate around robotic devices"
    - Make it Public
    - Don't initialize with README (we already have one)
@@ -35,7 +35,7 @@
 2. **Add Remote and Push**:
    ```bash
    # Add the remote (replace YOUR_USERNAME with your GitHub username)
-   git remote add origin https://github.com/YOUR_USERNAME/droidbrb-v3.git
+   git remote add origin https://github.com/YOUR_USERNAME/droidbrb.git
    
    # Push to GitHub
    git branch -M main
@@ -52,7 +52,7 @@
 
 Once pushed, your repository will be available at:
 ```
-https://github.com/YOUR_USERNAME/droidbrb-v3
+https://github.com/YOUR_USERNAME/droidbrb
 ```
 
 ## 📋 Repository Features

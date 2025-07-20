@@ -14,12 +14,12 @@ if command -v gh &> /dev/null; then
         
         # Create repository and push
         echo "🚀 Creating GitHub repository..."
-        gh repo create droidbrb-v3 --public --source=. --remote=origin --push
+        gh repo create droidbrb --public --source=. --remote=origin --push
         
         if [ $? -eq 0 ]; then
             echo "✅ Repository created and pushed successfully!"
             echo "🌐 Your repository is now available at:"
-            echo "   https://github.com/$(gh api user --jq .login)/droidbrb-v3"
+            echo "   https://github.com/$(gh api user --jq .login)/droidbrb"
         else
             echo "❌ Failed to create repository. Please check the error above."
         fi
