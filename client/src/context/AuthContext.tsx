@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
-import { User, RegisterForm, LoginForm, ProfileForm } from '../types';
+import { User, RegisterForm, LoginForm, ProfileForm, Expertise } from '../types';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
@@ -51,12 +51,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
-            const profileData = userDoc.data() as User;
+            const profileData = userDoc.data();
             setUserProfile({
               ...profileData,
-              createdAt: profileData.createdAt.toDate(),
-              updatedAt: profileData.updatedAt.toDate(),
-            });
+              id: user.uid,
+              createdAt: profileData.createdAt?.toDate?.() || new Date(),
+              updatedAt: profileData.updatedAt?.toDate?.() || new Date(),
+            } as User);
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
@@ -99,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         bio: '',
         avatar: '',
         location: '',
-        expertise: 'BEGINNER' as const,
+        expertise: Expertise.BEGINNER,
         isVerified: false,
         isPremium: false,
         rating: 0,

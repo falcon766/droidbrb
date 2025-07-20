@@ -3,64 +3,86 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { 
-  Robot, 
-  Users, 
+  Bot, 
+  Search, 
   MapPin, 
-  Star, 
-  MessageCircle, 
+  Filter,
+  MessageCircle,
   Calendar,
-  ArrowRight,
-  Play,
-  Shield,
-  Zap,
-  Globe
+  Heart,
+  DollarSign,
+  Settings,
+  Gamepad2,
+  Plane,
+  ClipboardCheck,
+  Heart as HeartIcon,
+  Package
 } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const features = [
     {
-      icon: Robot,
-      title: 'Robot Marketplace',
-      description: 'Browse and rent robots from enthusiasts worldwide. From drones to humanoids, find the perfect robot for your project.',
+      icon: Search,
+      title: 'Find the Perfect Robot',
+      description: 'Browse through our extensive catalog of robots. Filter by category, location, or specific capabilities to find exactly what you need.',
       color: 'bg-blue-500'
     },
     {
-      icon: Users,
-      title: 'Community Hub',
-      description: 'Connect with fellow robotics enthusiasts. Share knowledge, join discussions, and attend local meetups.',
-      color: 'bg-green-500'
-    },
-    {
-      icon: MapPin,
-      title: 'Location-Based',
-      description: 'Find robots and events near you. Filter by distance and discover local robotics communities.',
-      color: 'bg-purple-500'
-    },
-    {
-      icon: Star,
-      title: 'Trust & Safety',
-      description: 'Verified users, reviews, and secure payments ensure a safe and reliable experience.',
-      color: 'bg-orange-500'
-    },
-    {
       icon: MessageCircle,
-      title: 'Real-time Chat',
-      description: 'Communicate directly with robot owners. Ask questions and coordinate rentals seamlessly.',
-      color: 'bg-pink-500'
+      title: 'Connect with the Owner',
+      description: 'Message directly with robot owners to discuss details, ask questions, and arrange meetups or rentals.',
+      color: 'bg-blue-500'
     },
     {
       icon: Calendar,
-      title: 'Event Management',
-      description: 'Create and join robotics events. From workshops to competitions, never miss an opportunity.',
-      color: 'bg-indigo-500'
+      title: 'Meet Up or Rent',
+      description: 'Schedule a time to meet and see the robot in person, or arrange rental terms if the owner offers rentals.',
+      color: 'bg-blue-500'
     }
   ];
 
-  const stats = [
-    { number: '1000+', label: 'Active Users' },
-    { number: '500+', label: 'Robot Listings' },
-    { number: '50+', label: 'Cities Covered' },
-    { number: '4.8', label: 'Average Rating' }
+  const featuredRobots = [
+    {
+      id: '1',
+      name: 'Loona Pet Robot',
+      category: 'Educational',
+      price: 25,
+      location: 'Manhattan Beach, CA',
+      description: 'ChatGPT-enabled conversations',
+      image: '/images/loona-robot.jpg',
+      isAvailable: true
+    },
+    {
+      id: '2',
+      name: 'LOOI Robot',
+      category: 'Educational',
+      price: 15,
+      location: 'Los Angeles, CA',
+      description: 'LOOI Robot base. Connects to your phone. ChatGPT-enabled conversations',
+      image: '/images/looi-robot.jpg',
+      isAvailable: true
+    },
+    {
+      id: '3',
+      name: 'KinderBot',
+      category: 'Other',
+      price: 10,
+      location: 'Manhattan Beach, CA',
+      description: 'KinderBot Code \'n Learn. Basic preschool programming lessons',
+      image: '/images/kinderbot.jpg',
+      isAvailable: true
+    }
+  ];
+
+  const categories = [
+    { name: 'Humanoid', icon: Bot, count: 0 },
+    { name: 'Industrial', icon: Settings, count: 0 },
+    { name: 'Educational', icon: MessageCircle, count: 2 },
+    { name: 'Hobby', icon: Gamepad2, count: 0 },
+    { name: 'Drone', icon: Plane, count: 0 },
+    { name: 'Service', icon: ClipboardCheck, count: 0 },
+    { name: 'Medical', icon: HeartIcon, count: 0 },
+    { name: 'Other', icon: Package, count: 1 }
   ];
 
   return (
@@ -70,133 +92,114 @@ const HomePage: React.FC = () => {
         <meta name="description" content="Join the world's largest robotics community. Share, rent, and collaborate around robotic devices." />
       </Helmet>
 
-      <div className="min-h-screen">
-        {/* Navigation */}
-        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <div className="min-h-screen bg-gray-900">
+        {/* Header */}
+        <header className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
+              {/* Logo */}
               <div className="flex items-center space-x-2">
-                <Robot className="h-8 w-8 text-primary-600" />
-                <span className="text-xl font-bold text-gray-900">DroidBRB</span>
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-white">DroidBRB</span>
               </div>
-              <div className="hidden md:flex items-center space-x-8">
-                <Link to="/robots" className="text-gray-600 hover:text-primary-600 transition-colors">
-                  Browse Robots
+
+              {/* Navigation */}
+              <nav className="hidden md:flex items-center space-x-8">
+                <Link to="/robots" className="text-white hover:text-blue-400 transition-colors">
+                  Explore Robots
                 </Link>
-                <Link to="/community" className="text-gray-600 hover:text-primary-600 transition-colors">
-                  Community
+                <Link to="/about" className="text-white hover:text-blue-400 transition-colors">
+                  About
                 </Link>
-                <Link to="/events" className="text-gray-600 hover:text-primary-600 transition-colors">
-                  Events
+                <Link to="/login" className="text-white hover:text-blue-400 transition-colors">
+                  Sign In
                 </Link>
-                <Link to="/login" className="text-gray-600 hover:text-primary-600 transition-colors">
-                  Login
+                <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Sign Up
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Get Started
-                </Link>
-              </div>
+              </nav>
             </div>
           </div>
-        </nav>
+        </header>
 
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary-50 via-white to-accent-50 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Connect, Share, and{' '}
-                  <span className="text-primary-600">Rent Robots</span>
-                </h1>
-                <p className="mt-6 text-xl text-gray-600 leading-relaxed">
-                  Join the world's largest robotics community. Share your robots, discover new technology, 
-                  and collaborate with fellow enthusiasts worldwide.
-                </p>
-                <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-all transform hover:scale-105"
-                  >
-                    Start Sharing Robots
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                  <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-primary-600 hover:text-primary-600 transition-all">
-                    <Play className="mr-2 h-5 w-5" />
-                    Watch Demo
-                  </button>
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-blue-400 text-lg font-medium mb-4">
+                Welcome to DroidBRB
+              </h2>
+              <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent mb-6">
+                Share. Rent. Innovate.
+              </h1>
+              <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+                The future of robotics is collaborative. DroidBRB connects you with a community of enthusiasts to rent and share robots, fostering innovation and learning.
+              </p>
+            </motion.div>
+
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-gray-800 rounded-lg p-4 mb-8"
+            >
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                  <Search className="h-5 w-5 text-gray-400 mr-3" />
+                  <input
+                    type="text"
+                    placeholder="Search robots..."
+                    className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                  />
                 </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative"
-              >
-                <div className="relative z-10">
-                  <div className="bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                    <div className="flex items-center space-x-4 mb-6">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                        <Robot className="h-6 w-6 text-primary-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">DJI Mavic Pro</h3>
-                        <p className="text-sm text-gray-500">Professional Drone</p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Daily Rate</span>
-                        <span className="font-semibold text-primary-600">$45</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Location</span>
-                        <span className="text-gray-900">San Francisco, CA</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm text-gray-600">4.9 (127 reviews)</span>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                  <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                  <input
+                    type="text"
+                    placeholder="City, State"
+                    className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                  />
+                  <Filter className="h-5 w-5 text-gray-400 ml-3" />
                 </div>
-                <div className="absolute -top-4 -right-4 w-32 h-32 bg-accent-200 rounded-full opacity-50"></div>
-                <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-primary-200 rounded-full opacity-50"></div>
-              </motion.div>
-            </div>
+                <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                  Search
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Link
+                to="/robots"
+                className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Find a Robot
+              </Link>
+              <Link
+                to="/create-robot"
+                className="bg-gray-800 text-white px-8 py-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors"
+              >
+                List Your Robot
+              </Link>
+            </motion.div>
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="bg-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div className="text-3xl md:text-4xl font-bold text-primary-600">{stat.number}</div>
-                  <div className="text-gray-600 mt-2">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="bg-gray-50 py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* How DroidBRB Works Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-800">
+          <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -204,16 +207,15 @@ const HomePage: React.FC = () => {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Everything You Need for Robotics
+              <h2 className="text-4xl font-bold text-white mb-4">
+                How DroidBRB Works
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                From finding the perfect robot to connecting with the community, 
-                DroidBRB provides all the tools you need to succeed in robotics.
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Connecting with robot enthusiasts in your area has never been easier
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
@@ -221,102 +223,151 @@ const HomePage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-xl p-8 shadow-soft hover:shadow-medium transition-shadow"
+                  className="bg-gray-700 rounded-lg p-8 text-center"
                 >
-                  <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-6`}>
-                    <feature.icon className="h-6 w-6 text-white" />
+                  <div className={`w-16 h-16 ${feature.color} rounded-full flex items-center justify-center mx-auto mb-6`}>
+                    <feature.icon className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  <h3 className="text-xl font-semibold text-white mb-4">{feature.title}</h3>
+                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-primary-600 py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Featured Robots Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
+              className="text-center mb-16"
             >
-              <h2 className="text-4xl font-bold text-white mb-6">
-                Ready to Join the Robotics Revolution?
+              <h2 className="text-4xl font-bold text-white mb-4">
+                Featured Robots
               </h2>
-              <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-                Start sharing your robots, discover amazing technology, and connect with 
-                the global robotics community today.
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Explore some of the most popular robots available in our community
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105"
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {featuredRobots.map((robot, index) => (
+                <motion.div
+                  key={robot.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                  onClick={() => window.location.href = `/robots/${robot.id}`}
                 >
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
-                  to="/robots"
-                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary-600 transition-all"
-                >
-                  Browse Robots
-                </Link>
-              </div>
+                  {/* Robot Image Placeholder */}
+                  <div className="h-48 bg-gray-700 flex items-center justify-center">
+                    <Bot className="h-16 w-16 text-gray-500" />
+                  </div>
+                  
+                  {/* Robot Info */}
+                  <div className="p-6">
+                    {/* Tags */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex gap-2">
+                        <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                          {robot.category}
+                        </span>
+                        <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          ${robot.price}/day
+                        </span>
+                      </div>
+                      <button className="text-white hover:text-red-400 transition-colors">
+                        <Heart className="h-5 w-5" />
+                      </button>
+                    </div>
+
+                    {/* Robot Details */}
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {robot.name}
+                    </h3>
+                    <div className="flex items-center text-gray-400 text-sm mb-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {robot.location}
+                    </div>
+                    <p className="text-gray-300 text-sm mb-4">
+                      {robot.description}
+                    </p>
+
+                    {/* Rent Button */}
+                    <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                      Available for Rent
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* View All Robots Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <Link
+                to="/robots"
+                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                View All Robots
+              </Link>
             </motion.div>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="bg-gray-900 text-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Robot className="h-8 w-8 text-primary-400" />
-                  <span className="text-xl font-bold">DroidBRB</span>
-                </div>
-                <p className="text-gray-400">
-                  Connecting robotics enthusiasts worldwide through sharing, collaboration, and innovation.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-4">Platform</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><Link to="/robots" className="hover:text-white transition-colors">Browse Robots</Link></li>
-                  <li><Link to="/community" className="hover:text-white transition-colors">Community</Link></li>
-                  <li><Link to="/events" className="hover:text-white transition-colors">Events</Link></li>
-                  <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-4">Support</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
-                  <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                  <li><Link to="/safety" className="hover:text-white transition-colors">Safety</Link></li>
-                  <li><Link to="/terms" className="hover:text-white transition-colors">Terms</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-4">Connect</h3>
-                <div className="flex space-x-4">
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    <Globe className="h-5 w-5" />
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    <MessageCircle className="h-5 w-5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2024 DroidBRB. All rights reserved.</p>
+        {/* Explore by Category Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">
+                Explore by Category
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Discover robots of all types, from industrial arms to educational bots
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {categories.map((category, index) => (
+                <motion.div
+                  key={category.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-800 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => window.location.href = `/robots?category=${category.name.toLowerCase()}`}
+                >
+                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <category.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">{category.name}</h3>
+                  <p className="text-gray-400 text-sm">
+                    {category.count === 0 ? 'None available' : `${category.count} robot${category.count === 1 ? '' : 's'}`}
+                  </p>
+                </motion.div>
+              ))}
             </div>
           </div>
-        </footer>
+        </section>
       </div>
     </>
   );

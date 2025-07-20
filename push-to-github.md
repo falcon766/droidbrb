@@ -35,7 +35,7 @@
 2. **Add Remote and Push**:
    ```bash
    # Add the remote (replace YOUR_USERNAME with your GitHub username)
-   git remote add origin https://github.com/YOUR_USERNAME/droidbrb.git
+   git remote add origin git@github.com:YOUR_USERNAME/droidbrb.git
    
    # Push to GitHub
    git branch -M main

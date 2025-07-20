@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Robot, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Bot, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LoginForm } from '../types';
 import toast from 'react-hot-toast';
@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
               
               <div className="flex justify-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                  <Robot className="h-8 w-8 text-primary-600" />
+                  <Bot className="h-8 w-8 text-primary-600" />
                 </div>
               </div>
               
