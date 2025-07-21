@@ -9,31 +9,19 @@ import {
   Plus,
   X
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
-interface CreateRobotForm {
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  location: string;
-  minRental: number;
-  maxRental: number;
-  pickupTime: string;
-  returnTime: string;
-  features: string[];
-  specifications: {
-    weight: string;
-    dimensions: string;
-    batteryLife: string;
-    connectivity: string;
-  };
-}
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { CreateRobotForm } from '../types';
+import { robotService } from '../services/robotService';
+import toast from 'react-hot-toast';
 
 const CreateRobotPage: React.FC = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState('');
   const [images, setImages] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -70,18 +58,33 @@ const CreateRobotPage: React.FC = () => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const onSubmit = (data: CreateRobotForm) => {
-    const robotData = {
-      ...data,
-      features,
-      images
-    };
-    console.log('Robot data:', robotData);
-    // Here you would submit to your API
-    alert('Robot listing created successfully!');
-    reset();
-    setFeatures([]);
-    setImages([]);
+  const onSubmit = async (data: CreateRobotForm) => {
+    if (!currentUser) {
+      toast.error('You must be logged in to create a robot listing');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const robotData = {
+        ...data,
+        features,
+        specifications: {
+          weight: data.specifications?.weight || '',
+          dimensions: data.specifications?.dimensions || '',
+          batteryLife: data.specifications?.batteryLife || '',
+          connectivity: data.specifications?.connectivity || '',
+        }
+      };
+
+      await robotService.createRobot(robotData, currentUser.uid, images);
+      toast.success('Robot listing created successfully!');
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create robot listing');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -353,9 +356,10 @@ const CreateRobotPage: React.FC = () => {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                disabled={isLoading}
+                className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                List Robot
+                {isLoading ? 'Creating...' : 'List Robot'}
               </button>
             </div>
           </form>

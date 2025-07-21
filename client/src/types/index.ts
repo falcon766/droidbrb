@@ -5,9 +5,9 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
-  bio?: string;
-  avatar?: string;
-  location?: string;
+  bio: string;
+  avatar: string;
+  location: string;
   expertise: Expertise;
   isVerified: boolean;
   isPremium: boolean;
@@ -18,92 +18,63 @@ export interface User {
 }
 
 export enum Expertise {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT'
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+  EXPERT = 'expert'
 }
 
-// Robot Types
 export interface Robot {
   id: string;
+  ownerId: string;
   name: string;
+  category: string;
   description: string;
-  category: RobotCategory;
-  brand?: string;
-  model?: string;
-  year?: number;
-  specifications?: RobotSpecifications;
-  images: string[];
-  hourlyRate?: number;
-  dailyRate?: number;
-  weeklyRate?: number;
-  monthlyRate?: number;
+  price: number;
   location: string;
-  latitude?: number;
-  longitude?: number;
+  minRental: number;
+  maxRental: number;
+  pickupTime: string;
+  returnTime: string;
+  features: string[];
+  specifications: {
+    weight: string;
+    dimensions: string;
+    batteryLife: string;
+    connectivity: string;
+  };
+  images: string[];
   isAvailable: boolean;
-  isVerified: boolean;
   rating: number;
   reviewCount: number;
-  ownerId: string;
-  owner: User;
+  totalRentals: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export enum RobotCategory {
-  DRONE = 'DRONE',
-  HUMANOID = 'HUMANOID',
-  INDUSTRIAL = 'INDUSTRIAL',
-  EDUCATIONAL = 'EDUCATIONAL',
-  SERVICE = 'SERVICE',
-  RESEARCH = 'RESEARCH',
-  HOBBY = 'HOBBY',
-  OTHER = 'OTHER'
+export interface Rating {
+  id: string;
+  robotId: string;
+  reviewerId: string;
+  reviewerName: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
 }
 
-export interface RobotSpecifications {
-  weight?: number;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  batteryLife?: number;
-  maxPayload?: number;
-  maxSpeed?: number;
-  sensors?: string[];
-  capabilities?: string[];
-  software?: string[];
-  [key: string]: any;
-}
-
-// Rental Types
 export interface Rental {
   id: string;
+  robotId: string;
+  robotName: string;
+  ownerId: string;
+  renterId: string;
+  renterName: string;
   startDate: Date;
   endDate: Date;
-  totalAmount: number;
-  status: RentalStatus;
-  notes?: string;
-  robotId: string;
-  robot: Robot;
-  renterId: string;
-  renter: User;
-  ownerId: string;
-  owner: User;
+  total: number;
+  status: 'pending' | 'active' | 'completed' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
-}
-
-export enum RentalStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  DISPUTED = 'DISPUTED'
 }
 
 // Message Types
@@ -224,7 +195,6 @@ export interface Review {
   updatedAt: Date;
 }
 
-// Form Types
 export interface LoginForm {
   email: string;
   password: string;
@@ -232,37 +202,39 @@ export interface LoginForm {
 
 export interface RegisterForm {
   email: string;
-  username: string;
   password: string;
   confirmPassword: string;
+  username: string;
   firstName: string;
   lastName: string;
-}
-
-export interface RobotForm {
-  name: string;
-  description: string;
-  category: RobotCategory;
-  brand?: string;
-  model?: string;
-  year?: number;
-  specifications?: RobotSpecifications;
-  hourlyRate?: number;
-  dailyRate?: number;
-  weeklyRate?: number;
-  monthlyRate?: number;
-  location: string;
-  latitude?: number;
-  longitude?: number;
 }
 
 export interface ProfileForm {
+  username: string;
   firstName: string;
   lastName: string;
-  username: string;
-  bio?: string;
-  location?: string;
+  bio: string;
+  location: string;
   expertise: Expertise;
+}
+
+export interface CreateRobotForm {
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  location: string;
+  minRental: number;
+  maxRental: number;
+  pickupTime: string;
+  returnTime: string;
+  features: string[];
+  specifications: {
+    weight: string;
+    dimensions: string;
+    batteryLife: string;
+    connectivity: string;
+  };
 }
 
 // API Response Types
@@ -285,7 +257,7 @@ export interface PaginatedResponse<T> {
 
 // Search and Filter Types
 export interface RobotFilters {
-  category?: RobotCategory;
+  category?: string;
   minPrice?: number;
   maxPrice?: number;
   location?: string;
