@@ -6,7 +6,9 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
@@ -17,6 +19,7 @@ interface AuthContextType {
   userProfile: User | null;
   loading: boolean;
   login: (credentials: LoginForm) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   register: (userData: RegisterForm) => Promise<void>;
   logout: () => Promise<void>;
   updateUserProfile: (data: ProfileForm) => Promise<void>;
@@ -75,6 +78,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginForm) => {
     try {
       await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      
+      // Check if user profile exists, if not create one
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      if (!userDoc.exists()) {
+        const userProfile: Omit<User, 'id'> = {
+          email: result.user.email || '',
+          username: result.user.displayName?.toLowerCase().replace(/\s+/g, '') || '',
+          firstName: result.user.displayName?.split(' ')[0] || '',
+          lastName: result.user.displayName?.split(' ').slice(1).join(' ') || '',
+          bio: '',
+          avatar: result.user.photoURL || '',
+          location: '',
+          expertise: Expertise.BEGINNER,
+          isVerified: false,
+          isPremium: false,
+          rating: 0,
+          reviewCount: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await setDoc(doc(db, 'users', result.user.uid), userProfile);
+      }
     } catch (error: any) {
       throw new Error(error.message);
     }
@@ -174,6 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userProfile,
     loading,
     login,
+    loginWithGoogle,
     register,
     logout,
     updateUserProfile,
