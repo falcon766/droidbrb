@@ -131,8 +131,8 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
               }}
             >
               <h2 className="text-blue-400 text-lg font-medium mb-4">
@@ -151,9 +151,9 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
+                duration: 1.2,
                 delay: 0.2,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                ease: [0.16, 1, 0.3, 1]
               }}
               className="bg-gray-800 rounded-lg p-4 mb-8"
             >
@@ -186,9 +186,9 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
+                duration: 1.2,
                 delay: 0.4,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                ease: [0.16, 1, 0.3, 1]
               }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
@@ -215,8 +215,8 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
               }}
               viewport={{ once: true }}
               className="text-center mb-16"
@@ -236,9 +236,9 @@ const HomePage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    duration: 0.8,
+                    duration: 1.2,
                     delay: index * 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
+                    ease: [0.16, 1, 0.3, 1]
                   }}
                   viewport={{ once: true }}
                   className="bg-gray-700 rounded-lg p-8 text-center"
@@ -261,8 +261,8 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
               }}
               viewport={{ once: true }}
               className="text-center mb-16"
@@ -282,9 +282,9 @@ const HomePage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    duration: 0.8,
+                    duration: 1.2,
                     delay: index * 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
+                    ease: [0.16, 1, 0.3, 1]
                   }}
                   viewport={{ once: true }}
                   className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
@@ -339,8 +339,8 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
               }}
               viewport={{ once: true }}
               className="text-center"
@@ -362,8 +362,8 @@ const HomePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
               }}
               viewport={{ once: true }}
               className="text-center mb-16"
@@ -383,9 +383,9 @@ const HomePage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    duration: 0.8,
+                    duration: 1.2,
                     delay: index * 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
+                    ease: [0.16, 1, 0.3, 1]
                   }}
                   viewport={{ once: true }}
                   className="bg-gray-800 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-700 transition-colors"
