@@ -130,7 +130,10 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
             >
               <h2 className="text-blue-400 text-lg font-medium mb-4">
                 Welcome to DroidBRB
@@ -147,7 +150,11 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ 
+                duration: 0.8,
+                delay: 0.2,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               className="bg-gray-800 rounded-lg p-4 mb-8"
             >
               <div className="flex flex-col md:flex-row gap-4">
@@ -178,7 +185,11 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ 
+                duration: 0.8,
+                delay: 0.4,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
@@ -203,7 +214,10 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               viewport={{ once: true }}
               className="text-center mb-16"
             >
@@ -221,7 +235,11 @@ const HomePage: React.FC = () => {
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  transition={{ 
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
                   viewport={{ once: true }}
                   className="bg-gray-700 rounded-lg p-8 text-center"
                 >
@@ -242,7 +260,10 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               viewport={{ once: true }}
               className="text-center mb-16"
             >
@@ -260,7 +281,11 @@ const HomePage: React.FC = () => {
                   key={robot.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  transition={{ 
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
                   viewport={{ once: true }}
                   className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
                   onClick={() => window.location.href = `/robots/${robot.id}`}
@@ -313,7 +338,10 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               viewport={{ once: true }}
               className="text-center"
             >
@@ -333,7 +361,10 @@ const HomePage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ 
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
               viewport={{ once: true }}
               className="text-center mb-16"
             >
@@ -351,7 +382,11 @@ const HomePage: React.FC = () => {
                   key={category.name}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  transition={{ 
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
                   viewport={{ once: true }}
                   className="bg-gray-800 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-700 transition-colors"
                   onClick={() => window.location.href = `/robots?category=${category.name.toLowerCase()}`}
