@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -18,8 +18,28 @@ import {
   Heart as HeartIcon,
   Package
 } from 'lucide-react';
+import { robotService } from '../services/robotService';
+import { Robot } from '../types';
 
 const HomePage: React.FC = () => {
+  const [featuredRobots, setFeaturedRobots] = useState<Robot[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedRobots = async () => {
+      try {
+        const robots = await robotService.getFeaturedRobots(6);
+        setFeaturedRobots(robots);
+      } catch (error) {
+        console.error('Error fetching featured robots:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedRobots();
+  }, []);
+
   const features = [
     {
       icon: Search,
@@ -41,38 +61,7 @@ const HomePage: React.FC = () => {
     }
   ];
 
-  const featuredRobots = [
-    {
-      id: '1',
-      name: 'Loona Pet Robot',
-      category: 'Educational',
-      price: 25,
-      location: 'Manhattan Beach, CA',
-      description: 'ChatGPT-enabled conversations',
-      image: '/images/loona-robot.jpg',
-      isAvailable: true
-    },
-    {
-      id: '2',
-      name: 'LOOI Robot',
-      category: 'Educational',
-      price: 15,
-      location: 'Los Angeles, CA',
-      description: 'LOOI Robot base. Connects to your phone. ChatGPT-enabled conversations',
-      image: '/images/looi-robot.jpg',
-      isAvailable: true
-    },
-    {
-      id: '3',
-      name: 'KinderBot',
-      category: 'Other',
-      price: 10,
-      location: 'Manhattan Beach, CA',
-      description: 'KinderBot Code \'n Learn. Basic preschool programming lessons',
-      image: '/images/kinderbot.jpg',
-      isAvailable: true
-    }
-  ];
+
 
   const categories = [
     { name: 'Humanoid', icon: Bot, count: 0 },
@@ -276,62 +265,114 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {featuredRobots.map((robot, index) => (
-                <motion.div
-                  key={robot.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 1.2,
-                    delay: index * 0.1,
-                    ease: [0.16, 1, 0.3, 1]
-                  }}
-                  viewport={{ once: true }}
-                  className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-                  onClick={() => window.location.href = `/robots/${robot.id}`}
-                >
-                  {/* Robot Image Placeholder */}
-                  <div className="h-48 bg-gray-700 flex items-center justify-center">
-                    <Bot className="h-16 w-16 text-gray-500" />
-                  </div>
-                  
-                  {/* Robot Info */}
-                  <div className="p-6">
-                    {/* Tags */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex gap-2">
-                        <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                          {robot.category}
-                        </span>
-                        <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
-                          ${robot.price}/day
-                        </span>
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 3 }).map((_, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 1.2,
+                      delay: index * 0.1,
+                      ease: [0.16, 1, 0.3, 1]
+                    }}
+                    className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+                  >
+                    <div className="h-48 bg-gray-700 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    </div>
+                    <div className="p-6">
+                      <div className="h-4 bg-gray-700 rounded mb-4"></div>
+                      <div className="h-3 bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-700 rounded mb-4"></div>
+                      <div className="h-8 bg-gray-700 rounded"></div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : featuredRobots.length === 0 ? (
+                <div className="col-span-3 text-center py-12">
+                  <Bot className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">No robots available yet</h3>
+                  <p className="text-gray-400 mb-6">Be the first to list a robot in your area!</p>
+                  <Link
+                    to="/create-robot"
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    List Your Robot
+                  </Link>
+                </div>
+              ) : (
+                featuredRobots.map((robot, index) => (
+                  <motion.div
+                    key={robot.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 1.2,
+                      delay: index * 0.1,
+                      ease: [0.16, 1, 0.3, 1]
+                    }}
+                    viewport={{ once: true }}
+                    className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                    onClick={() => window.location.href = `/robots/${robot.id}`}
+                  >
+                    {/* Robot Image */}
+                    <div className="h-48 bg-gray-700 flex items-center justify-center">
+                      {robot.images && robot.images.length > 0 ? (
+                        <img 
+                          src={robot.images[0]} 
+                          alt={robot.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <Bot className={`h-16 w-16 text-gray-500 ${robot.images && robot.images.length > 0 ? 'hidden' : ''}`} />
+                    </div>
+                    
+                    {/* Robot Info */}
+                    <div className="p-6">
+                      {/* Tags */}
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex gap-2">
+                          <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                            {robot.category}
+                          </span>
+                          <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            ${robot.price}/day
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-400 text-sm">⭐</span>
+                          <span className="text-white text-sm">{robot.rating.toFixed(1)}</span>
+                        </div>
                       </div>
-                      <button className="text-white hover:text-red-400 transition-colors">
-                        <Heart className="h-5 w-5" />
+
+                      {/* Robot Details */}
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {robot.name}
+                      </h3>
+                      <div className="flex items-center text-gray-400 text-sm mb-2">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {robot.location}
+                      </div>
+                      <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                        {robot.description}
+                      </p>
+
+                      {/* Rent Button */}
+                      <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Available for Rent
                       </button>
                     </div>
-
-                    {/* Robot Details */}
-                    <h3 className="text-lg font-semibold text-white mb-2">
-                      {robot.name}
-                    </h3>
-                    <div className="flex items-center text-gray-400 text-sm mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {robot.location}
-                    </div>
-                    <p className="text-gray-300 text-sm mb-4">
-                      {robot.description}
-                    </p>
-
-                    {/* Rent Button */}
-                    <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                      Available for Rent
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              )}
             </div>
 
             {/* View All Robots Button */}
