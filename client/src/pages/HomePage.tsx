@@ -146,28 +146,41 @@ const HomePage: React.FC = () => {
               }}
               className="bg-gray-800 rounded-lg p-4 mb-8"
             >
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
-                  <Search className="h-5 w-5 text-gray-400 mr-3" />
-                  <input
-                    type="text"
-                    placeholder="Search robots..."
-                    className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
-                  />
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const query = formData.get('query') as string;
+                const location = formData.get('location') as string;
+                const params = new URLSearchParams();
+                if (query) params.append('query', query);
+                if (location) params.append('location', location);
+                window.location.href = `/robots?${params.toString()}`;
+              }}>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                    <Search className="h-5 w-5 text-gray-400 mr-3" />
+                    <input
+                      name="query"
+                      type="text"
+                      placeholder="Search robots..."
+                      className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                    />
+                  </div>
+                  <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                    <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                    <input
+                      name="location"
+                      type="text"
+                      placeholder="City, State"
+                      className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                    />
+                    <Filter className="h-5 w-5 text-gray-400 ml-3" />
+                  </div>
+                  <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Search
+                  </button>
                 </div>
-                <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
-                  <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                  <input
-                    type="text"
-                    placeholder="City, State"
-                    className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
-                  />
-                  <Filter className="h-5 w-5 text-gray-400 ml-3" />
-                </div>
-                <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                  Search
-                </button>
-              </div>
+              </form>
             </motion.div>
 
             {/* Action Buttons */}
