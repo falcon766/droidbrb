@@ -4,7 +4,6 @@ import {
   Bot, 
   Search, 
   MapPin, 
-  Filter,
   Heart,
   DollarSign,
   SlidersHorizontal

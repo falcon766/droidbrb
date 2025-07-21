@@ -11,8 +11,7 @@ import {
   Settings,
   LogOut,
   User,
-  MapPin,
-  Heart
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 

@@ -35,14 +35,14 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button className="hover:text-white transition-colors text-left">
                   Origin Story
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button className="hover:text-white transition-colors text-left">
                   Contact
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -52,14 +52,14 @@ const Footer: React.FC = () => {
             <h3 className="font-semibold text-white mb-4 uppercase">Legal</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button className="hover:text-white transition-colors text-left">
                   Privacy Policy
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button className="hover:text-white transition-colors text-left">
                   Terms of Service
-                </a>
+                </button>
               </li>
             </ul>
           </div>

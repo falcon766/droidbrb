@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Bot, 
   MapPin, 
   Heart,
   DollarSign,
-  Calendar,
   Star,
   MessageCircle,
   ArrowLeft,
-  Clock,
   User,
   Shield
 } from 'lucide-react';
 
 const RobotDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const [isFavorited, setIsFavorited] = useState(false);
 
   // Mock robot data - in real app this would come from API
