@@ -20,13 +20,15 @@ export const robotService = {
   // Create a new robot listing
   async createRobot(robotData: CreateRobotForm, ownerId: string, images: File[]): Promise<string> {
     try {
-      // Upload images to Firebase Storage
+      // Upload images to Firebase Storage (only if images exist)
       const imageUrls: string[] = [];
-      for (const image of images) {
-        const imageRef = ref(storage, `robots/${ownerId}/${Date.now()}_${image.name}`);
-        const snapshot = await uploadBytes(imageRef, image);
-        const url = await getDownloadURL(snapshot.ref);
-        imageUrls.push(url);
+      if (images && images.length > 0) {
+        for (const image of images) {
+          const imageRef = ref(storage, `robots/${ownerId}/${Date.now()}_${image.name}`);
+          const snapshot = await uploadBytes(imageRef, image);
+          const url = await getDownloadURL(snapshot.ref);
+          imageUrls.push(url);
+        }
       }
 
       // Create robot document

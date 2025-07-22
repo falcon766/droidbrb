@@ -83,9 +83,10 @@ export interface Message {
   content: string;
   isRead: boolean;
   senderId: string;
-  sender: User;
+  senderName: string;
   receiverId: string;
-  receiver: User;
+  receiverName: string;
+  receiverEmail?: string;
   createdAt: Date;
 }
 

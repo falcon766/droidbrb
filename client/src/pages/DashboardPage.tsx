@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { robotService } from '../services/robotService';
+import { messageService } from '../services/messageService';
 import { Robot } from '../types';
 
 const DashboardPage: React.FC = () => {
@@ -21,22 +22,27 @@ const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [myRobots, setMyRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
-    const fetchRobots = async () => {
+    const fetchData = async () => {
       if (currentUser) {
         try {
-          const robots = await robotService.getRobotsByOwner(currentUser.uid);
+          const [robots, unreadCount] = await Promise.all([
+            robotService.getRobotsByOwner(currentUser.uid),
+            messageService.getUnreadCount(currentUser.uid)
+          ]);
           setMyRobots(robots);
+          setUnreadMessages(unreadCount);
         } catch (error) {
-          console.error('Error fetching robots:', error);
+          console.error('Error fetching data:', error);
         } finally {
           setLoading(false);
         }
       }
     };
 
-    fetchRobots();
+    fetchData();
   }, [currentUser]);
 
   const stats = [
@@ -208,9 +214,29 @@ const DashboardPage: React.FC = () => {
       case 'messages':
         return (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-white">Messages</h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-white">Messages</h3>
+              <Link
+                to="/messages"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                View All Messages
+              </Link>
+            </div>
             <div className="bg-gray-800 rounded-lg p-6">
-              <p className="text-gray-400">No new messages</p>
+              {unreadMessages > 0 ? (
+                <div className="text-center">
+                  <p className="text-white mb-2">You have {unreadMessages} unread message{unreadMessages === 1 ? '' : 's'}</p>
+                  <Link
+                    to="/messages"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    View Messages
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-center">No new messages</p>
+              )}
             </div>
           </div>
         );
@@ -280,7 +306,12 @@ const DashboardPage: React.FC = () => {
                     }`}
                   >
                     <tab.icon className="h-5 w-5 mr-3" />
-                    {tab.name}
+                    <span className="flex-1 text-left">{tab.name}</span>
+                    {tab.id === 'messages' && unreadMessages > 0 && (
+                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        {unreadMessages}
+                      </span>
+                    )}
                   </button>
                 ))}
               </nav>
