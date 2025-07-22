@@ -161,30 +161,58 @@ export const robotService = {
   // Get featured robots (most popular)
   async getFeaturedRobots(limitCount: number = 6): Promise<Robot[]> {
     try {
-      const q = query(
+      // First try to get robots ordered by rating
+      let q = query(
         collection(db, 'robots'),
         where('isAvailable', '==', true),
         orderBy('rating', 'desc'),
         limit(limitCount)
       );
       
-      const querySnapshot = await getDocs(q);
-      const robots: Robot[] = [];
-      
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        robots.push({
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        } as Robot);
-      });
-      
-      return robots;
+      try {
+        const querySnapshot = await getDocs(q);
+        const robots: Robot[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          robots.push({
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+          } as Robot);
+        });
+        
+        return robots;
+      } catch (orderByError) {
+        // If orderBy fails (e.g., no documents or missing field), try without orderBy
+        console.warn('OrderBy failed, trying without rating sort:', orderByError);
+        
+        q = query(
+          collection(db, 'robots'),
+          where('isAvailable', '==', true),
+          limit(limitCount)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const robots: Robot[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          robots.push({
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+          } as Robot);
+        });
+        
+        return robots;
+      }
     } catch (error) {
       console.error('Error fetching featured robots:', error);
-      throw new Error('Failed to fetch featured robots');
+      // Return empty array instead of throwing error
+      return [];
     }
   },
 }; 

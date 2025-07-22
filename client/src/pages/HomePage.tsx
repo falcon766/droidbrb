@@ -27,12 +27,20 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     const fetchFeaturedRobots = async () => {
+      // Add a timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        setLoading(false);
+      }, 5000); // 5 second timeout
+
       try {
         const robots = await robotService.getFeaturedRobots(6);
         setFeaturedRobots(robots);
       } catch (error) {
         console.error('Error fetching featured robots:', error);
+        // Set empty array on error to show empty state
+        setFeaturedRobots([]);
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     };
