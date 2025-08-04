@@ -1,5 +1,6 @@
 import { robotService } from './robotService';
 import { Robot } from '../types';
+import { distanceService, Coordinates } from './distanceService';
 
 export interface SearchFilters {
   query?: string;
@@ -9,6 +10,9 @@ export interface SearchFilters {
   maxPrice?: number;
   radius?: number; // in miles
   isAvailable?: boolean;
+  userLatitude?: number;
+  userLongitude?: number;
+  maxDistance?: number; // in miles
 }
 
 export interface LocationSuggestion {
@@ -26,42 +30,45 @@ export const searchService = {
     if (!input || input.length < 3) return [];
 
     try {
-      // Note: In a real implementation, you would need to:
-      // 1. Set up Google Places API key in environment variables
-      // 2. Create a backend endpoint to proxy the request (to hide API key)
-      // 3. Or use Google Places Autocomplete widget directly in frontend
+      console.log('Calling Netlify function for real Google Places data');
       
-      // For now, we'll return mock suggestions
-      const mockSuggestions: LocationSuggestion[] = [
-        {
-          place_id: '1',
-          description: 'Manhattan Beach, CA, USA',
+      // Call our Netlify function which proxies the Google Places API
+      const response = await fetch(`/.netlify/functions/places-autocomplete?input=${encodeURIComponent(input)}`);
+      
+      if (!response.ok) {
+        console.error('Netlify function error:', response.status, response.statusText);
+        return [];
+      }
+      
+      const data = await response.json();
+      console.log('Google Places API response:', data);
+      
+      // Handle the newer Places API response format
+      if (data.suggestions && Array.isArray(data.suggestions)) {
+        return data.suggestions.map((suggestion: any) => ({
+          place_id: suggestion.placePrediction.placeId,
+          description: suggestion.placePrediction.structuredFormat?.mainText?.text || suggestion.placePrediction.structuredFormat?.fullText?.text || '',
           structured_formatting: {
-            main_text: 'Manhattan Beach',
-            secondary_text: 'CA, USA'
+            main_text: suggestion.placePrediction.structuredFormat?.mainText?.text || '',
+            secondary_text: suggestion.placePrediction.structuredFormat?.secondaryText?.text || ''
           }
-        },
-        {
-          place_id: '2',
-          description: 'Los Angeles, CA, USA',
+        }));
+      }
+      
+      // Fallback to legacy format if needed
+      if (data.predictions && Array.isArray(data.predictions)) {
+        return data.predictions.map((prediction: any) => ({
+          place_id: prediction.place_id,
+          description: prediction.description,
           structured_formatting: {
-            main_text: 'Los Angeles',
-            secondary_text: 'CA, USA'
+            main_text: prediction.structured_formatting?.main_text || '',
+            secondary_text: prediction.structured_formatting?.secondary_text || ''
           }
-        },
-        {
-          place_id: '3',
-          description: 'San Francisco, CA, USA',
-          structured_formatting: {
-            main_text: 'San Francisco',
-            secondary_text: 'CA, USA'
-          }
-        }
-      ];
-
-      return mockSuggestions.filter(suggestion => 
-        suggestion.description.toLowerCase().includes(input.toLowerCase())
-      );
+        }));
+      }
+      
+      console.log('No suggestions found in response');
+      return [];
     } catch (error) {
       console.error('Error fetching location suggestions:', error);
       return [];
@@ -82,6 +89,86 @@ export const searchService = {
           robot.description.toLowerCase().includes(query) ||
           robot.category.toLowerCase().includes(query)
         );
+      }
+
+      // Handle location-based distance filtering
+      if (filters.location && filters.maxDistance) {
+        // Geocode the location to get coordinates
+        const coordinates = await distanceService.getCoordinatesFromAddress(filters.location);
+        
+        if (coordinates) {
+          const userLocation: Coordinates = {
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude
+          };
+
+          robots = robots.filter(robot => {
+            if (!robot.latitude || !robot.longitude) {
+              return false; // Skip robots without coordinates
+            }
+
+            const robotLocation: Coordinates = {
+              latitude: robot.latitude,
+              longitude: robot.longitude
+            };
+
+            const distance = distanceService.calculateDistance(userLocation, robotLocation);
+            return distance <= filters.maxDistance!;
+          });
+
+          // Sort by distance (closest first)
+          robots.sort((a, b) => {
+            if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+            
+            const distanceA = distanceService.calculateDistance(userLocation, {
+              latitude: a.latitude,
+              longitude: a.longitude
+            });
+            const distanceB = distanceService.calculateDistance(userLocation, {
+              latitude: b.latitude,
+              longitude: b.longitude
+            });
+            
+            return distanceA - distanceB;
+          });
+        }
+      }
+      // Apply distance filter if user coordinates and max distance are provided
+      else if (filters.userLatitude && filters.userLongitude && filters.maxDistance) {
+        const userLocation: Coordinates = {
+          latitude: filters.userLatitude,
+          longitude: filters.userLongitude
+        };
+
+        robots = robots.filter(robot => {
+          if (!robot.latitude || !robot.longitude) {
+            return false; // Skip robots without coordinates
+          }
+
+          const robotLocation: Coordinates = {
+            latitude: robot.latitude,
+            longitude: robot.longitude
+          };
+
+          const distance = distanceService.calculateDistance(userLocation, robotLocation);
+          return distance <= filters.maxDistance!;
+        });
+
+        // Sort by distance (closest first)
+        robots.sort((a, b) => {
+          if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+          
+          const distanceA = distanceService.calculateDistance(userLocation, {
+            latitude: a.latitude,
+            longitude: a.longitude
+          });
+          const distanceB = distanceService.calculateDistance(userLocation, {
+            latitude: b.latitude,
+            longitude: b.longitude
+          });
+          
+          return distanceA - distanceB;
+        });
       }
 
       if (filters.category && filters.category !== 'all') {

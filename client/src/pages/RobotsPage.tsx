@@ -10,13 +10,20 @@ import {
   SlidersHorizontal,
   Filter,
   X,
-  Star
+  Star,
+  ArrowLeft
 } from 'lucide-react';
 import { searchService, SearchFilters } from '../services/searchService';
 import { robotService } from '../services/robotService';
 import { Robot } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { distanceService, Coordinates } from '../services/distanceService';
+import DistanceFilter from '../components/DistanceFilter';
+import { useNavigate } from 'react-router-dom';
 
 const RobotsPage: React.FC = () => {
+  const { userProfile } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [robots, setRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +31,8 @@ const RobotsPage: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [maxDistance, setMaxDistance] = useState(25); // Default 25 miles
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -39,13 +48,29 @@ const RobotsPage: React.FC = () => {
     const query = searchParams.get('query') || '';
     const location = searchParams.get('location') || '';
     const category = searchParams.get('category') || '';
+    const distance = searchParams.get('distance') || '';
     
     setFilters({
       query: query || undefined,
       location: location || undefined,
       category: category || undefined,
     });
+    
+    // Set distance filter if provided in URL
+    if (distance) {
+      setMaxDistance(Number(distance));
+    }
   }, [searchParams]);
+
+  // Load user location from current user
+  useEffect(() => {
+    if (userProfile?.latitude && userProfile?.longitude) {
+      setUserLocation({
+        latitude: userProfile.latitude,
+        longitude: userProfile.longitude
+      });
+    }
+  }, [userProfile]);
 
   useEffect(() => {
     fetchRobots();
@@ -54,7 +79,17 @@ const RobotsPage: React.FC = () => {
   const fetchRobots = async () => {
     setLoading(true);
     try {
-      const results = await searchService.searchRobots(filters);
+      // Add user location and distance filter to search filters
+      const searchFilters = {
+        ...filters,
+        userLatitude: userLocation?.latitude,
+        userLongitude: userLocation?.longitude,
+        maxDistance: maxDistance // Always pass maxDistance, let the search service handle it
+      };
+      
+      console.log('🔍 Search filters:', searchFilters); // Debug log
+      
+      const results = await searchService.searchRobots(searchFilters);
       setRobots(results);
     } catch (error) {
       console.error('Error fetching robots:', error);
@@ -85,6 +120,21 @@ const RobotsPage: React.FC = () => {
     setShowLocationSuggestions(false);
   };
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.location-input-container')) {
+        setShowLocationSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleCategoryChange = (category: string) => {
     setFilters(prev => ({ ...prev, category }));
   };
@@ -101,15 +151,30 @@ const RobotsPage: React.FC = () => {
     setFilters({});
   };
 
+  const handleDistanceChange = (distance: number) => {
+    setMaxDistance(distance);
+    // Refetch robots with new distance filter
+    setTimeout(() => fetchRobots(), 100);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Browse Robots</h1>
-              <p className="text-gray-300 mt-2">Find the perfect robot for your needs</p>
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="mr-4 p-3 text-white bg-gray-700 hover:bg-gray-600 transition-colors rounded-lg border-2 border-gray-500 hover:border-gray-400 shadow-lg"
+                title="Go back - Updated"
+              >
+                <ArrowLeft className="h-8 w-8" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Browse Robots - FORCE UPDATE</h1>
+                <p className="text-gray-300 mt-2">Find the perfect robot for your needs</p>
+              </div>
             </div>
             <Link
               to="/create-robot"
@@ -135,7 +200,7 @@ const RobotsPage: React.FC = () => {
                 </div>
               </div>
               
-              <div className="flex-1 relative">
+              <div className="flex-1 relative location-input-container">
                 <div className="flex items-center bg-gray-600 rounded-lg px-4 py-3">
                   <MapPin className="h-5 w-5 text-gray-400 mr-3" />
                   <input
@@ -167,7 +232,7 @@ const RobotsPage: React.FC = () => {
               
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-500 transition-colors flex items-center"
+                className="bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-500 transition-colors flex items-center ml-3"
               >
                 <SlidersHorizontal className="h-5 w-5 mr-2" />
                 Filters
@@ -183,6 +248,14 @@ const RobotsPage: React.FC = () => {
                 className="mt-4 pt-4 border-t border-gray-600"
               >
                 <div className="grid md:grid-cols-3 gap-4">
+                  {/* Distance Filter */}
+                  <div>
+                    <DistanceFilter
+                      maxDistance={maxDistance}
+                      onDistanceChange={handleDistanceChange}
+                      userLocation={userLocation || undefined}
+                    />
+                  </div>
                   {/* Category Filter */}
                   <div>
                     <label className="block text-white text-sm font-medium mb-2">Category</label>
@@ -267,13 +340,26 @@ const RobotsPage: React.FC = () => {
           <div className="text-center py-12">
             <Bot className="h-16 w-16 text-gray-500 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">No robots found</h3>
-            <p className="text-gray-400 mb-6">Try adjusting your search criteria or be the first to list a robot in your area!</p>
-            <Link
-              to="/create-robot"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              List Your Robot
-            </Link>
+            <p className="text-gray-400 mb-6">
+              {filters.location && maxDistance ? 
+                `No robots found within ${maxDistance} mile${maxDistance !== 1 ? 's' : ''} of ${filters.location}. Try expanding your search radius or adjusting your location.` :
+                'Try adjusting your search criteria or be the first to list a robot in your area!'
+              }
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => setMaxDistance(Math.min(maxDistance * 2, 100))}
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Expand Search Area
+              </button>
+              <Link
+                to="/create-robot"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                List Your Robot
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

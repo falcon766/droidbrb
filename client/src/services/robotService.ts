@@ -20,15 +20,28 @@ export const robotService = {
   // Create a new robot listing
   async createRobot(robotData: CreateRobotForm, ownerId: string, images: File[]): Promise<string> {
     try {
+      console.log('Creating robot with data:', { robotData, ownerId, imageCount: images?.length });
+      
+      // Check if Firebase is properly initialized
+      if (!db) {
+        throw new Error('Firebase database is not initialized');
+      }
+      
+      if (!storage) {
+        throw new Error('Firebase storage is not initialized');
+      }
+
       // Upload images to Firebase Storage (only if images exist)
       const imageUrls: string[] = [];
       if (images && images.length > 0) {
+        console.log('Uploading images...');
         for (const image of images) {
           const imageRef = ref(storage, `robots/${ownerId}/${Date.now()}_${image.name}`);
           const snapshot = await uploadBytes(imageRef, image);
           const url = await getDownloadURL(snapshot.ref);
           imageUrls.push(url);
         }
+        console.log('Images uploaded successfully:', imageUrls);
       }
 
       // Create robot document
@@ -44,10 +57,15 @@ export const robotService = {
         updatedAt: Timestamp.now(),
       };
 
+      console.log('Adding robot document to Firestore...');
       const docRef = await addDoc(collection(db, 'robots'), robotDoc);
+      console.log('Robot created successfully with ID:', docRef.id);
       return docRef.id;
     } catch (error) {
       console.error('Error creating robot:', error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to create robot listing: ${error.message}`);
+      }
       throw new Error('Failed to create robot listing');
     }
   },
@@ -161,6 +179,22 @@ export const robotService = {
   // Get featured robots (most popular)
   async getFeaturedRobots(limitCount: number = 6): Promise<Robot[]> {
     try {
+      // Check if Firebase is initialized
+      if (!db) {
+        console.warn('Firebase not initialized - returning empty robots list');
+        return [];
+      }
+
+      // Check if we have valid Firebase config
+      const hasValidConfig = process.env.REACT_APP_FIREBASE_API_KEY && 
+                            process.env.REACT_APP_FIREBASE_PROJECT_ID &&
+                            process.env.REACT_APP_FIREBASE_API_KEY !== 'missing-api-key';
+      
+      if (!hasValidConfig) {
+        console.warn('Firebase config invalid - returning empty robots list');
+        return [];
+      }
+
       // First try to get robots ordered by rating
       let q = query(
         collection(db, 'robots'),

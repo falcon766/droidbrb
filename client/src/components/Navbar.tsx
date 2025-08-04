@@ -38,6 +38,12 @@ const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link 
+              to="/" 
+              className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Home
+            </Link>
+            <Link 
               to="/robots" 
               className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
@@ -54,9 +60,11 @@ const Navbar: React.FC = () => {
                 </Link>
                 <Link 
                   to="/messages" 
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="relative text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
                 >
-                  Messages
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Messages</span>
+                  {/* Unread badge - you can add this later */}
                 </Link>
                 
                 {/* User Menu */}
@@ -130,6 +138,13 @@ const Navbar: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-900 border-t border-gray-800">
+            <Link 
+              to="/" 
+              className="text-white hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
             <Link 
               to="/robots" 
               className="text-white hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium"

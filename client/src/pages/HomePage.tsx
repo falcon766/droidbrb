@@ -19,18 +19,27 @@ import {
   Package
 } from 'lucide-react';
 import { robotService } from '../services/robotService';
+import { searchService, LocationSuggestion } from '../services/searchService';
 import { Robot } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { distanceService, Coordinates } from '../services/distanceService';
 
 const HomePage: React.FC = () => {
+  const { userProfile } = useAuth();
   const [featuredRobots, setFeaturedRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [locationValue, setLocationValue] = useState('');
+  const [maxDistance, setMaxDistance] = useState(25); // Default 25 miles
+  const [showDistanceFilter, setShowDistanceFilter] = useState(false);
 
   useEffect(() => {
     const fetchFeaturedRobots = async () => {
       // Add a timeout to prevent infinite loading
       const timeoutId = setTimeout(() => {
         setLoading(false);
-      }, 5000); // 5 second timeout
+      }, 3000); // 3 second timeout
 
       try {
         const robots = await robotService.getFeaturedRobots(6);
@@ -45,7 +54,46 @@ const HomePage: React.FC = () => {
       }
     };
 
-    fetchFeaturedRobots();
+    // Only fetch if we're not already loading
+    if (loading) {
+      fetchFeaturedRobots();
+    }
+  }, [loading]);
+
+  const handleLocationChange = async (value: string) => {
+    console.log('Location input changed:', value);
+    setLocationValue(value);
+    
+    if (value.length >= 3) {
+      console.log('Calling searchService.getLocationSuggestions with:', value);
+      const suggestions = await searchService.getLocationSuggestions(value);
+      console.log('Received suggestions:', suggestions);
+      setLocationSuggestions(suggestions);
+      setShowLocationSuggestions(true);
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const handleLocationSelect = (suggestion: LocationSuggestion) => {
+    setLocationValue(suggestion.description);
+    setShowLocationSuggestions(false);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.location-input-container')) {
+        setShowLocationSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const features = [
@@ -74,12 +122,12 @@ const HomePage: React.FC = () => {
   const categories = [
     { name: 'Humanoid', icon: Bot, count: 0 },
     { name: 'Industrial', icon: Settings, count: 0 },
-    { name: 'Educational', icon: MessageCircle, count: 2 },
+    { name: 'Educational', icon: MessageCircle, count: 0 },
     { name: 'Hobby', icon: Gamepad2, count: 0 },
     { name: 'Drone', icon: Plane, count: 0 },
     { name: 'Service', icon: ClipboardCheck, count: 0 },
     { name: 'Medical', icon: HeartIcon, count: 0 },
-    { name: 'Other', icon: Package, count: 1 }
+    { name: 'Other', icon: Package, count: 0 }
   ];
 
   return (
@@ -158,10 +206,10 @@ const HomePage: React.FC = () => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
                 const query = formData.get('query') as string;
-                const location = formData.get('location') as string;
                 const params = new URLSearchParams();
                 if (query) params.append('query', query);
-                if (location) params.append('location', location);
+                if (locationValue) params.append('location', locationValue);
+                if (maxDistance !== 25) params.append('distance', maxDistance.toString());
                 window.location.href = `/robots?${params.toString()}`;
               }}>
                 <div className="flex flex-col md:flex-row gap-4">
@@ -174,15 +222,66 @@ const HomePage: React.FC = () => {
                       className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
                     />
                   </div>
-                  <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
-                    <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                    <input
-                      name="location"
-                      type="text"
-                      placeholder="City, State"
-                      className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
-                    />
-                    <Filter className="h-5 w-5 text-gray-400 ml-3" />
+                  <div className="flex-1 relative location-input-container">
+                    <div className="flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                      <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                      <input
+                        name="location"
+                        type="text"
+                        placeholder="City, State"
+                        value={locationValue}
+                        onChange={(e) => handleLocationChange(e.target.value)}
+                        onFocus={() => setShowLocationSuggestions(true)}
+                        className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                        autoComplete="off"
+                        data-google-places-autocomplete="true"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowDistanceFilter(!showDistanceFilter)}
+                        className="text-gray-400 hover:text-white transition-colors ml-3"
+                      >
+                        <Filter className="h-5 w-5" />
+                      </button>
+                    </div>
+                    
+                    {/* Location Suggestions */}
+                    {showLocationSuggestions && locationSuggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 bg-gray-700 rounded-lg mt-1 z-10 max-h-48 overflow-y-auto">
+                        {locationSuggestions.map((suggestion) => (
+                          <button
+                            key={suggestion.place_id}
+                            onClick={() => handleLocationSelect(suggestion)}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-600 text-white border-b border-gray-600 last:border-b-0"
+                          >
+                            <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
+                            <div className="text-sm text-gray-400">{suggestion.structured_formatting.secondary_text}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Distance Filter Dropdown */}
+                    {showDistanceFilter && (
+                      <div className="absolute top-full left-0 right-0 bg-gray-700 rounded-lg mt-1 z-10 p-4">
+                        <h4 className="text-white font-medium mb-3">Distance Filter</h4>
+                        <div className="space-y-2">
+                          {[1, 5, 10, 25, 50, 100].map((distance) => (
+                            <label key={distance} className="flex items-center cursor-pointer">
+                              <input
+                                type="radio"
+                                name="distance"
+                                value={distance}
+                                checked={maxDistance === distance}
+                                onChange={(e) => setMaxDistance(Number(e.target.value))}
+                                className="mr-3 text-blue-500 focus:ring-blue-500"
+                              />
+                              <span className="text-white">{distance} mile{distance !== 1 ? 's' : ''}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
                     Search
@@ -314,13 +413,13 @@ const HomePage: React.FC = () => {
               ) : featuredRobots.length === 0 ? (
                 <div className="col-span-3 text-center py-12">
                   <Bot className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">No robots available yet</h3>
-                  <p className="text-gray-400 mb-6">Be the first to list a robot in your area!</p>
+                  <h3 className="text-xl font-semibold text-white mb-2">Post Your Robot</h3>
+                  <p className="text-gray-400 mb-6">Be the first to share your robot with the community!</p>
                   <Link
                     to="/create-robot"
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    List Your Robot
+                    Post Your Robot
                   </Link>
                 </div>
               ) : (

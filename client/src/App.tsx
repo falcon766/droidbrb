@@ -16,11 +16,13 @@ import RobotDetailPage from './pages/RobotDetailPage';
 import CreateRobotPage from './pages/CreateRobotPage';
 import MessagesPage from './pages/MessagesPage';
 import NotFoundPage from './pages/NotFoundPage';
+import FirebaseDiagnostic from './components/FirebaseDiagnostic';
 
 // Components
 
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
+import DebugInfo from './components/DebugInfo';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -90,6 +92,7 @@ const AppContent: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/robots" element={<RobotListPage />} />
             <Route path="/robots/:id" element={<RobotDetailPage />} />
+            <Route path="/firebase-diagnostic" element={<FirebaseDiagnostic />} />
             
             {/* Auth Routes */}
             <Route 
@@ -159,6 +162,7 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AppContent />
+          <DebugInfo />
           <Toaster 
             position="top-right"
             toastOptions={{

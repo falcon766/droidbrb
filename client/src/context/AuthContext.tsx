@@ -46,10 +46,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Add a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('AuthContext loading timeout - forcing loading to false');
+      setLoading(false);
+    }, 2000); // 2 second timeout
+
+    // Check if Firebase is initialized
+    if (!auth) {
+      console.warn('Firebase auth not initialized - skipping authentication check');
+      setLoading(false);
+      clearTimeout(timeoutId);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('Auth state changed:', user ? 'User logged in' : 'No user');
       setCurrentUser(user);
       
-      if (user) {
+      if (user && db) {
         // Fetch user profile from Firestore
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -64,18 +79,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
+          // Don't let Firestore errors prevent the app from loading
+          setUserProfile(null);
         }
       } else {
         setUserProfile(null);
       }
       
+      console.log('Setting loading to false');
       setLoading(false);
+      clearTimeout(timeoutId);
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(timeoutId);
+      unsubscribe();
+    };
   }, []);
 
   const login = async (credentials: LoginForm) => {
+    if (!auth) {
+      throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+    }
     try {
       await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
     } catch (error: any) {
@@ -84,6 +109,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const loginWithGoogle = async () => {
+    if (!auth || !db) {
+      throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+    }
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -116,6 +144,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const register = async (userData: RegisterForm) => {
+    if (!auth || !db) {
+      throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+    }
     try {
       // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
@@ -157,6 +188,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
+    if (!auth) {
+      throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+    }
     try {
       await signOut(auth);
     } catch (error: any) {
@@ -167,6 +201,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateUserProfile = async (data: ProfileForm) => {
     if (!currentUser) {
       throw new Error('No user logged in');
+    }
+
+    if (!db) {
+      throw new Error('Firebase database is not initialized. Please check your configuration.');
     }
 
     try {
@@ -197,6 +235,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const resetPassword = async (email: string) => {
+    if (!auth) {
+      throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+    }
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error: any) {

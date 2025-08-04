@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { robotService } from '../services/robotService';
 import { messageService } from '../services/messageService';
 import { Robot } from '../types';
+import Navbar from '../components/Navbar';
 
 const DashboardPage: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -258,6 +259,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <Navbar />
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

@@ -8,6 +8,10 @@ export interface User {
   bio: string;
   avatar: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
+  zipcode?: string;
+  address?: string;
   expertise: Expertise;
   isVerified: boolean;
   isPremium: boolean;
@@ -32,6 +36,10 @@ export interface Robot {
   description: string;
   price: number;
   location: string;
+  latitude?: number;
+  longitude?: number;
+  zipcode?: string;
+  address?: string;
   minRental: number;
   maxRental: number;
   pickupTime: string;

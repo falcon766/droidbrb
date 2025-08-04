@@ -86,6 +86,12 @@ export const messageService = {
   // Get all conversations for a user
   async getUserConversations(userId: string): Promise<Message[]> {
     try {
+      // Check if db is available
+      if (!db) {
+        console.error('Firestore database not initialized');
+        return [];
+      }
+
       const q = query(
         collection(db, 'messages'),
         where('senderId', '==', userId),
@@ -112,7 +118,8 @@ export const messageService = {
       return messages;
     } catch (error) {
       console.error('Error fetching user conversations:', error);
-      throw new Error('Failed to fetch conversations');
+      // Return empty array instead of throwing error to prevent app crashes
+      return [];
     }
   },
 
