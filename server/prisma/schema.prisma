@@ -20,6 +20,10 @@ model User {
   bio               String?
   avatar            String?
   location          String?
+  latitude          Float?
+  longitude         Float?
+  zipcode           String?
+  address           String? // Private address for distance calculations
   expertise         Expertise @default(BEGINNER)
   isVerified        Boolean   @default(false)
   isPremium         Boolean   @default(false)
@@ -62,6 +66,8 @@ model Robot {
   location          String
   latitude          Float?
   longitude         Float?
+  zipcode           String?
+  address           String? // Private address for distance calculations
   isAvailable       Boolean   @default(true)
   isVerified        Boolean   @default(false)
   rating            Float     @default(0)

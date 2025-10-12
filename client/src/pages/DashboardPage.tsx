@@ -5,9 +5,7 @@ import {
   Bot, 
   Plus,
   Calendar,
-  Star,
   MessageCircle,
-  Settings,
   LogOut,
   User,
   MapPin
@@ -50,15 +48,14 @@ const DashboardPage: React.FC = () => {
     { label: 'My Robots', value: myRobots.length.toString(), icon: Bot, color: 'text-purple-400' },
     { label: 'Active Rentals', value: '0', icon: Calendar, color: 'text-blue-400' },
     { label: 'Total Rentals', value: '0', icon: Calendar, color: 'text-green-400' },
-    { label: 'Average Rating', value: myRobots.length > 0 ? (myRobots.reduce((acc, robot) => acc + robot.rating, 0) / myRobots.length).toFixed(1) : '0.0', icon: Star, color: 'text-yellow-400' }
+    { label: 'Messages', value: unreadMessages.toString(), icon: MessageCircle, color: 'text-blue-400' }
   ];
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: Bot },
     { id: 'my-robots', name: 'My Robots', icon: Bot },
     { id: 'rentals', name: 'Rentals', icon: Calendar },
-    { id: 'messages', name: 'Messages', icon: MessageCircle },
-    { id: 'settings', name: 'Settings', icon: Settings }
+    { id: 'messages', name: 'Messages', icon: MessageCircle }
   ];
 
   const renderTabContent = () => {
@@ -176,10 +173,6 @@ const DashboardPage: React.FC = () => {
                         <p className="text-white font-medium">{robot.totalRentals}</p>
                       </div>
                       <div>
-                        <span className="text-gray-400">Rating:</span>
-                        <p className="text-white font-medium">{robot.rating.toFixed(1)} ⭐</p>
-                      </div>
-                      <div>
                         <span className="text-gray-400">Category:</span>
                         <p className="text-white font-medium">{robot.category}</p>
                       </div>
@@ -238,16 +231,6 @@ const DashboardPage: React.FC = () => {
               ) : (
                 <p className="text-gray-400 text-center">No new messages</p>
               )}
-            </div>
-          </div>
-        );
-
-      case 'settings':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-white">Settings</h3>
-            <div className="bg-gray-800 rounded-lg p-6">
-              <p className="text-gray-400">Settings coming soon...</p>
             </div>
           </div>
         );

@@ -7,12 +7,12 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Pages
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import ProfilePage from './pages/ProfilePage';
-import RobotListPage from './pages/RobotListPage';
 import RobotDetailPage from './pages/RobotDetailPage';
+import RobotsPage from './pages/RobotsPage';
 import CreateRobotPage from './pages/CreateRobotPage';
 import MessagesPage from './pages/MessagesPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -90,8 +90,10 @@ const AppContent: React.FC = () => {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
-            <Route path="/robots" element={<RobotListPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/robots" element={<RobotsPage />} />
             <Route path="/robots/:id" element={<RobotDetailPage />} />
+            <Route path="/search" element={<RobotsPage />} />
             <Route path="/firebase-diagnostic" element={<FirebaseDiagnostic />} />
             
             {/* Auth Routes */}
@@ -118,14 +120,6 @@ const AppContent: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
                 </ProtectedRoute>
               } 
             />

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
@@ -67,6 +67,16 @@ try {
   if (hasValidConfig) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    
+    // Set Firebase Auth to use session-only persistence (clears when browser closes)
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        console.log('Firebase Auth set to session-only persistence');
+      })
+      .catch((error) => {
+        console.error('Error setting auth persistence:', error);
+      });
+    
     db = getFirestore(app);
     storage = getStorage(app);
   } else {

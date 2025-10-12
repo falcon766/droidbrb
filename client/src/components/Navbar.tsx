@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, User, LogOut, Settings, MessageSquare, Plus } from 'lucide-react';
+import { Menu, X, User, LogOut, MessageSquare, Plus } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -82,13 +82,6 @@ const Navbar: React.FC = () => {
                     >
                       <User className="w-4 h-4" />
                       <span>Dashboard</span>
-                    </Link>
-                    <Link 
-                      to="/profile" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      <span>Profile</span>
                     </Link>
                     <button 
                       onClick={handleLogout}
@@ -178,14 +171,6 @@ const Navbar: React.FC = () => {
                 >
                   <User className="w-4 h-4" />
                   <span>Dashboard</span>
-                </Link>
-                <Link 
-                  to="/profile" 
-                  className="text-white hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Profile</span>
                 </Link>
                 <button 
                   onClick={() => {

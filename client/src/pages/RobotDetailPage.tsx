@@ -1,54 +1,64 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Bot, 
   MapPin, 
   Heart,
   DollarSign,
-  Star,
   MessageCircle,
   ArrowLeft,
-  User,
-  Shield
+  User
 } from 'lucide-react';
+
+import { robotService } from '../services/robotService';
+import { Robot, User as UserType } from '../types';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 const RobotDetailPage: React.FC = () => {
   const [isFavorited, setIsFavorited] = useState(false);
+  const [robot, setRobot] = useState<Robot | null>(null);
+  const [owner, setOwner] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  // Mock robot data - in real app this would come from API
-  const robot = {
-    id: '1',
-    name: 'Loona Pet Robot',
-    category: 'Educational',
-    price: 25,
-    location: 'Manhattan Beach, CA',
-    description: 'Loona is an advanced pet robot with ChatGPT-enabled conversations. Perfect for learning about robotics and AI interaction.',
-    longDescription: 'Loona Pet Robot is a cutting-edge companion robot that combines advanced robotics with artificial intelligence. Features include natural language processing, emotional recognition, and interactive learning capabilities. Perfect for educational purposes, research, or simply experiencing the future of human-robot interaction.',
-    image: '/images/loona-robot.jpg',
-    isAvailable: true,
-    rating: 4.8,
-    reviewCount: 127,
-    owner: {
-      name: 'Sarah Johnson',
-      rating: 4.9,
-      reviewCount: 45,
-      isVerified: true
-    },
-    specifications: {
-      weight: '2.5 kg',
-      dimensions: '30 x 20 x 15 cm',
-      batteryLife: '8 hours',
-      connectivity: 'WiFi, Bluetooth',
-      features: ['Voice Recognition', 'Facial Recognition', 'ChatGPT Integration', 'Educational Games']
-    },
-    availability: {
-      minRental: '1 day',
-      maxRental: '30 days',
-      pickupTime: '9:00 AM - 6:00 PM',
-      returnTime: '9:00 AM - 6:00 PM'
-    }
-  };
+  useEffect(() => {
+    const load = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await robotService.getRobotById(id);
+        setRobot(data);
+        
+        // Fetch owner information
+        if (data && data.ownerId && db) {
+          try {
+            const ownerDoc = await getDoc(doc(db, 'users', data.ownerId));
+            if (ownerDoc.exists()) {
+              const ownerData = ownerDoc.data();
+              setOwner({
+                ...ownerData,
+                id: data.ownerId,
+                createdAt: ownerData.createdAt?.toDate?.() || new Date(),
+                updatedAt: ownerData.updatedAt?.toDate?.() || new Date(),
+              } as UserType);
+            }
+          } catch (error) {
+            console.error('Error fetching owner info:', error);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load robot', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
 
   const reviews = [
     {
@@ -67,18 +77,39 @@ const RobotDetailPage: React.FC = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!robot) {
+    return (
+      <div className="min-h-screen bg-gray-900">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <Bot className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">Robot not found</h1>
+          <p className="text-gray-400 mb-6">The robot you are looking for does not exist or was removed.</p>
+          <button onClick={() => navigate(-1)} className="text-blue-400 hover:text-blue-300 underline">Go back</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link 
-            to="/robots" 
+          <button 
+            onClick={() => navigate(-1)}
             className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Robots
-          </Link>
+            Back
+          </button>
           <h1 className="text-3xl font-bold text-white">{robot.name}</h1>
         </div>
       </div>
@@ -114,11 +145,6 @@ const RobotDetailPage: React.FC = () => {
                     {robot.location}
                   </div>
                   <div className="flex items-center mb-4">
-                    <div className="flex items-center mr-4">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                      <span className="text-white">{robot.rating}</span>
-                      <span className="text-gray-400 ml-1">({robot.reviewCount} reviews)</span>
-                    </div>
                     <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
                       {robot.category}
                     </span>
@@ -134,7 +160,7 @@ const RobotDetailPage: React.FC = () => {
                 </button>
               </div>
 
-              <p className="text-gray-300 mb-6">{robot.longDescription}</p>
+              <p className="text-gray-300 mb-6">{robot.description}</p>
 
               {/* Specifications */}
               <div className="border-t border-gray-700 pt-6">
@@ -157,16 +183,18 @@ const RobotDetailPage: React.FC = () => {
                     <span className="text-white ml-2">{robot.specifications.connectivity}</span>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <span className="text-gray-400">Features:</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {robot.specifications.features.map((feature, index) => (
-                      <span key={index} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">
-                        {feature}
-                      </span>
-                    ))}
+                {robot.features && robot.features.length > 0 && (
+                  <div className="mt-4">
+                    <span className="text-gray-400">Features:</span>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {robot.features.map((feature, index) => (
+                        <span key={index} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </motion.div>
 
@@ -185,10 +213,6 @@ const RobotDetailPage: React.FC = () => {
                       <div className="flex items-center">
                         <User className="h-4 w-4 text-gray-400 mr-2" />
                         <span className="text-white font-medium">{review.user}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                        <span className="text-white text-sm">{review.rating}</span>
                       </div>
                     </div>
                     <p className="text-gray-300 text-sm mb-2">{review.comment}</p>
@@ -245,15 +269,19 @@ const RobotDetailPage: React.FC = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Min Rental:</span>
-                    <span className="text-white">{robot.availability.minRental}</span>
+                    <span className="text-white">{robot.minRental} day{robot.minRental !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Max Rental:</span>
-                    <span className="text-white">{robot.availability.maxRental}</span>
+                    <span className="text-white">{robot.maxRental} day{robot.maxRental !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Pickup Time:</span>
-                    <span className="text-white">{robot.availability.pickupTime}</span>
+                    <span className="text-white">{robot.pickupTime}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Return Time:</span>
+                    <span className="text-white">{robot.returnTime}</span>
                   </div>
                 </div>
               </div>
@@ -267,27 +295,57 @@ const RobotDetailPage: React.FC = () => {
               className="bg-gray-800 rounded-lg p-6"
             >
               <h4 className="text-white font-medium mb-4">Owner</h4>
-              <div className="flex items-center mb-3">
-                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mr-3">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
+              {owner ? (
                 <div>
-                  <div className="flex items-center">
-                    <span className="text-white font-medium">{robot.owner.name}</span>
-                    {robot.owner.isVerified && (
-                      <Shield className="h-4 w-4 text-blue-400 ml-2" />
+                  <div className="flex items-center mb-4">
+                    {owner.avatar ? (
+                      <img
+                        src={owner.avatar}
+                        alt={owner.firstName}
+                        className="w-12 h-12 rounded-full object-cover mr-3"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                        <User className="h-6 w-6 text-gray-400" />
+                      </div>
                     )}
+                    <div>
+                      <p className="text-white font-medium">
+                        {owner.firstName} {owner.lastName}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        Member since {new Date(owner.createdAt).getFullYear()}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center text-sm">
-                    <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
-                    <span className="text-white">{robot.owner.rating}</span>
-                    <span className="text-gray-400 ml-1">({robot.owner.reviewCount} reviews)</span>
-                  </div>
+                  
+                  {owner.bio && (
+                    <p className="text-gray-300 text-sm mb-4">{owner.bio}</p>
+                  )}
+                  
+                  {owner.location && (
+                    <div className="flex items-center text-gray-400 text-sm mb-4">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {owner.location}
+                    </div>
+                  )}
+                  
+                  <button
+                    onClick={() => navigate('/messages')}
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message Owner
+                  </button>
                 </div>
-              </div>
-              <button className="w-full py-2 px-4 border border-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                View Profile
-              </button>
+              ) : (
+                <div className="flex items-center text-gray-400">
+                  <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                    <User className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <div className="text-sm">Owner information unavailable</div>
+                </div>
+              )}
             </motion.div>
           </div>
         </div>

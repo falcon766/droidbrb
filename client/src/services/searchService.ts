@@ -45,19 +45,43 @@ export const searchService = {
       
       // Handle the newer Places API response format
       if (data.suggestions && Array.isArray(data.suggestions)) {
-        return data.suggestions.map((suggestion: any) => ({
-          place_id: suggestion.placePrediction.placeId,
-          description: suggestion.placePrediction.structuredFormat?.mainText?.text || suggestion.placePrediction.structuredFormat?.fullText?.text || '',
-          structured_formatting: {
-            main_text: suggestion.placePrediction.structuredFormat?.mainText?.text || '',
-            secondary_text: suggestion.placePrediction.structuredFormat?.secondaryText?.text || ''
-          }
-        }));
+        const suggestions = data.suggestions.map((suggestion: any) => {
+          const placePrediction = suggestion.placePrediction;
+          const structuredFormat = placePrediction.structuredFormat;
+          
+          // Extract the full text description
+          const fullText = structuredFormat?.fullText?.text || '';
+          const mainText = structuredFormat?.mainText?.text || '';
+          const secondaryText = structuredFormat?.secondaryText?.text || '';
+          
+          return {
+            place_id: placePrediction.placeId,
+            description: fullText || `${mainText}, ${secondaryText}`.replace(/,\s*$/, ''),
+            structured_formatting: {
+              main_text: mainText,
+              secondary_text: secondaryText
+            }
+          };
+        });
+        
+        // Sort suggestions by relevance (exact matches first, then by length)
+        return suggestions.sort((a: LocationSuggestion, b: LocationSuggestion) => {
+          const aDesc = a.description.toLowerCase();
+          const bDesc = b.description.toLowerCase();
+          const inputLower = input.toLowerCase();
+          
+          // Exact match gets highest priority
+          if (aDesc.startsWith(inputLower) && !bDesc.startsWith(inputLower)) return -1;
+          if (bDesc.startsWith(inputLower) && !aDesc.startsWith(inputLower)) return 1;
+          
+          // Then sort by length (shorter descriptions first for more specific matches)
+          return aDesc.length - bDesc.length;
+        });
       }
       
       // Fallback to legacy format if needed
       if (data.predictions && Array.isArray(data.predictions)) {
-        return data.predictions.map((prediction: any) => ({
+        const suggestions = data.predictions.map((prediction: any) => ({
           place_id: prediction.place_id,
           description: prediction.description,
           structured_formatting: {
@@ -65,6 +89,18 @@ export const searchService = {
             secondary_text: prediction.structured_formatting?.secondary_text || ''
           }
         }));
+        
+        // Sort legacy format suggestions too
+        return suggestions.sort((a: LocationSuggestion, b: LocationSuggestion) => {
+          const aDesc = a.description.toLowerCase();
+          const bDesc = b.description.toLowerCase();
+          const inputLower = input.toLowerCase();
+          
+          if (aDesc.startsWith(inputLower) && !bDesc.startsWith(inputLower)) return -1;
+          if (bDesc.startsWith(inputLower) && !aDesc.startsWith(inputLower)) return 1;
+          
+          return aDesc.length - bDesc.length;
+        });
       }
       
       console.log('No suggestions found in response');
@@ -78,8 +114,11 @@ export const searchService = {
   // Search robots with filters
   async searchRobots(filters: SearchFilters): Promise<Robot[]> {
     try {
+      console.log('🔍 Starting robot search with filters:', filters);
+      
       // Get all available robots first
       let robots = await robotService.getAvailableRobots();
+      console.log(`📦 Found ${robots.length} total robots to filter`);
 
       // Apply filters
       if (filters.query) {
@@ -93,7 +132,10 @@ export const searchService = {
 
       // Handle location-based distance filtering
       if (filters.location && filters.maxDistance) {
+        console.log('🔍 Location and maxDistance filters found:', { location: filters.location, maxDistance: filters.maxDistance });
+        
         // Geocode the location to get coordinates
+        console.log('🔍 Attempting to geocode location:', filters.location);
         const coordinates = await distanceService.getCoordinatesFromAddress(filters.location);
         
         if (coordinates) {
@@ -102,8 +144,13 @@ export const searchService = {
             longitude: coordinates.longitude
           };
 
+          console.log('📍 User location coordinates:', coordinates);
+          console.log('🔍 Filtering robots within', filters.maxDistance, 'miles of', filters.location);
+          console.log('📊 Total robots to filter:', robots.length);
+
           robots = robots.filter(robot => {
             if (!robot.latitude || !robot.longitude) {
+              console.log('❌ Robot', robot.name, 'has no coordinates, skipping');
               return false; // Skip robots without coordinates
             }
 
@@ -113,7 +160,11 @@ export const searchService = {
             };
 
             const distance = distanceService.calculateDistance(userLocation, robotLocation);
-            return distance <= filters.maxDistance!;
+            const isWithinRange = distance <= filters.maxDistance!;
+            
+            console.log(`📍 ${robot.name}: ${distance.toFixed(1)} miles from ${filters.location} - ${isWithinRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
+            
+            return isWithinRange;
           });
 
           // Sort by distance (closest first)
@@ -131,6 +182,13 @@ export const searchService = {
             
             return distanceA - distanceB;
           });
+
+          console.log(`✅ Found ${robots.length} robots within ${filters.maxDistance} miles of ${filters.location}`);
+        } else {
+          console.log('❌ Could not geocode location:', filters.location);
+          console.log('⚠️ Falling back to showing all robots (no distance filtering)');
+          // Don't filter by distance if we can't geocode, but still apply other filters
+          // This allows users to see robots even if geocoding fails
         }
       }
       // Apply distance filter if user coordinates and max distance are provided
@@ -140,8 +198,12 @@ export const searchService = {
           longitude: filters.userLongitude
         };
 
+        console.log('📍 User coordinates from profile:', userLocation);
+        console.log('🔍 Filtering robots within', filters.maxDistance, 'miles of user location');
+
         robots = robots.filter(robot => {
           if (!robot.latitude || !robot.longitude) {
+            console.log('❌ Robot', robot.name, 'has no coordinates, skipping');
             return false; // Skip robots without coordinates
           }
 
@@ -151,7 +213,11 @@ export const searchService = {
           };
 
           const distance = distanceService.calculateDistance(userLocation, robotLocation);
-          return distance <= filters.maxDistance!;
+          const isWithinRange = distance <= filters.maxDistance!;
+          
+          console.log(`📍 ${robot.name}: ${distance.toFixed(1)} miles from user - ${isWithinRange ? '✅ IN RANGE' : '❌ OUT OF RANGE'}`);
+          
+          return isWithinRange;
         });
 
         // Sort by distance (closest first)
@@ -169,6 +235,8 @@ export const searchService = {
           
           return distanceA - distanceB;
         });
+
+        console.log(`✅ Found ${robots.length} robots within ${filters.maxDistance} miles of user location`);
       }
 
       if (filters.category && filters.category !== 'all') {
@@ -185,18 +253,14 @@ export const searchService = {
         robots = robots.filter(robot => robot.price <= filters.maxPrice!);
       }
 
-      if (filters.location) {
-        // Simple location filtering - in a real app, you'd use geocoding
-        // and distance calculations
-        robots = robots.filter(robot => 
-          robot.location.toLowerCase().includes(filters.location!.toLowerCase())
-        );
-      }
+      // Note: Location filtering is now handled by the distance-based filtering above
+      // This prevents robots from being shown outside the specified radius
 
       if (filters.isAvailable !== undefined) {
         robots = robots.filter(robot => robot.isAvailable === filters.isAvailable);
       }
 
+      console.log(`✅ Search complete! Returning ${robots.length} robots after filtering`);
       return robots;
     } catch (error) {
       console.error('Error searching robots:', error);

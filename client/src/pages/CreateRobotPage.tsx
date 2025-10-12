@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { 
@@ -13,6 +13,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { CreateRobotForm } from '../types';
 import { robotService } from '../services/robotService';
+import { distanceService } from '../services/distanceService';
+import { searchService } from '../services/searchService';
 import toast from 'react-hot-toast';
 
 const CreateRobotPage: React.FC = () => {
@@ -22,6 +24,10 @@ const CreateRobotPage: React.FC = () => {
   const [newFeature, setNewFeature] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [locationValue, setLocationValue] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
 
   const {
     register,
@@ -58,17 +64,121 @@ const CreateRobotPage: React.FC = () => {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  const handleLocationChange = async (value: string) => {
+    setLocationValue(value);
+    setSelectedLocation(''); // Clear selection when typing
+    
+    if (value.length >= 3) {
+      try {
+        const suggestions = await searchService.getLocationSuggestions(value);
+        setLocationSuggestions(suggestions);
+        setShowLocationSuggestions(true);
+      } catch (error) {
+        console.error('Error fetching location suggestions:', error);
+        setLocationSuggestions([]);
+        setShowLocationSuggestions(false);
+      }
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const handleLocationSelect = (suggestion: any) => {
+    const locationText = suggestion.description;
+    
+    // Check if the location is specific enough (should have state/country or be a well-known city)
+    const hasStateOrCountry = locationText.includes(',') || locationText.includes('USA') || locationText.includes('United States');
+    
+    // Allow well-known cities even without state/country if they're from Google Places
+    const isWellKnownCity = locationText.length > 5 && (
+      locationText.includes('City') || 
+      locationText.includes('Town') || 
+      locationText.includes('Village') ||
+      locationText.includes('County')
+    );
+    
+    if (!hasStateOrCountry && !isWellKnownCity) {
+      toast.error('Please select a more specific location (e.g., "Apex, NC" instead of just "Apex")');
+      return;
+    }
+    
+    setLocationValue(locationText);
+    setSelectedLocation(locationText);
+    setShowLocationSuggestions(false);
+    setLocationSuggestions([]);
+    
+    // Show success message
+    toast.success(`Location selected: ${locationText}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission on Enter
+    }
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.location-input-container')) {
+        setShowLocationSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const onSubmit = async (data: CreateRobotForm) => {
     if (!currentUser) {
       toast.error('You must be logged in to create a robot listing');
       return;
     }
 
+    // Validate that a location was selected from suggestions
+    if (!selectedLocation) {
+      toast.error('Please select a location from the suggestions to ensure accurate GPS coordinates');
+      return;
+    }
+
     setIsLoading(true);
     try {
+      // Use the selected location instead of the form data
+      const finalLocation = selectedLocation;
+      
+      // Auto-geocode the location to get coordinates
+      let latitude: number | undefined;
+      let longitude: number | undefined;
+      
+      try {
+        const coordinates = await distanceService.getCoordinatesFromAddress(finalLocation);
+        if (coordinates) {
+          latitude = coordinates.latitude;
+          longitude = coordinates.longitude;
+          console.log('📍 Auto-geocoded location:', finalLocation, '→', coordinates);
+        } else {
+          console.log('⚠️ Could not geocode location:', finalLocation);
+          toast.error(`Could not determine GPS coordinates for "${finalLocation}". This usually means the location is too generic. Please select a more specific location (e.g., "Apex, NC" instead of "Apex").`);
+          setIsLoading(false);
+          return;
+        }
+      } catch (geocodeError) {
+        console.error('Geocoding error:', geocodeError);
+        toast.error(`Geocoding failed for "${finalLocation}". Please try a different, more specific location.`);
+        setIsLoading(false);
+        return;
+      }
+
       const robotData = {
         ...data,
+        location: finalLocation, // Use the validated location
         features,
+        latitude,
+        longitude,
         specifications: {
           weight: data.specifications?.weight || '',
           dimensions: data.specifications?.dimensions || '',
@@ -78,7 +188,7 @@ const CreateRobotPage: React.FC = () => {
       };
 
       await robotService.createRobot(robotData, currentUser.uid, images);
-      toast.success('Robot listing created successfully!');
+      toast.success('Robot listing created successfully with location coordinates!');
       navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Failed to create robot listing');
@@ -194,15 +304,54 @@ const CreateRobotPage: React.FC = () => {
                   <label className="block text-white font-medium mb-2">
                     Location *
                   </label>
-                  <div className="relative">
+                  <div className="relative location-input-container">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                       type="text"
-                      {...register('location', { required: 'Location is required' })}
+                      value={locationValue}
+                      onChange={(e) => handleLocationChange(e.target.value)}
+                      onKeyDown={handleKeyDown}
                       className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="City, State"
+                      placeholder="Start typing city, state, or zipcode..."
                     />
+                    
+                    {/* Location Suggestions Dropdown */}
+                    {showLocationSuggestions && locationSuggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 bg-gray-700 border border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto z-50">
+                        {locationSuggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleLocationSelect(suggestion)}
+                            className="w-full text-left px-4 py-3 text-white hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                          >
+                            <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
+                            <div className="text-sm text-gray-300">{suggestion.structured_formatting.secondary_text}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  
+                  {selectedLocation && (
+                    <p className="text-green-400 text-sm mt-1">
+                      ✅ Location selected: {selectedLocation}
+                    </p>
+                  )}
+                  
+                  {!selectedLocation && locationValue && (
+                    <p className="text-yellow-400 text-sm mt-1">
+                      ⚠️ Please select a location from the suggestions above
+                    </p>
+                  )}
+                  
+                  <p className="text-blue-400 text-sm mt-1">
+                    📍 GPS coordinates will be automatically added for distance-based search
+                  </p>
+                  <p className="text-yellow-400 text-sm mt-1">
+                    💡 Tip: Select specific locations like "Apex, NC" instead of just "Apex" for better accuracy
+                  </p>
+                  
                   {errors.location && (
                     <p className="text-red-400 text-sm mt-1">{errors.location.message}</p>
                   )}

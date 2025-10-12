@@ -5,12 +5,9 @@ import {
   Bot, 
   Search, 
   MapPin, 
-  Heart,
   DollarSign,
   SlidersHorizontal,
-  Filter,
   X,
-  Star,
   ArrowLeft
 } from 'lucide-react';
 import { searchService, SearchFilters } from '../services/searchService';
@@ -33,6 +30,7 @@ const RobotsPage: React.FC = () => {
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
   const [maxDistance, setMaxDistance] = useState(25); // Default 25 miles
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [searchLocationCoordinates, setSearchLocationCoordinates] = useState<Coordinates | null>(null);
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -72,9 +70,30 @@ const RobotsPage: React.FC = () => {
     }
   }, [userProfile]);
 
+  // Geocode search location when it changes
   useEffect(() => {
-    fetchRobots();
-  }, [filters]);
+    const geocodeSearchLocation = async () => {
+      if (filters.location) {
+        const coordinates = await distanceService.getCoordinatesFromAddress(filters.location);
+        setSearchLocationCoordinates(coordinates);
+      } else {
+        setSearchLocationCoordinates(null);
+      }
+    };
+
+    geocodeSearchLocation();
+  }, [filters.location]);
+
+  useEffect(() => {
+    // Only fetch robots if we have meaningful search parameters
+    if (filters.query || filters.location || filters.category) {
+      fetchRobots();
+    } else {
+      // If no search parameters, don't show any robots initially
+      setRobots([]);
+      setLoading(false);
+    }
+  }, [filters, maxDistance]);
 
   const fetchRobots = async () => {
     setLoading(true);
@@ -84,10 +103,20 @@ const RobotsPage: React.FC = () => {
         ...filters,
         userLatitude: userLocation?.latitude,
         userLongitude: userLocation?.longitude,
-        maxDistance: maxDistance // Always pass maxDistance, let the search service handle it
+        maxDistance: maxDistance // This will be used by the search service
       };
       
       console.log('🔍 Search filters:', searchFilters); // Debug log
+      console.log('📍 Max distance being used:', maxDistance); // Debug log
+      
+      // Debug: Let's see what robots exist in the database
+      const allRobots = await robotService.getAvailableRobots();
+      console.log('📦 All robots in database:', allRobots.map(r => ({
+        id: r.id,
+        name: r.name,
+        location: r.location,
+        coordinates: r.latitude && r.longitude ? `${r.latitude}, ${r.longitude}` : 'NO COORDINATES'
+      })));
       
       const results = await searchService.searchRobots(searchFilters);
       setRobots(results);
@@ -149,6 +178,8 @@ const RobotsPage: React.FC = () => {
 
   const clearFilters = () => {
     setFilters({});
+    setMaxDistance(25);
+    setSearchLocationCoordinates(null);
   };
 
   const handleDistanceChange = (distance: number) => {
@@ -162,27 +193,104 @@ const RobotsPage: React.FC = () => {
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center">
-              <button
-                onClick={() => navigate(-1)}
-                className="mr-4 p-3 text-white bg-gray-700 hover:bg-gray-600 transition-colors rounded-lg border-2 border-gray-500 hover:border-gray-400 shadow-lg"
-                title="Go back - Updated"
-              >
-                <ArrowLeft className="h-8 w-8" />
-              </button>
-              <div>
-                <h1 className="text-3xl font-bold text-white">Browse Robots - FORCE UPDATE</h1>
-                <p className="text-gray-300 mt-2">Find the perfect robot for your needs</p>
+          {/* Navigation Bar */}
+          <div className="flex items-center mb-6">
+            <button
+              onClick={() => navigate('/')}
+              className="mr-4 p-3 text-white bg-gray-700 hover:bg-gray-600 transition-colors rounded-lg border-2 border-gray-500 hover:border-gray-400 shadow-lg"
+              title="Go back to home"
+            >
+              <ArrowLeft className="h-8 w-8" />
+            </button>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-white">Search Results</h1>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                {filters.query && (
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                    "{filters.query}"
+                  </span>
+                )}
+                {filters.location && (
+                  <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    {filters.location}
+                  </span>
+                )}
+                {maxDistance && (
+                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+                    Within {maxDistance} miles
+                  </span>
+                )}
               </div>
             </div>
-            <Link
-              to="/create-robot"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              List Your Robot
-            </Link>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/')}
+                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400"
+              >
+                New Search
+              </button>
+              <button
+                onClick={clearFilters}
+                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400"
+              >
+                Clear Filters
+              </button>
+              <Link
+                to="/create-robot"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                List Your Robot
+              </Link>
+            </div>
           </div>
+
+          {/* Search Results Summary */}
+          {robots.length > 0 && (
+            <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Bot className="h-6 w-6 text-green-400" />
+                  <div>
+                    <p className="text-green-300 font-medium">
+                      Found {robots.length} robot{robots.length !== 1 ? 's' : ''}
+                      {filters.location && maxDistance && ` within ${maxDistance} miles of ${filters.location}`}
+                    </p>
+                    {filters.location && (
+                      <p className="text-green-400/70 text-sm">
+                        Showing results sorted by distance (closest first)
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/')}
+                  className="text-green-400 hover:text-green-300 transition-colors text-sm underline"
+                >
+                  Modify Search
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Debug Info - Remove in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-4 mb-4 text-xs text-gray-400">
+              <div className="font-medium mb-2">🔍 Debug Info:</div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div>Search Location: {filters.location || 'None'}</div>
+                  <div>Max Distance: {maxDistance} miles</div>
+                  <div>Search Coordinates: {searchLocationCoordinates ? `${searchLocationCoordinates.latitude.toFixed(4)}, ${searchLocationCoordinates.longitude.toFixed(4)}` : 'Not geocoded'}</div>
+                </div>
+                <div>
+                  <div>User Location: {userLocation ? `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}` : 'None'}</div>
+                  <div>Robots with Coords: {robots.filter(r => r.latitude && r.longitude).length}/{robots.length}</div>
+                  <div>Total Robots Found: {robots.length}</div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Search Bar */}
           <div className="bg-gray-700 rounded-lg p-4">
@@ -321,20 +429,17 @@ const RobotsPage: React.FC = () => {
 
         {/* Robots Grid */}
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
-                <div className="h-48 bg-gray-700 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-                <div className="p-6">
-                  <div className="h-4 bg-gray-700 rounded mb-4"></div>
-                  <div className="h-3 bg-gray-700 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-700 rounded mb-4"></div>
-                  <div className="h-8 bg-gray-700 rounded"></div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              Searching for robots...
+            </h3>
+            <p className="text-gray-400">
+              {filters.location && maxDistance 
+                ? `Looking within ${maxDistance} miles of ${filters.location}`
+                : 'Finding available robots in your area'
+              }
+            </p>
           </div>
         ) : robots.length === 0 ? (
           <div className="text-center py-12">
@@ -402,10 +507,6 @@ const RobotsPage: React.FC = () => {
                         ${robot.price}/day
                       </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-400" />
-                      <span className="text-white text-sm">{robot.rating.toFixed(1)}</span>
-                    </div>
                   </div>
 
                   {/* Robot Details */}
@@ -414,7 +515,18 @@ const RobotsPage: React.FC = () => {
                   </h3>
                   <div className="flex items-center text-gray-400 text-sm mb-2">
                     <MapPin className="h-4 w-4 mr-1" />
-                    {robot.location}
+                    <span>{robot.location}</span>
+                    {searchLocationCoordinates && robot.latitude && robot.longitude && (
+                      <span className="ml-2 text-blue-400">
+                        • {(() => {
+                          const distance = distanceService.calculateDistance(
+                            searchLocationCoordinates,
+                            { latitude: robot.latitude, longitude: robot.longitude }
+                          );
+                          return `${distance.toFixed(1)} miles away`;
+                        })()}
+                      </span>
+                    )}
                   </div>
                   <p className="text-gray-300 text-sm mb-4 line-clamp-2">
                     {robot.description}

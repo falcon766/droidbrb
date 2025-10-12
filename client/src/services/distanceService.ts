@@ -41,12 +41,14 @@ export const distanceService = {
       
       if (data.results && data.results.length > 0) {
         const location = data.results[0].geometry.location;
+        console.log('📍 Geocoded coordinates:', { address, coordinates: location });
         return {
           latitude: location.lat,
           longitude: location.lng
         };
       }
       
+      console.log('❌ No geocoding results for:', address);
       return null;
     } catch (error) {
       console.error('Error geocoding address:', error);

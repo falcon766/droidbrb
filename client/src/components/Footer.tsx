@@ -35,31 +35,41 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <button className="hover:text-white transition-colors text-left">
-                  Origin Story
-                </button>
+                <Link to="/create-robot" className="hover:text-white transition-colors">
+                  List Your Robot
+                </Link>
               </li>
               <li>
-                <button className="hover:text-white transition-colors text-left">
-                  Contact
-                </button>
+                <Link to="/dashboard" className="hover:text-white transition-colors">
+                  Dashboard
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* LEGAL */}
+          {/* CONNECT */}
           <div>
-            <h3 className="font-semibold text-white mb-4 uppercase">Legal</h3>
+            <h3 className="font-semibold text-white mb-4 uppercase">Connect</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <button className="hover:text-white transition-colors text-left">
-                  Privacy Policy
-                </button>
+                <Link to="/messages" className="hover:text-white transition-colors">
+                  Messages
+                </Link>
               </li>
               <li>
-                <button className="hover:text-white transition-colors text-left">
-                  Terms of Service
-                </button>
+                <a href="mailto:hello@droidbrb.com" className="hover:text-white transition-colors">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <Link to="/login" className="hover:text-white transition-colors">
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="hover:text-white transition-colors">
+                  Sign Up
+                </Link>
               </li>
             </ul>
           </div>

@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionTimeout, setSessionTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Add a timeout to prevent infinite loading
@@ -65,6 +66,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setCurrentUser(user);
       
       if (user && db) {
+        // Clear any existing session timeout
+        if (sessionTimeout) {
+          clearTimeout(sessionTimeout);
+        }
+        
+        // Set session timeout for 8 hours (28800000 ms)
+        const timeout = setTimeout(() => {
+          console.log('Session timeout - logging out user');
+          logout();
+        }, 8 * 60 * 60 * 1000); // 8 hours
+        
+        setSessionTimeout(timeout);
+        
         // Fetch user profile from Firestore
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -83,6 +97,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserProfile(null);
         }
       } else {
+        // Clear session timeout when user logs out
+        if (sessionTimeout) {
+          clearTimeout(sessionTimeout);
+          setSessionTimeout(null);
+        }
         setUserProfile(null);
       }
       
@@ -93,6 +112,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => {
       clearTimeout(timeoutId);
+      if (sessionTimeout) {
+        clearTimeout(sessionTimeout);
+      }
       unsubscribe();
     };
   }, []);
@@ -192,7 +214,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw new Error('Firebase authentication is not initialized. Please check your configuration.');
     }
     try {
+      // Clear session timeout
+      if (sessionTimeout) {
+        clearTimeout(sessionTimeout);
+        setSessionTimeout(null);
+      }
+      
+      // Sign out from Firebase
       await signOut(auth);
+      
+      // Clear local state
+      setCurrentUser(null);
+      setUserProfile(null);
+      
+      // Clear any stored data
+      localStorage.removeItem('firebase:authUser:');
+      sessionStorage.clear();
+      
+      console.log('User logged out and session cleared');
     } catch (error: any) {
       throw new Error(error.message);
     }

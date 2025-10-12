@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { 
@@ -9,23 +9,23 @@ import {
   Filter,
   MessageCircle,
   Calendar,
-  Heart,
   DollarSign,
   Settings,
   Gamepad2,
   Plane,
   ClipboardCheck,
-  Heart as HeartIcon,
-  Package
+  Package,
+  Heart
 } from 'lucide-react';
 import { robotService } from '../services/robotService';
 import { searchService, LocationSuggestion } from '../services/searchService';
 import { Robot } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { distanceService, Coordinates } from '../services/distanceService';
+import Navbar from '../components/Navbar';
 
 const HomePage: React.FC = () => {
-  const { userProfile } = useAuth();
+  const { currentUser, userProfile } = useAuth();
+  const navigate = useNavigate();
   const [featuredRobots, setFeaturedRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
@@ -33,6 +33,7 @@ const HomePage: React.FC = () => {
   const [locationValue, setLocationValue] = useState('');
   const [maxDistance, setMaxDistance] = useState(25); // Default 25 miles
   const [showDistanceFilter, setShowDistanceFilter] = useState(false);
+
 
   useEffect(() => {
     const fetchFeaturedRobots = async () => {
@@ -126,9 +127,10 @@ const HomePage: React.FC = () => {
     { name: 'Hobby', icon: Gamepad2, count: 0 },
     { name: 'Drone', icon: Plane, count: 0 },
     { name: 'Service', icon: ClipboardCheck, count: 0 },
-    { name: 'Medical', icon: HeartIcon, count: 0 },
+    { name: 'Medical', icon: Heart, count: 0 },
     { name: 'Other', icon: Package, count: 0 }
   ];
+
 
   return (
     <>
@@ -138,36 +140,7 @@ const HomePage: React.FC = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gray-900">
-        {/* Header */}
-        <header className="bg-gray-900 border-b border-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              {/* Logo */}
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">DroidBRB</span>
-              </div>
-
-              {/* Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <Link to="/robots" className="text-white hover:text-blue-400 transition-colors">
-                  Explore Robots
-                </Link>
-                <Link to="/about" className="text-white hover:text-blue-400 transition-colors">
-                  About
-                </Link>
-                <Link to="/login" className="text-white hover:text-blue-400 transition-colors">
-                  Sign In
-                </Link>
-                <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  Sign Up
-                </Link>
-              </nav>
-            </div>
-          </div>
-        </header>
+        <Navbar />
 
         {/* Hero Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
@@ -181,13 +154,16 @@ const HomePage: React.FC = () => {
               }}
             >
               <h2 className="text-blue-400 text-lg font-medium mb-4">
-                Welcome to DroidBRB
+                {currentUser ? `Welcome back, ${userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}!` : 'Welcome to DroidBRB'}
               </h2>
               <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent mb-6">
                 Share. Rent. Innovate.
               </h1>
               <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-                The future of robotics is collaborative. DroidBRB connects you with a community of enthusiasts to rent and share robots, fostering innovation and learning.
+                {currentUser 
+                  ? `Ready to explore the robotics community, ${userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}? Find robots near you or share your own with fellow enthusiasts.`
+                  : 'The future of robotics is collaborative. DroidBRB connects you with a community of enthusiasts to rent and share robots, fostering innovation and learning.'
+                }
               </p>
             </motion.div>
 
@@ -210,7 +186,7 @@ const HomePage: React.FC = () => {
                 if (query) params.append('query', query);
                 if (locationValue) params.append('location', locationValue);
                 if (maxDistance !== 25) params.append('distance', maxDistance.toString());
-                window.location.href = `/robots?${params.toString()}`;
+                navigate(`/search?${params.toString()}`);
               }}>
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
@@ -466,10 +442,6 @@ const HomePage: React.FC = () => {
                             <DollarSign className="h-3 w-3" />
                             ${robot.price}/day
                           </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400 text-sm">⭐</span>
-                          <span className="text-white text-sm">{robot.rating.toFixed(1)}</span>
                         </div>
                       </div>
 
