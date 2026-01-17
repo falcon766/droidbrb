@@ -7,65 +7,66 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Cyber Steel Theme - Robotic Dark Mode
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',  // Electric cyan
+          500: '#06b6d4',  // Main cyan
+          600: '#0891b2',  // Deep cyan
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63',
         },
         secondary: {
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
           300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
+          400: '#94a3b8',  // Steel gray
+          500: '#64748b',  // Muted steel
           600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
+          700: '#334155',  // Dark steel
+          800: '#1e293b',  // Darker slate
+          900: '#0f172a',  // Deep slate
         },
         accent: {
-          50: '#fef7ee',
-          100: '#fdedd4',
-          200: '#fbd7a9',
-          300: '#f8bb72',
-          400: '#f5953a',
-          500: '#f3771e',
-          600: '#e45d13',
-          700: '#bd4512',
-          800: '#963816',
-          900: '#7a3015',
+          50: '#f0fdff',
+          100: '#ccfbfe',
+          200: '#99f6fc',
+          300: '#5eecf9',
+          400: '#22d8ee',  // Bright teal
+          500: '#06b8d4',  // Vivid teal
+          600: '#0894b3',  // Deep teal
+          700: '#0e7691',
+          800: '#135f76',
+          900: '#154e63',
         },
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
           300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
+          400: '#4ade80',  // Neon green
+          500: '#22c55e',  // Power green
           600: '#16a34a',
           700: '#15803d',
           800: '#166534',
           900: '#14532d',
         },
         warning: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+          50: '#fefce8',
+          100: '#fef9c3',
+          200: '#fef08a',
+          300: '#fde047',
+          400: '#facc15',  // Alert yellow
+          500: '#eab308',
+          600: '#ca8a04',
+          700: '#a16207',
+          800: '#854d0e',
+          900: '#713f12',
         },
         error: {
           50: '#fef2f2',
@@ -78,6 +79,16 @@ module.exports = {
           700: '#b91c1c',
           800: '#991b1b',
           900: '#7f1d1d',
+        },
+        // Robot-specific colors
+        robot: {
+          darker: '#0a0f1a',   // Deepest background
+          dark: '#0f1419',     // Main background
+          slate: '#1a1f2e',    // Card background
+          steel: '#242b3d',    // Elevated elements
+          chrome: '#8b949e',   // Metallic text
+          glow: '#22d3ee',     // Cyan glow
+          neon: '#4ade80',     // Green neon
         }
       },
       fontFamily: {

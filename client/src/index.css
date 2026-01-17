@@ -19,22 +19,25 @@ code {
     monospace;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Robotic theme */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0f1419;
+  border-left: 1px solid #1a1f2e;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: linear-gradient(180deg, #22d3ee 0%, #06b6d4 100%);
+  border-radius: 5px;
+  border: 2px solid #0f1419;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: linear-gradient(180deg, #22d3ee 0%, #0891b2 100%);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
 
 /* Smooth transitions */
@@ -44,11 +47,33 @@ code {
   transition-duration: 150ms;
 }
 
-/* Focus styles */
+/* Focus styles - Robotic glow */
 .focus-ring:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px #0ea5e9;
+  box-shadow: 0 0 0 2px #22d3ee, 0 0 20px rgba(34, 211, 238, 0.3);
+}
+
+/* Robotic glow effects */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+.border-glow {
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.2), inset 0 0 10px rgba(34, 211, 238, 0.1);
 }
 
 /* Custom animations */
@@ -103,6 +128,24 @@ code {
   }
 }
 
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.3), 0 0 20px rgba(34, 211, 238, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.5), 0 0 40px rgba(34, 211, 238, 0.2);
+  }
+}
+
+@keyframes textGlowPulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+  }
+}
+
 /* Utility classes */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -122,4 +165,12 @@ code {
 
 .animate-bounce-gentle {
   animation: bounceGentle 2s infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.animate-text-glow {
+  animation: textGlowPulse 2s ease-in-out infinite;
 } 

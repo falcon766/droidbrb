@@ -92,29 +92,77 @@ export const messageService = {
         return [];
       }
 
-      const q = query(
+      // Query for messages where user is sender
+      const qSent = query(
         collection(db, 'messages'),
         where('senderId', '==', userId),
         orderBy('createdAt', 'desc')
       );
-      
-      const querySnapshot = await getDocs(q);
-      const messages: Message[] = [];
-      
-      querySnapshot.forEach((doc) => {
+
+      // Query for messages where user is receiver
+      const qReceived = query(
+        collection(db, 'messages'),
+        where('receiverId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+
+      const [sentSnapshot, receivedSnapshot] = await Promise.all([
+        getDocs(qSent),
+        getDocs(qReceived)
+      ]);
+
+      const messagesMap = new Map<string, Message>();
+
+      // Process sent messages
+      sentSnapshot.forEach((doc) => {
         const data = doc.data();
-        messages.push({
+        const partnerId = data.receiverId;
+        const message = {
           id: doc.id,
           content: data.content,
           senderId: data.senderId,
           senderName: data.senderName,
           receiverId: data.receiverId,
           receiverName: data.receiverName,
+          receiverEmail: data.receiverEmail,
           isRead: data.isRead,
           createdAt: data.createdAt?.toDate() || new Date(),
-        } as Message);
+        } as Message;
+
+        // Keep only the most recent message per conversation partner
+        if (!messagesMap.has(partnerId) ||
+            (messagesMap.get(partnerId)!.createdAt < message.createdAt)) {
+          messagesMap.set(partnerId, message);
+        }
       });
-      
+
+      // Process received messages
+      receivedSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const partnerId = data.senderId;
+        const message = {
+          id: doc.id,
+          content: data.content,
+          senderId: data.senderId,
+          senderName: data.senderName,
+          receiverId: data.receiverId,
+          receiverName: data.receiverName,
+          receiverEmail: data.receiverEmail,
+          isRead: data.isRead,
+          createdAt: data.createdAt?.toDate() || new Date(),
+        } as Message;
+
+        // Keep only the most recent message per conversation partner
+        if (!messagesMap.has(partnerId) ||
+            (messagesMap.get(partnerId)!.createdAt < message.createdAt)) {
+          messagesMap.set(partnerId, message);
+        }
+      });
+
+      // Convert map to array and sort by most recent
+      const messages = Array.from(messagesMap.values())
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
       return messages;
     } catch (error) {
       console.error('Error fetching user conversations:', error);

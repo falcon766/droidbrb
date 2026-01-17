@@ -102,19 +102,19 @@ const HomePage: React.FC = () => {
       icon: Search,
       title: 'Find the Perfect Robot',
       description: 'Browse through our extensive catalog of robots. Filter by category, location, or specific capabilities to find exactly what you need.',
-      color: 'bg-blue-500'
+      color: 'bg-primary-500'
     },
     {
       icon: MessageCircle,
       title: 'Connect with the Owner',
       description: 'Message directly with robot owners to discuss details, ask questions, and arrange meetups or rentals.',
-      color: 'bg-blue-500'
+      color: 'bg-primary-500'
     },
     {
       icon: Calendar,
       title: 'Meet Up or Rent',
       description: 'Schedule a time to meet and see the robot in person, or arrange rental terms if the owner offers rentals.',
-      color: 'bg-blue-500'
+      color: 'bg-primary-500'
     }
   ];
 
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
         <meta name="description" content="Join the world's largest robotics community. Share, rent, and collaborate around robotic devices." />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-robot-dark">
         <Navbar />
 
         {/* Hero Section */}
@@ -153,10 +153,10 @@ const HomePage: React.FC = () => {
                 ease: [0.16, 1, 0.3, 1]
               }}
             >
-              <h2 className="text-blue-400 text-lg font-medium mb-4">
+              <h2 className="text-primary-400 text-lg font-medium mb-4">
                 {currentUser ? `Welcome back, ${userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}!` : 'Welcome to DroidBRB'}
               </h2>
-              <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent mb-6">
+              <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-primary-300 via-primary-400 to-primary-500 bg-clip-text text-transparent mb-6 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">
                 Share. Rent. Innovate.
               </h1>
               <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
@@ -176,7 +176,7 @@ const HomePage: React.FC = () => {
                 delay: 0.2,
                 ease: [0.16, 1, 0.3, 1]
               }}
-              className="bg-gray-800 rounded-lg p-4 mb-8"
+              className="bg-robot-slate rounded-lg p-4 mb-8 border border-primary-900/30"
             >
               <form onSubmit={(e) => {
                 e.preventDefault();
@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
                 navigate(`/search?${params.toString()}`);
               }}>
                 <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                  <div className="flex-1 flex items-center bg-robot-steel rounded-lg px-4 py-3 border border-primary-900/30">
                     <Search className="h-5 w-5 text-gray-400 mr-3" />
                     <input
                       name="query"
@@ -199,7 +199,7 @@ const HomePage: React.FC = () => {
                     />
                   </div>
                   <div className="flex-1 relative location-input-container">
-                    <div className="flex items-center bg-gray-700 rounded-lg px-4 py-3">
+                    <div className="flex items-center bg-robot-steel rounded-lg px-4 py-3 border border-primary-900/30">
                       <MapPin className="h-5 w-5 text-gray-400 mr-3" />
                       <input
                         name="location"
@@ -223,12 +223,12 @@ const HomePage: React.FC = () => {
                     
                     {/* Location Suggestions */}
                     {showLocationSuggestions && locationSuggestions.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 bg-gray-700 rounded-lg mt-1 z-10 max-h-48 overflow-y-auto">
+                      <div className="absolute top-full left-0 right-0 bg-robot-steel rounded-lg mt-1 z-10 max-h-48 overflow-y-auto border border-primary-900/30">
                         {locationSuggestions.map((suggestion) => (
                           <button
                             key={suggestion.place_id}
                             onClick={() => handleLocationSelect(suggestion)}
-                            className="w-full text-left px-4 py-3 hover:bg-gray-600 text-white border-b border-gray-600 last:border-b-0"
+                            className="w-full text-left px-4 py-3 hover:bg-robot-slate text-white border-b border-primary-900/30 last:border-b-0"
                           >
                             <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
                             <div className="text-sm text-gray-400">{suggestion.structured_formatting.secondary_text}</div>
@@ -236,10 +236,10 @@ const HomePage: React.FC = () => {
                         ))}
                       </div>
                     )}
-                    
+
                     {/* Distance Filter Dropdown */}
                     {showDistanceFilter && (
-                      <div className="absolute top-full left-0 right-0 bg-gray-700 rounded-lg mt-1 z-10 p-4">
+                      <div className="absolute top-full left-0 right-0 bg-robot-steel rounded-lg mt-1 z-10 p-4 border border-primary-900/30">
                         <h4 className="text-white font-medium mb-3">Distance Filter</h4>
                         <div className="space-y-2">
                           {[1, 5, 10, 25, 50, 100].map((distance) => (
@@ -250,7 +250,7 @@ const HomePage: React.FC = () => {
                                 value={distance}
                                 checked={maxDistance === distance}
                                 onChange={(e) => setMaxDistance(Number(e.target.value))}
-                                className="mr-3 text-blue-500 focus:ring-blue-500"
+                                className="mr-3 text-primary-500 focus:ring-primary-500"
                               />
                               <span className="text-white">{distance} mile{distance !== 1 ? 's' : ''}</span>
                             </label>
@@ -259,7 +259,7 @@ const HomePage: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                  <button type="submit" className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]">
                     Search
                   </button>
                 </div>
@@ -279,13 +279,13 @@ const HomePage: React.FC = () => {
             >
               <Link
                 to="/robots"
-                className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+                className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]"
               >
                 Find a Robot
               </Link>
               <Link
                 to="/create-robot"
-                className="bg-gray-800 text-white px-8 py-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors"
+                className="bg-robot-slate text-white px-8 py-3 rounded-lg border border-primary-900/30 hover:bg-robot-steel transition-all hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
               >
                 List Your Robot
               </Link>
@@ -294,7 +294,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* How DroidBRB Works Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-robot-slate">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -326,9 +326,9 @@ const HomePage: React.FC = () => {
                     ease: [0.16, 1, 0.3, 1]
                   }}
                   viewport={{ once: true }}
-                  className="bg-gray-700 rounded-lg p-8 text-center"
+                  className="bg-robot-steel rounded-lg p-8 text-center border border-primary-900/30 hover:border-primary-500/30 transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]"
                 >
-                  <div className={`w-16 h-16 ${feature.color} rounded-full flex items-center justify-center mx-auto mb-6`}>
+                  <div className={`w-16 h-16 ${feature.color} rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(34,211,238,0.4)]`}>
                     <feature.icon className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-4">{feature.title}</h3>
@@ -373,16 +373,16 @@ const HomePage: React.FC = () => {
                       delay: index * 0.1,
                       ease: [0.16, 1, 0.3, 1]
                     }}
-                    className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+                    className="bg-robot-slate rounded-lg overflow-hidden shadow-lg border border-primary-900/30"
                   >
-                    <div className="h-48 bg-gray-700 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    <div className="h-48 bg-robot-steel flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
                     </div>
                     <div className="p-6">
-                      <div className="h-4 bg-gray-700 rounded mb-4"></div>
-                      <div className="h-3 bg-gray-700 rounded mb-2"></div>
-                      <div className="h-3 bg-gray-700 rounded mb-4"></div>
-                      <div className="h-8 bg-gray-700 rounded"></div>
+                      <div className="h-4 bg-robot-steel rounded mb-4"></div>
+                      <div className="h-3 bg-robot-steel rounded mb-2"></div>
+                      <div className="h-3 bg-robot-steel rounded mb-4"></div>
+                      <div className="h-8 bg-robot-steel rounded"></div>
                     </div>
                   </motion.div>
                 ))
@@ -393,7 +393,7 @@ const HomePage: React.FC = () => {
                   <p className="text-gray-400 mb-6">Be the first to share your robot with the community!</p>
                   <Link
                     to="/create-robot"
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]"
                   >
                     Post Your Robot
                   </Link>
@@ -410,11 +410,11 @@ const HomePage: React.FC = () => {
                       ease: [0.16, 1, 0.3, 1]
                     }}
                     viewport={{ once: true }}
-                    className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                    className="bg-robot-slate rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all cursor-pointer border border-primary-900/30 hover:border-primary-500/30 hover:shadow-[0_0_25px_rgba(34,211,238,0.2)]"
                     onClick={() => window.location.href = `/robots/${robot.id}`}
                   >
                     {/* Robot Image */}
-                    <div className="h-48 bg-gray-700 flex items-center justify-center">
+                    <div className="h-48 bg-robot-steel flex items-center justify-center">
                       {robot.images && robot.images.length > 0 ? (
                         <img 
                           src={robot.images[0]} 
@@ -435,10 +435,10 @@ const HomePage: React.FC = () => {
                       {/* Tags */}
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex gap-2">
-                          <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                          <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded shadow-[0_0_10px_rgba(34,211,238,0.3)]">
                             {robot.category}
                           </span>
-                          <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                          <span className="bg-robot-steel text-white text-xs px-2 py-1 rounded flex items-center gap-1 border border-primary-900/30">
                             <DollarSign className="h-3 w-3" />
                             ${robot.price}/day
                           </span>
@@ -480,7 +480,7 @@ const HomePage: React.FC = () => {
             >
               <Link
                 to="/robots"
-                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-block bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]"
               >
                 View All Robots
               </Link>
@@ -521,10 +521,10 @@ const HomePage: React.FC = () => {
                     ease: [0.16, 1, 0.3, 1]
                   }}
                   viewport={{ once: true }}
-                  className="bg-gray-800 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-700 transition-colors"
+                  className="bg-robot-slate rounded-lg p-6 text-center cursor-pointer hover:bg-robot-steel transition-all border border-primary-900/30 hover:border-primary-500/30 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]"
                   onClick={() => window.location.href = `/robots?category=${category.name.toLowerCase()}`}
                 >
-                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,211,238,0.4)]">
                     <category.icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-white font-semibold mb-2">{category.name}</h3>

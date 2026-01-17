@@ -79,33 +79,33 @@ const RobotDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-robot-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500 shadow-[0_0_20px_rgba(6,182,212,0.5)]"></div>
       </div>
     );
   }
 
   if (!robot) {
     return (
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-robot-dark">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <Bot className="h-16 w-16 text-gray-600 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">Robot not found</h1>
           <p className="text-gray-400 mb-6">The robot you are looking for does not exist or was removed.</p>
-          <button onClick={() => navigate(-1)} className="text-blue-400 hover:text-blue-300 underline">Go back</button>
+          <button onClick={() => navigate(-1)} className="text-primary-400 hover:text-primary-300 underline transition-all">Go back</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-robot-dark">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-robot-slate border-b border-primary-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <button 
+          <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-4"
+            className="inline-flex items-center text-primary-400 hover:text-primary-300 transition-all mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
@@ -123,9 +123,9 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-gray-800 rounded-lg overflow-hidden"
+              className="bg-robot-slate rounded-lg overflow-hidden shadow-lg shadow-cyan-500/10"
             >
-              <div className="h-96 bg-gray-700 flex items-center justify-center">
+              <div className="h-96 bg-robot-steel flex items-center justify-center">
                 <Bot className="h-24 w-24 text-gray-500" />
               </div>
             </motion.div>
@@ -135,7 +135,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-gray-800 rounded-lg p-6"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-cyan-500/10"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -145,14 +145,14 @@ const RobotDetailPage: React.FC = () => {
                     {robot.location}
                   </div>
                   <div className="flex items-center mb-4">
-                    <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                    <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded">
                       {robot.category}
                     </span>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsFavorited(!isFavorited)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-lg transition-all ${
                     isFavorited ? 'text-red-400 bg-red-900/20' : 'text-white hover:text-red-400'
                   }`}
                 >
@@ -163,7 +163,7 @@ const RobotDetailPage: React.FC = () => {
               <p className="text-gray-300 mb-6">{robot.description}</p>
 
               {/* Specifications */}
-              <div className="border-t border-gray-700 pt-6">
+              <div className="border-t border-primary-900/30 pt-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Specifications</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
@@ -188,7 +188,7 @@ const RobotDetailPage: React.FC = () => {
                     <span className="text-gray-400">Features:</span>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {robot.features.map((feature, index) => (
-                        <span key={index} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">
+                        <span key={index} className="bg-robot-steel text-white text-xs px-2 py-1 rounded">
                           {feature}
                         </span>
                       ))}
@@ -203,12 +203,12 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-800 rounded-lg p-6"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-cyan-500/10"
             >
               <h3 className="text-lg font-semibold text-white mb-4">Reviews</h3>
               <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="border-b border-gray-700 pb-4 last:border-b-0">
+                  <div key={review.id} className="border-b border-primary-900/30 pb-4 last:border-b-0">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center">
                         <User className="h-4 w-4 text-gray-400 mr-2" />
@@ -230,7 +230,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-gray-800 rounded-lg p-6 sticky top-6"
+              className="bg-robot-slate rounded-lg p-6 sticky top-6 shadow-lg shadow-cyan-500/10"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
@@ -239,18 +239,18 @@ const RobotDetailPage: React.FC = () => {
                   <span className="text-gray-400 ml-1">/day</span>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs ${
-                  robot.isAvailable 
-                    ? 'bg-green-600 text-white' 
+                  robot.isAvailable
+                    ? 'bg-green-600 text-white'
                     : 'bg-gray-600 text-gray-300'
                 }`}>
                   {robot.isAvailable ? 'Available' : 'Rented'}
                 </span>
               </div>
 
-              <button 
-                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors mb-4 ${
-                  robot.isAvailable 
-                    ? 'bg-green-600 text-white hover:bg-green-700' 
+              <button
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-all mb-4 ${
+                  robot.isAvailable
+                    ? 'bg-green-600 text-white hover:bg-green-700'
                     : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 }`}
                 disabled={!robot.isAvailable}
@@ -258,13 +258,16 @@ const RobotDetailPage: React.FC = () => {
                 {robot.isAvailable ? 'Rent Now' : 'Currently Rented'}
               </button>
 
-              <button className="w-full py-3 px-4 border border-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors mb-4">
+              <button
+                onClick={() => navigate('/messages')}
+                className="w-full py-3 px-4 border border-primary-900/30 text-white rounded-lg hover:bg-robot-steel transition-all mb-4 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
+              >
                 <MessageCircle className="h-4 w-4 inline mr-2" />
                 Contact Owner
               </button>
 
               {/* Availability Info */}
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-primary-900/30 pt-4">
                 <h4 className="text-white font-medium mb-3">Availability</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -292,7 +295,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-gray-800 rounded-lg p-6"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-cyan-500/10"
             >
               <h4 className="text-white font-medium mb-4">Owner</h4>
               {owner ? (
@@ -305,7 +308,7 @@ const RobotDetailPage: React.FC = () => {
                         className="w-12 h-12 rounded-full object-cover mr-3"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                      <div className="w-12 h-12 bg-robot-steel rounded-full flex items-center justify-center mr-3">
                         <User className="h-6 w-6 text-gray-400" />
                       </div>
                     )}
@@ -318,21 +321,21 @@ const RobotDetailPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   {owner.bio && (
                     <p className="text-gray-300 text-sm mb-4">{owner.bio}</p>
                   )}
-                  
+
                   {owner.location && (
                     <div className="flex items-center text-gray-400 text-sm mb-4">
                       <MapPin className="h-4 w-4 mr-2" />
                       {owner.location}
                     </div>
                   )}
-                  
+
                   <button
                     onClick={() => navigate('/messages')}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                    className="w-full bg-primary-500 text-white py-2 px-4 rounded-lg hover:bg-primary-600 transition-all flex items-center justify-center shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message Owner
@@ -340,7 +343,7 @@ const RobotDetailPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex items-center text-gray-400">
-                  <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                  <div className="w-10 h-10 bg-robot-steel rounded-full flex items-center justify-center mr-3">
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <div className="text-sm">Owner information unavailable</div>

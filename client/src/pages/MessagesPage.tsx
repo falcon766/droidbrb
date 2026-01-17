@@ -82,13 +82,13 @@ const MessagesPage: React.FC = () => {
         return;
       }
 
-      const receiverId = conversation.senderId === currentUser.uid 
-        ? conversation.receiverId 
+      const receiverId = conversation.senderId === currentUser.uid
+        ? conversation.receiverId
         : conversation.senderId;
-      
-      const receiverName = conversation.senderId === currentUser.uid 
-        ? conversation.senderName 
-        : conversation.receiverName;
+
+      const receiverName = conversation.senderId === currentUser.uid
+        ? conversation.receiverName
+        : conversation.senderName;
 
       await messageService.createMessage(
         currentUser.uid,
@@ -155,15 +155,15 @@ const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-robot-dark">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-robot-slate border-b border-primary-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Link 
-                to="/dashboard" 
-                className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mr-4"
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center text-primary-400 hover:text-primary-300 transition-all mr-4"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
@@ -177,8 +177,8 @@ const MessagesPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
           {/* Conversations List */}
-          <div className="lg:col-span-1 bg-gray-800 rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-gray-700">
+          <div className="lg:col-span-1 bg-robot-slate rounded-lg overflow-hidden">
+            <div className="p-4 border-b border-primary-900/30">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -186,7 +186,7 @@ const MessagesPage: React.FC = () => {
                   placeholder="Search conversations..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ const MessagesPage: React.FC = () => {
             <div className="overflow-y-auto h-[calc(100%-80px)]">
               {loading ? (
                 <div className="p-4 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
                 </div>
               ) : filteredConversations.length === 0 ? (
                 <div className="p-8 text-center">
@@ -207,20 +207,20 @@ const MessagesPage: React.FC = () => {
                   const partnerId = getConversationPartnerId(conversation);
                   const partnerName = getConversationPartner(conversation);
                   const isSelected = selectedConversation === partnerId;
-                  
+
                   return (
                     <motion.div
                       key={conversation.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-700 transition-colors ${
-                        isSelected ? 'bg-gray-700' : ''
+                      className={`p-4 border-b border-primary-900/30 cursor-pointer hover:bg-robot-steel transition-all ${
+                        isSelected ? 'bg-robot-steel' : ''
                       }`}
                       onClick={() => setSelectedConversation(partnerId)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
                             <User className="h-5 w-5 text-white" />
                           </div>
                           <div>
@@ -235,7 +235,7 @@ const MessagesPage: React.FC = () => {
                             {formatTime(conversation.createdAt)}
                           </p>
                           {!conversation.isRead && conversation.senderId !== currentUser?.uid && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 ml-auto"></div>
+                            <div className="w-2 h-2 bg-primary-500 rounded-full mt-1 ml-auto shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
                           )}
                         </div>
                       </div>
@@ -247,20 +247,23 @@ const MessagesPage: React.FC = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="lg:col-span-2 bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+          <div className="lg:col-span-2 bg-robot-slate rounded-lg overflow-hidden flex flex-col">
             {selectedConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-gray-700">
+                <div className="p-4 border-b border-primary-900/30">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
                       <User className="h-5 w-5 text-white" />
                     </div>
                     <div>
                       <h3 className="text-white font-medium">
-                        {conversations.find(c => 
-                          getConversationPartnerId(c) === selectedConversation
-                        )?.senderName || 'User'}
+                        {(() => {
+                          const conv = conversations.find(c =>
+                            getConversationPartnerId(c) === selectedConversation
+                          );
+                          return conv ? getConversationPartner(conv) : 'User';
+                        })()}
                       </h3>
                       <p className="text-gray-400 text-sm">Online</p>
                     </div>
@@ -271,7 +274,7 @@ const MessagesPage: React.FC = () => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((message) => {
                     const isOwnMessage = message.senderId === currentUser?.uid;
-                    
+
                     return (
                       <motion.div
                         key={message.id}
@@ -279,14 +282,14 @@ const MessagesPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                          isOwnMessage 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-700 text-white'
+                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg transition-all ${
+                          isOwnMessage
+                            ? 'bg-primary-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+                            : 'bg-robot-steel text-white'
                         }`}>
                           <p className="text-sm">{message.content}</p>
                           <div className={`flex items-center justify-between mt-1 ${
-                            isOwnMessage ? 'text-blue-200' : 'text-gray-400'
+                            isOwnMessage ? 'text-primary-200' : 'text-gray-400'
                           }`}>
                             <span className="text-xs">
                               {formatTime(message.createdAt)}
@@ -304,21 +307,21 @@ const MessagesPage: React.FC = () => {
                 </div>
 
                 {/* Message Input */}
-                <div className="p-4 border-t border-gray-700">
+                <div className="p-4 border-t border-primary-900/30">
                   <div className="flex space-x-4">
                     <textarea
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type your message..."
-                      className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      className="flex-1 bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none transition-all"
                       rows={1}
                       disabled={sending}
                     />
                     <button
                       onClick={sendMessage}
                       disabled={!newMessage.trim() || sending}
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                      className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                     >
                       {sending ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
