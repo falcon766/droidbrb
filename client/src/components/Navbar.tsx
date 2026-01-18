@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">D</span>
               </div>
               <span className="text-xl font-bold text-white">DroidBRB</span>
@@ -101,9 +101,9 @@ const Navbar: React.FC = () => {
                 >
                   Login
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                <Link
+                  to="/register"
+                  className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -192,9 +192,9 @@ const Navbar: React.FC = () => {
                 >
                   Login
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white block px-3 py-2 rounded-md text-base font-medium"
+                <Link
+                  to="/register"
+                  className="bg-gray-600 hover:bg-gray-500 text-white block px-3 py-2 rounded-md text-base font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign Up

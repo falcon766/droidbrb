@@ -7,66 +7,66 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Cyber Steel Theme - Robotic Dark Mode
+        // Monochrome Theme with Subtle Accents
         primary: {
-          50: '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee',  // Electric cyan
-          500: '#06b6d4',  // Main cyan
-          600: '#0891b2',  // Deep cyan
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
-        },
-        secondary: {
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
           300: '#cbd5e1',
-          400: '#94a3b8',  // Steel gray
-          500: '#64748b',  // Muted steel
-          600: '#475569',
-          700: '#334155',  // Dark steel
-          800: '#1e293b',  // Darker slate
-          900: '#0f172a',  // Deep slate
+          400: '#94a3b8',  // Muted steel blue
+          500: '#64748b',  // Subtle accent
+          600: '#475569',  // Hover state
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+        secondary: {
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',  // Light gray
+          500: '#737373',  // Medium gray
+          600: '#525252',  // Dark gray
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
         },
         accent: {
-          50: '#f0fdff',
-          100: '#ccfbfe',
-          200: '#99f6fc',
-          300: '#5eecf9',
-          400: '#22d8ee',  // Bright teal
-          500: '#06b8d4',  // Vivid teal
-          600: '#0894b3',  // Deep teal
-          700: '#0e7691',
-          800: '#135f76',
-          900: '#154e63',
+          50: '#fafafa',
+          100: '#f4f4f5',
+          200: '#e4e4e7',
+          300: '#d4d4d8',
+          400: '#a1a1aa',  // Zinc accent
+          500: '#71717a',  // Subtle zinc
+          600: '#52525b',
+          700: '#3f3f46',
+          800: '#27272a',
+          900: '#18181b',
         },
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
           300: '#86efac',
-          400: '#4ade80',  // Neon green
-          500: '#22c55e',  // Power green
+          400: '#4ade80',  // Green for availability
+          500: '#22c55e',
           600: '#16a34a',
           700: '#15803d',
           800: '#166534',
           900: '#14532d',
         },
         warning: {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
-          300: '#fde047',
-          400: '#facc15',  // Alert yellow
-          500: '#eab308',
-          600: '#ca8a04',
-          700: '#a16207',
-          800: '#854d0e',
-          900: '#713f12',
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
         },
         error: {
           50: '#fef2f2',
@@ -80,15 +80,17 @@ module.exports = {
           800: '#991b1b',
           900: '#7f1d1d',
         },
-        // Robot-specific colors
+        // Grayscale Robot Theme
         robot: {
-          darker: '#0a0f1a',   // Deepest background
-          dark: '#0f1419',     // Main background
-          slate: '#1a1f2e',    // Card background
-          steel: '#242b3d',    // Elevated elements
-          chrome: '#8b949e',   // Metallic text
-          glow: '#22d3ee',     // Cyan glow
-          neon: '#4ade80',     // Green neon
+          darker: '#0a0a0a',   // Almost black
+          dark: '#111111',     // Very dark gray
+          slate: '#1a1a1a',    // Dark slate
+          steel: '#252525',    // Elevated dark gray
+          medium: '#2d2d2d',   // Medium dark
+          chrome: '#9ca3af',   // Chrome gray text
+          light: '#d1d5db',    // Light gray text
+          glow: '#64748b',     // Subtle blue-gray glow
+          neon: '#4ade80',     // Green accent
         }
       },
       fontFamily: {

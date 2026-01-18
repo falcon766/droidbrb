@@ -19,25 +19,24 @@ code {
     monospace;
 }
 
-/* Custom scrollbar - Robotic theme */
+/* Custom scrollbar - Grayscale theme */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f1419;
-  border-left: 1px solid #1a1f2e;
+  background: #111111;
+  border-left: 1px solid #1a1a1a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #22d3ee 0%, #06b6d4 100%);
+  background: linear-gradient(180deg, #525252 0%, #404040 100%);
   border-radius: 5px;
-  border: 2px solid #0f1419;
+  border: 2px solid #111111;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #22d3ee 0%, #0891b2 100%);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  background: linear-gradient(180deg, #737373 0%, #525252 100%);
 }
 
 /* Smooth transitions */
@@ -47,33 +46,33 @@ code {
   transition-duration: 150ms;
 }
 
-/* Focus styles - Robotic glow */
+/* Focus styles - Subtle glow */
 .focus-ring:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px #22d3ee, 0 0 20px rgba(34, 211, 238, 0.3);
+  box-shadow: 0 0 0 2px #64748b;
 }
 
-/* Robotic glow effects */
+/* Subtle glow effects */
 .glow-cyan {
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .glow-cyan-sm {
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .glow-green {
-  box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  text-shadow: none;
 }
 
 .border-glow {
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.2), inset 0 0 10px rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  box-shadow: none;
 }
 
 /* Custom animations */
@@ -130,19 +129,19 @@ code {
 
 @keyframes glowPulse {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(34, 211, 238, 0.3), 0 0 20px rgba(34, 211, 238, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   50% {
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.5), 0 0 40px rgba(34, 211, 238, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 }
 
 @keyframes textGlowPulse {
   0%, 100% {
-    text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    text-shadow: none;
   }
   50% {
-    text-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+    text-shadow: none;
   }
 }
 

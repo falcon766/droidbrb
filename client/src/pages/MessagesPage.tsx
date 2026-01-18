@@ -235,7 +235,7 @@ const MessagesPage: React.FC = () => {
                             {formatTime(conversation.createdAt)}
                           </p>
                           {!conversation.isRead && conversation.senderId !== currentUser?.uid && (
-                            <div className="w-2 h-2 bg-primary-500 rounded-full mt-1 ml-auto shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                            <div className="w-2 h-2 bg-primary-500 rounded-full mt-1 ml-auto shadow-sm"></div>
                           )}
                         </div>
                       </div>
@@ -284,7 +284,7 @@ const MessagesPage: React.FC = () => {
                       >
                         <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg transition-all ${
                           isOwnMessage
-                            ? 'bg-primary-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+                            ? 'bg-primary-500 text-white shadow-md'
                             : 'bg-robot-steel text-white'
                         }`}>
                           <p className="text-sm">{message.content}</p>
@@ -321,7 +321,7 @@ const MessagesPage: React.FC = () => {
                     <button
                       onClick={sendMessage}
                       disabled={!newMessage.trim() || sending}
-                      className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                      className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                     >
                       {sending ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
