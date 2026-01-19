@@ -123,7 +123,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-robot-slate rounded-lg overflow-hidden shadow-lg shadow-lg"
+              className="bg-robot-slate rounded-lg overflow-hidden shadow-lg"
             >
               <div className="h-96 bg-robot-steel flex items-center justify-center">
                 <Bot className="h-24 w-24 text-gray-500" />
@@ -135,7 +135,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-lg"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -203,7 +203,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-lg"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg"
             >
               <h3 className="text-lg font-semibold text-white mb-4">Reviews</h3>
               <div className="space-y-4">
@@ -230,7 +230,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-robot-slate rounded-lg p-6 sticky top-6 shadow-lg shadow-lg"
+              className="bg-robot-slate rounded-lg p-6 sticky top-6 shadow-lg"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
@@ -260,7 +260,7 @@ const RobotDetailPage: React.FC = () => {
 
               <button
                 onClick={() => navigate('/messages')}
-                className="w-full py-3 px-4 border border-primary-900/30 text-white rounded-lg hover:bg-robot-steel transition-all mb-4 shadow-lg shadow-lg hover:shadow-xl"
+                className="w-full py-3 px-4 border border-primary-900/30 text-white rounded-lg hover:bg-robot-steel transition-all mb-4"
               >
                 <MessageCircle className="h-4 w-4 inline mr-2" />
                 Contact Owner
@@ -295,7 +295,7 @@ const RobotDetailPage: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-robot-slate rounded-lg p-6 shadow-lg shadow-lg"
+              className="bg-robot-slate rounded-lg p-6 shadow-lg"
             >
               <h4 className="text-white font-medium mb-4">Owner</h4>
               {owner ? (
@@ -335,7 +335,7 @@ const RobotDetailPage: React.FC = () => {
 
                   <button
                     onClick={() => navigate('/messages')}
-                    className="w-full bg-primary-500 text-white py-2 px-4 rounded-lg hover:bg-primary-600 transition-all flex items-center justify-center shadow-lg shadow-lg hover:shadow-xl"
+                    className="w-full bg-primary-500 text-white py-2 px-4 rounded-lg hover:bg-primary-600 transition-all flex items-center justify-center"
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message Owner
