@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 const RobotsPage: React.FC = () => {
   const { userProfile } = useAuth();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [robots, setRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<SearchFilters>({});
@@ -93,6 +93,7 @@ const RobotsPage: React.FC = () => {
       setRobots([]);
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, maxDistance]);
 
   const fetchRobots = async () => {

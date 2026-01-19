@@ -33,12 +33,14 @@ const FirebaseDiagnostic: React.FC = () => {
         envVars[varName] = !!process.env[varName];
       });
 
+      const allEnvVarsSetLocal = Object.values(envVars).every(Boolean);
+
       // For now, just check environment variables
       // Firebase services will be checked when they're properly initialized
-      const firebaseInit = allEnvVarsSet;
-      const auth = allEnvVarsSet;
-      const db = allEnvVarsSet;
-      const storage = allEnvVarsSet;
+      const firebaseInit = allEnvVarsSetLocal;
+      const auth = allEnvVarsSetLocal;
+      const db = allEnvVarsSetLocal;
+      const storage = allEnvVarsSetLocal;
 
       setDiagnostics({
         envVars,

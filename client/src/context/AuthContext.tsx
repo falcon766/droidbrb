@@ -117,6 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (credentials: LoginForm) => {

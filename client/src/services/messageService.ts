@@ -1,13 +1,12 @@
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  getDocs, 
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
   getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
+  query,
+  where,
+  orderBy,
   updateDoc,
   serverTimestamp,
   onSnapshot
@@ -299,14 +298,9 @@ export const messageService = {
   },
 
   // Search users for messaging
-  async searchUsers(query: string, currentUserId: string): Promise<User[]> {
-    try {
-      // In a real implementation, you would use a more sophisticated search
-      // For now, we'll return an empty array as user search would need to be implemented
-      return [];
-    } catch (error) {
-      console.error('Error searching users:', error);
-      return [];
-    }
+  async searchUsers(_query: string, _currentUserId: string): Promise<User[]> {
+    // In a real implementation, you would use a more sophisticated search
+    // For now, we'll return an empty array as user search would need to be implemented
+    return [];
   }
 }; 

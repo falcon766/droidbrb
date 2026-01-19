@@ -32,8 +32,7 @@ const CreateRobotPage: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset
+    formState: { errors }
   } = useForm<CreateRobotForm>();
 
   const categories = [

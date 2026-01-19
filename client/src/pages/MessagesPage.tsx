@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  MessageCircle, 
-  Send, 
+import {
+  MessageCircle,
+  Send,
   ArrowLeft,
   Search,
   User,
-  Clock,
   Check,
   CheckCheck
 } from 'lucide-react';
@@ -30,12 +29,14 @@ const MessagesPage: React.FC = () => {
     if (currentUser) {
       fetchConversations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   useEffect(() => {
     if (selectedConversation) {
       fetchMessages(selectedConversation);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
 
   const fetchConversations = async () => {
