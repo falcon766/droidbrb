@@ -85,30 +85,33 @@ export const messageService = {
   // Get all conversations for a user
   async getUserConversations(userId: string): Promise<Message[]> {
     try {
+      console.log('Fetching conversations for user:', userId);
+
       // Check if db is available
       if (!db) {
         console.error('Firestore database not initialized');
         return [];
       }
 
-      // Query for messages where user is sender
+      // Try a simpler approach: get all messages for this user without orderBy
+      // This avoids potential index issues
       const qSent = query(
         collection(db, 'messages'),
-        where('senderId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('senderId', '==', userId)
       );
 
-      // Query for messages where user is receiver
       const qReceived = query(
         collection(db, 'messages'),
-        where('receiverId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('receiverId', '==', userId)
       );
 
+      console.log('Executing queries...');
       const [sentSnapshot, receivedSnapshot] = await Promise.all([
         getDocs(qSent),
         getDocs(qReceived)
       ]);
+
+      console.log('Sent messages:', sentSnapshot.size, 'Received messages:', receivedSnapshot.size);
 
       const messagesMap = new Map<string, Message>();
 
@@ -162,9 +165,11 @@ export const messageService = {
       const messages = Array.from(messagesMap.values())
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
+      console.log('Returning', messages.length, 'conversations');
       return messages;
     } catch (error) {
       console.error('Error fetching user conversations:', error);
+      console.error('Error details:', error);
       // Return empty array instead of throwing error to prevent app crashes
       return [];
     }
