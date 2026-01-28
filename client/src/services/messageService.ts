@@ -6,7 +6,6 @@ import {
   getDoc,
   query,
   where,
-  orderBy,
   updateDoc,
   serverTimestamp,
   onSnapshot
@@ -51,31 +50,36 @@ export const messageService = {
   // Get conversation between two users
   async getConversation(userId1: string, userId2: string): Promise<Message[]> {
     try {
+      // Query without orderBy to avoid index requirements
       const q = query(
         collection(db, 'messages'),
         where('senderId', 'in', [userId1, userId2]),
-        where('receiverId', 'in', [userId1, userId2]),
-        orderBy('createdAt', 'desc')
+        where('receiverId', 'in', [userId1, userId2])
       );
-      
+
       const querySnapshot = await getDocs(q);
       const messages: Message[] = [];
-      
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        messages.push({
-          id: doc.id,
-          content: data.content,
-          senderId: data.senderId,
-          senderName: data.senderName,
-          receiverId: data.receiverId,
-          receiverName: data.receiverName,
-          isRead: data.isRead,
-          createdAt: data.createdAt?.toDate() || new Date(),
-        } as Message);
+        // Only include messages that are actually between these two users
+        if ((data.senderId === userId1 && data.receiverId === userId2) ||
+            (data.senderId === userId2 && data.receiverId === userId1)) {
+          messages.push({
+            id: doc.id,
+            content: data.content,
+            senderId: data.senderId,
+            senderName: data.senderName,
+            receiverId: data.receiverId,
+            receiverName: data.receiverName,
+            isRead: data.isRead,
+            createdAt: data.createdAt?.toDate() || new Date(),
+          } as Message);
+        }
       });
-      
-      return messages.reverse(); // Return in chronological order
+
+      // Sort in chronological order (oldest first)
+      return messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     } catch (error) {
       console.error('Error fetching conversation:', error);
       throw new Error('Failed to fetch conversation');
@@ -229,12 +233,12 @@ export const messageService = {
 
   // Real-time listener for new messages
   subscribeToMessages(userId: string, callback: (messages: Message[]) => void) {
+    // Remove orderBy to avoid index requirements
     const q = query(
       collection(db, 'messages'),
-      where('receiverId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('receiverId', '==', userId)
     );
-    
+
     return onSnapshot(q, (querySnapshot) => {
       const messages: Message[] = [];
       querySnapshot.forEach((doc) => {

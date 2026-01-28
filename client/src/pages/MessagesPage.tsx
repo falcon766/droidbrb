@@ -28,13 +28,33 @@ const MessagesPage: React.FC = () => {
   useEffect(() => {
     if (currentUser) {
       fetchConversations();
+
+      // Set up real-time listener for new messages
+      const unsubscribe = messageService.subscribeToMessages(currentUser.uid, () => {
+        // Refresh conversations when new messages arrive
+        fetchConversations();
+
+        // Also refresh current conversation messages if one is selected
+        if (selectedConversation) {
+          fetchMessages(selectedConversation);
+        }
+      });
+
+      return () => unsubscribe();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   useEffect(() => {
-    if (selectedConversation) {
+    if (selectedConversation && currentUser) {
       fetchMessages(selectedConversation);
+
+      // Set up a polling interval to check for new messages in the active conversation
+      const intervalId = setInterval(() => {
+        fetchMessages(selectedConversation);
+      }, 3000); // Poll every 3 seconds
+
+      return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
