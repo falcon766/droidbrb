@@ -24,6 +24,7 @@ const MessagesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -58,6 +59,15 @@ const MessagesPage: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const fetchConversations = async () => {
     if (!currentUser) return;
@@ -325,6 +335,7 @@ const MessagesPage: React.FC = () => {
                       </motion.div>
                     );
                   })}
+                  <div ref={messagesEndRef} />
                 </div>
 
                 {/* Message Input */}
