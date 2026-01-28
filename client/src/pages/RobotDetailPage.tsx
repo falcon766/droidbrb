@@ -125,9 +125,19 @@ const RobotDetailPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="bg-robot-slate rounded-lg overflow-hidden shadow-lg"
             >
-              <div className="h-96 bg-robot-steel flex items-center justify-center">
-                <Bot className="h-24 w-24 text-gray-500" />
-              </div>
+              {robot.images && robot.images.length > 0 ? (
+                <div className="h-96 bg-robot-steel">
+                  <img
+                    src={robot.images[0]}
+                    alt={robot.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-96 bg-robot-steel flex items-center justify-center">
+                  <Bot className="h-24 w-24 text-gray-500" />
+                </div>
+              )}
             </motion.div>
 
             {/* Robot Info */}
