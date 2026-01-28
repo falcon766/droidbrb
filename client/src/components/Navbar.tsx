@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Menu, X, User, LogOut, MessageSquare, Plus } from 'lucide-react';
+import { messageService } from '../services/messageService';
 
 const Navbar: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogout = async () => {
     try {
@@ -20,6 +22,30 @@ const Navbar: React.FC = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      const fetchUnreadCount = async () => {
+        const count = await messageService.getUnreadCount(currentUser.uid);
+        setUnreadCount(count);
+      };
+
+      fetchUnreadCount();
+
+      // Set up real-time listener for new messages
+      const unsubscribe = messageService.subscribeToMessages(currentUser.uid, () => {
+        fetchUnreadCount();
+      });
+
+      // Poll every 10 seconds as backup
+      const intervalId = setInterval(fetchUnreadCount, 10000);
+
+      return () => {
+        unsubscribe();
+        clearInterval(intervalId);
+      };
+    }
+  }, [currentUser]);
 
   return (
     <nav className="bg-gray-900 shadow-lg border-b border-gray-800">
@@ -58,13 +84,17 @@ const Navbar: React.FC = () => {
                 >
                   List Robot
                 </Link>
-                <Link 
-                  to="/messages" 
+                <Link
+                  to="/messages"
                   className="relative text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Messages</span>
-                  {/* Unread badge - you can add this later */}
+                  {unreadCount > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
                 
                 {/* User Menu */}
@@ -156,13 +186,18 @@ const Navbar: React.FC = () => {
                   <Plus className="w-4 h-4" />
                   <span>List Robot</span>
                 </Link>
-                <Link 
-                  to="/messages" 
-                  className="text-white hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                <Link
+                  to="/messages"
+                  className="relative text-white hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Messages</span>
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center ml-2">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
                 <Link 
                   to="/dashboard" 
