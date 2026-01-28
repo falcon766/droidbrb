@@ -60,22 +60,7 @@ const RobotDetailPage: React.FC = () => {
     load();
   }, [id]);
 
-  const reviews = [
-    {
-      id: 1,
-      user: 'Alex Chen',
-      rating: 5,
-      comment: 'Amazing robot! My kids loved learning with Loona. Very responsive and educational.',
-      date: '2024-01-15'
-    },
-    {
-      id: 2,
-      user: 'Maria Rodriguez',
-      rating: 4,
-      comment: 'Great experience renting Loona. The owner was very helpful and the robot worked perfectly.',
-      date: '2024-01-10'
-    }
-  ];
+  const reviews: any[] = [];
 
   if (loading) {
     return (
@@ -217,18 +202,22 @@ const RobotDetailPage: React.FC = () => {
             >
               <h3 className="text-lg font-semibold text-white mb-4">Reviews</h3>
               <div className="space-y-4">
-                {reviews.map((review) => (
-                  <div key={review.id} className="border-b border-primary-900/30 pb-4 last:border-b-0">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 text-gray-400 mr-2" />
-                        <span className="text-white font-medium">{review.user}</span>
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review.id} className="border-b border-primary-900/30 pb-4 last:border-b-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center">
+                          <User className="h-4 w-4 text-gray-400 mr-2" />
+                          <span className="text-white font-medium">{review.user}</span>
+                        </div>
                       </div>
+                      <p className="text-gray-300 text-sm mb-2">{review.comment}</p>
+                      <span className="text-gray-500 text-xs">{review.date}</span>
                     </div>
-                    <p className="text-gray-300 text-sm mb-2">{review.comment}</p>
-                    <span className="text-gray-500 text-xs">{review.date}</span>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-center py-4">No reviews yet. Be the first to rent and review this robot!</p>
+                )}
               </div>
             </motion.div>
           </div>
