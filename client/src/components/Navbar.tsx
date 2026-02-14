@@ -48,17 +48,13 @@ const Navbar: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2.5 group">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
-                <svg className="w-5 h-5" viewBox="0 0 64 64" fill="none">
-                  <path d="M32 8 L22 16 L12 12 L8 18 L18 20 L14 24 L50 24 L46 20 L56 18 L52 12 L42 16 Z" fill="white"/>
-                  <path d="M14 24 L14 44 L20 50 L44 50 L50 44 L50 24 Z" fill="white"/>
-                  <path d="M32 20 L28 24 L32 28 L36 24 Z" fill="rgba(0,0,0,0.4)"/>
-                  <rect x="17" y="30" width="11" height="6" rx="1" fill="rgba(0,0,0,0.4)"/>
-                  <rect x="36" y="30" width="11" height="6" rx="1" fill="rgba(0,0,0,0.4)"/>
-                  <rect x="16" y="38" width="10" height="8" rx="1" fill="rgba(255,255,255,0.7)"/>
-                  <rect x="38" y="38" width="10" height="8" rx="1" fill="rgba(255,255,255,0.7)"/>
-                  <rect x="18" y="40" width="3" height="3" rx="0.5" fill="rgba(0,0,0,0.3)"/>
-                  <rect x="43" y="40" width="3" height="3" rx="0.5" fill="rgba(0,0,0,0.3)"/>
-                  <path d="M28 48 L32 52 L36 48 Z" fill="rgba(255,255,255,0.7)"/>
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="3" y="4" width="18" height="14" rx="3" ry="3" opacity="0.9"/>
+                  <rect x="7" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
+                  <rect x="14" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
+                  <rect x="10.5" y="0.5" width="3" height="4" rx="1.5"/>
+                  <rect x="1" y="8" width="2.5" height="5" rx="1.25"/>
+                  <rect x="20.5" y="8" width="2.5" height="5" rx="1.25"/>
                 </svg>
               </div>
               <span className="text-lg font-semibold text-gray-100 tracking-tight">

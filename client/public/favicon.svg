@@ -1,16 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <rect width="64" height="64" rx="12" fill="#111111"/>
-  <path d="M32 8 L22 16 L12 12 L8 18 L18 20 L14 24 L50 24 L46 20 L56 18 L52 12 L42 16 Z" fill="#64748b"/>
-  <path d="M14 24 L14 44 L20 50 L44 50 L50 44 L50 24 Z" fill="#64748b"/>
-  <path d="M32 20 L28 24 L32 28 L36 24 Z" fill="#1a1a1a"/>
-  <rect x="17" y="30" width="11" height="6" rx="1" fill="#1a1a1a"/>
-  <rect x="18" y="31" width="9" height="4" rx="0.5" fill="#475569"/>
-  <rect x="36" y="30" width="11" height="6" rx="1" fill="#1a1a1a"/>
-  <rect x="37" y="31" width="9" height="4" rx="0.5" fill="#475569"/>
-  <rect x="16" y="38" width="10" height="8" rx="1" fill="#475569"/>
-  <rect x="38" y="38" width="10" height="8" rx="1" fill="#475569"/>
-  <rect x="18" y="40" width="3" height="3" rx="0.5" fill="#1a1a1a"/>
-  <rect x="43" y="40" width="3" height="3" rx="0.5" fill="#1a1a1a"/>
-  <path d="M28 48 L32 52 L36 48 Z" fill="#475569"/>
-  <path d="M30 36 L32 40 L34 36 Z" fill="#475569"/>
+  <!-- Head -->
+  <rect x="10" y="16" width="44" height="34" rx="8" fill="#64748b"/>
+  <!-- Left eye (vertical rounded rect) -->
+  <rect x="18" y="24" width="8" height="14" rx="4" fill="#1a1a1a"/>
+  <!-- Right eye (vertical rounded rect) -->
+  <rect x="38" y="24" width="8" height="14" rx="4" fill="#1a1a1a"/>
+  <!-- Single antenna -->
+  <rect x="28" y="4" width="8" height="14" rx="4" fill="#64748b"/>
+  <!-- Left ear -->
+  <rect x="3" y="26" width="8" height="12" rx="4" fill="#64748b"/>
+  <!-- Right ear -->
+  <rect x="53" y="26" width="8" height="12" rx="4" fill="#64748b"/>
 </svg>
