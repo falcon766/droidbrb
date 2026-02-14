@@ -15,6 +15,7 @@ import RobotDetailPage from './pages/RobotDetailPage';
 import RobotsPage from './pages/RobotsPage';
 import CreateRobotPage from './pages/CreateRobotPage';
 import MessagesPage from './pages/MessagesPage';
+import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import FirebaseDiagnostic from './components/FirebaseDiagnostic';
 
@@ -131,13 +132,21 @@ const AppContent: React.FC = () => {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/messages" 
+            <Route
+              path="/messages"
               element={
                 <ProtectedRoute>
                   <MessagesPage />
                 </ProtectedRoute>
-              } 
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
             />
             
             {/* 404 Route */}

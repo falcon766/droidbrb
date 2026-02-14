@@ -21,19 +21,10 @@ if (missingVars.length > 0) {
   console.error('Please set up your Firebase environment variables in a .env file');
 }
 
-// Debug: Log all environment variables
-console.log('=== ENVIRONMENT VARIABLES DEBUG ===');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('REACT_APP_FIREBASE_API_KEY exists:', !!process.env.REACT_APP_FIREBASE_API_KEY);
-console.log('REACT_APP_FIREBASE_API_KEY length:', process.env.REACT_APP_FIREBASE_API_KEY?.length);
-console.log('REACT_APP_FIREBASE_API_KEY first 10 chars:', process.env.REACT_APP_FIREBASE_API_KEY?.substring(0, 10));
-console.log('REACT_APP_FIREBASE_API_KEY last 10 chars:', process.env.REACT_APP_FIREBASE_API_KEY?.substring(-10));
-console.log('REACT_APP_FIREBASE_API_KEY full value:', process.env.REACT_APP_FIREBASE_API_KEY);
-console.log('REACT_APP_FIREBASE_PROJECT_ID:', process.env.REACT_APP_FIREBASE_PROJECT_ID);
-console.log('REACT_APP_FIREBASE_AUTH_DOMAIN:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
-console.log('REACT_APP_GOOGLE_PLACES_API_KEY exists:', !!process.env.REACT_APP_GOOGLE_PLACES_API_KEY);
-console.log('REACT_APP_GOOGLE_PLACES_API_KEY length:', process.env.REACT_APP_GOOGLE_PLACES_API_KEY?.length);
-console.log('=== END DEBUG ===');
+// Debug: Check env var presence (no values logged for security)
+if (process.env.NODE_ENV === 'development') {
+  console.log('Firebase env vars present:', requiredEnvVars.map(v => `${v}: ${!!process.env[v]}`).join(', '));
+}
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || 'missing-api-key',
@@ -45,12 +36,10 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || undefined,
 };
 
-// Simple debug to see what's actually loaded
-console.log('Firebase Config Debug:', {
-  apiKey: firebaseConfig.apiKey.substring(0, 10) + '...',
-  appId: firebaseConfig.appId,
-  projectId: firebaseConfig.projectId
-});
+// Verify config is loaded
+if (process.env.NODE_ENV === 'development') {
+  console.log('Firebase project:', firebaseConfig.projectId);
+}
 
 // Initialize Firebase only if config is valid
 let app: any;

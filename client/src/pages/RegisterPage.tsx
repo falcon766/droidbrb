@@ -57,14 +57,14 @@ const RegisterPage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900 flex flex-col">
+      <div className="min-h-screen bg-robot-dark flex flex-col">
         {/* Header */}
-        <header className="bg-gray-800 border-b border-gray-700">
+        <header className="bg-robot-slate border-b border-primary-900/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
               <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">DroidBRB</span>
@@ -73,7 +73,7 @@ const RegisterPage: React.FC = () => {
               {/* Back to Home */}
               <Link
                 to="/"
-                className="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors"
+                className="flex items-center space-x-2 text-white hover:text-primary-400 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Home</span>
@@ -102,14 +102,14 @@ const RegisterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
+            <div className="bg-robot-slate rounded-lg p-8 border border-primary-900/30">
               {/* Google Sign Up Button */}
               <div className="mb-6">
                 <button
                   type="button"
                   onClick={handleGoogleSignUp}
                   disabled={isGoogleLoading}
-                  className="w-full flex justify-center items-center px-4 py-3 border border-gray-600 rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex justify-center items-center px-4 py-3 border border-primary-900/30 rounded-lg shadow-sm bg-robot-steel text-white hover:bg-robot-steel focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isGoogleLoading ? (
                     <div className="flex items-center">
@@ -133,10 +133,10 @@ const RegisterPage: React.FC = () => {
               {/* Divider */}
               <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-600" />
+                  <div className="w-full border-t border-primary-900/30" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-800 text-gray-400">Or create account with email</span>
+                  <span className="px-2 bg-robot-slate text-gray-400">Or create account with email</span>
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ const RegisterPage: React.FC = () => {
                     <input
                       {...register('username', { required: 'Username is required' })}
                       type="text"
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Choose a username"
                     />
                   </div>
@@ -170,7 +170,7 @@ const RegisterPage: React.FC = () => {
                   <input
                     {...register('firstName', { required: 'First name is required' })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter your first name"
                   />
                   {errors.firstName && (
@@ -186,7 +186,7 @@ const RegisterPage: React.FC = () => {
                   <input
                     {...register('lastName', { required: 'Last name is required' })}
                     type="text"
-                    className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full px-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter your last name"
                   />
                   {errors.lastName && (
@@ -212,7 +212,7 @@ const RegisterPage: React.FC = () => {
                         },
                       })}
                       type="email"
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter your email"
                     />
                   </div>
@@ -241,7 +241,7 @@ const RegisterPage: React.FC = () => {
                         },
                       })}
                       type={showPassword ? 'text' : 'password'}
-                      className="block w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-10 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Create a password"
                     />
                     <button
@@ -276,7 +276,7 @@ const RegisterPage: React.FC = () => {
                         validate: (value) => value === password || 'Passwords do not match',
                       })}
                       type={showConfirmPassword ? 'text' : 'password'}
-                      className="block w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full pl-10 pr-10 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Confirm your password"
                     />
                     <button
@@ -300,7 +300,7 @@ const RegisterPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </button>
@@ -310,7 +310,7 @@ const RegisterPage: React.FC = () => {
               <div className="mt-6 text-center">
                 <p className="text-gray-400">
                   Already have an account?{' '}
-                  <Link to="/login" className="text-blue-400 hover:text-blue-300 transition-colors">
+                  <Link to="/login" className="text-primary-400 hover:text-primary-300 transition-colors">
                     Sign in here
                   </Link>
                 </p>

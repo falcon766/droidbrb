@@ -36,10 +36,17 @@ export const robotService = {
       if (images && images.length > 0) {
         console.log('Uploading images...');
         for (const image of images) {
-          const imageRef = ref(storage, `robots/${ownerId}/${Date.now()}_${image.name}`);
-          const snapshot = await uploadBytes(imageRef, image);
-          const url = await getDownloadURL(snapshot.ref);
-          imageUrls.push(url);
+          try {
+            // Sanitize filename to remove special characters that can cause storage issues
+            const safeName = image.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const imageRef = ref(storage, `robots/${ownerId}/${Date.now()}_${safeName}`);
+            const snapshot = await uploadBytes(imageRef, image);
+            const url = await getDownloadURL(snapshot.ref);
+            imageUrls.push(url);
+          } catch (uploadError) {
+            console.error(`Failed to upload image "${image.name}":`, uploadError);
+            throw new Error(`Failed to upload image "${image.name}". Please try again.`);
+          }
         }
         console.log('Images uploaded successfully:', imageUrls);
       }

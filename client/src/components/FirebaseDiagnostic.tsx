@@ -58,7 +58,7 @@ const FirebaseDiagnostic: React.FC = () => {
   const allServicesWorking = diagnostics.firebaseInit && diagnostics.auth && diagnostics.db && diagnostics.storage;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-robot-dark text-white p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4">Firebase Configuration Diagnostic</h1>
@@ -68,7 +68,7 @@ const FirebaseDiagnostic: React.FC = () => {
         </div>
 
         {/* Environment Variables */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-robot-slate rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             {allEnvVarsSet ? (
               <CheckCircle className="h-6 w-6 text-green-400 mr-2" />
@@ -80,7 +80,7 @@ const FirebaseDiagnostic: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(diagnostics.envVars).map(([varName, isSet]) => (
-              <div key={varName} className="flex items-center justify-between p-3 bg-gray-700 rounded">
+              <div key={varName} className="flex items-center justify-between p-3 bg-robot-steel rounded">
                 <span className="text-sm font-mono">{varName}</span>
                 {isSet ? (
                   <CheckCircle className="h-5 w-5 text-green-400" />
@@ -93,7 +93,7 @@ const FirebaseDiagnostic: React.FC = () => {
         </div>
 
         {/* Firebase Services */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-robot-slate rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             {allServicesWorking ? (
               <CheckCircle className="h-6 w-6 text-green-400 mr-2" />
@@ -104,7 +104,7 @@ const FirebaseDiagnostic: React.FC = () => {
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
+            <div className="flex items-center justify-between p-3 bg-robot-steel rounded">
               <span>Firebase Initialization</span>
               {diagnostics.firebaseInit ? (
                 <CheckCircle className="h-5 w-5 text-green-400" />
@@ -112,7 +112,7 @@ const FirebaseDiagnostic: React.FC = () => {
                 <XCircle className="h-5 w-5 text-red-400" />
               )}
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
+            <div className="flex items-center justify-between p-3 bg-robot-steel rounded">
               <span>Authentication</span>
               {diagnostics.auth ? (
                 <CheckCircle className="h-5 w-5 text-green-400" />
@@ -120,7 +120,7 @@ const FirebaseDiagnostic: React.FC = () => {
                 <XCircle className="h-5 w-5 text-red-400" />
               )}
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
+            <div className="flex items-center justify-between p-3 bg-robot-steel rounded">
               <span>Firestore Database</span>
               {diagnostics.db ? (
                 <CheckCircle className="h-5 w-5 text-green-400" />
@@ -128,7 +128,7 @@ const FirebaseDiagnostic: React.FC = () => {
                 <XCircle className="h-5 w-5 text-red-400" />
               )}
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
+            <div className="flex items-center justify-between p-3 bg-robot-steel rounded">
               <span>Storage</span>
               {diagnostics.storage ? (
                 <CheckCircle className="h-5 w-5 text-green-400" />
@@ -140,7 +140,7 @@ const FirebaseDiagnostic: React.FC = () => {
         </div>
 
         {/* Status Summary */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-robot-slate rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Status Summary</h2>
           
           {allEnvVarsSet && allServicesWorking ? (
@@ -169,12 +169,12 @@ const FirebaseDiagnostic: React.FC = () => {
         </div>
 
         {/* Instructions */}
-        <div className="bg-blue-900 border border-blue-700 rounded-lg p-6">
+        <div className="bg-primary-900/30 border border-primary-900/30 rounded-lg p-6">
           <div className="flex items-start">
-            <Info className="h-6 w-6 text-blue-400 mr-3 mt-1" />
+            <Info className="h-6 w-6 text-primary-400 mr-3 mt-1" />
             <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-2">How to Fix Issues</h3>
-              <ol className="text-blue-300 space-y-2 list-decimal list-inside">
+              <h3 className="text-lg font-semibold text-primary-400 mb-2">How to Fix Issues</h3>
+              <ol className="text-gray-300 space-y-2 list-decimal list-inside">
                 <li>Go to your Netlify dashboard</li>
                 <li>Navigate to Site Settings → Environment Variables</li>
                 <li>Add the missing environment variables from your Firebase project</li>
@@ -189,7 +189,7 @@ const FirebaseDiagnostic: React.FC = () => {
         <div className="mt-8 text-center">
           <a 
             href="/" 
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
           >
             Back to Home
           </a>

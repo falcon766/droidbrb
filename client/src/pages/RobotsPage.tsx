@@ -190,15 +190,15 @@ const RobotsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-robot-dark">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-robot-slate border-b border-primary-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Navigation Bar */}
           <div className="flex items-center mb-6">
             <button
               onClick={() => navigate('/')}
-              className="mr-4 p-3 text-white bg-gray-700 hover:bg-gray-600 transition-colors rounded-lg border-2 border-gray-500 hover:border-gray-400 shadow-lg"
+              className="mr-4 p-3 text-white bg-robot-steel hover:bg-robot-slate transition-colors rounded-lg border-2 border-primary-900/30 hover:border-primary-400 shadow-lg"
               title="Go back to home"
             >
               <ArrowLeft className="h-8 w-8" />
@@ -207,7 +207,7 @@ const RobotsPage: React.FC = () => {
               <h1 className="text-3xl font-bold text-white">Search Results</h1>
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 {filters.query && (
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                  <span className="bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
                     "{filters.query}"
                   </span>
                 )}
@@ -218,7 +218,7 @@ const RobotsPage: React.FC = () => {
                   </span>
                 )}
                 {maxDistance && (
-                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+                  <span className="bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
                     Within {maxDistance} miles
                   </span>
                 )}
@@ -227,19 +227,19 @@ const RobotsPage: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/')}
-                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400"
+                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-primary-900/30 hover:border-primary-400"
               >
                 New Search
               </button>
               <button
                 onClick={clearFilters}
-                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400"
+                className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-primary-900/30 hover:border-primary-400"
               >
                 Clear Filters
               </button>
               <Link
                 to="/create-robot"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
               >
                 List Your Robot
               </Link>
@@ -276,7 +276,7 @@ const RobotsPage: React.FC = () => {
 
           {/* Debug Info - Remove in production */}
           {process.env.NODE_ENV === 'development' && (
-            <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-4 mb-4 text-xs text-gray-400">
+            <div className="bg-robot-slate/50 border border-primary-900/30 rounded-lg p-4 mb-4 text-xs text-gray-400">
               <div className="font-medium mb-2">🔍 Debug Info:</div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -294,10 +294,10 @@ const RobotsPage: React.FC = () => {
           )}
 
           {/* Search Bar */}
-          <div className="bg-gray-700 rounded-lg p-4">
+          <div className="bg-robot-steel rounded-lg p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <div className="flex items-center bg-gray-600 rounded-lg px-4 py-3">
+                <div className="flex items-center bg-robot-steel rounded-lg px-4 py-3">
                   <Search className="h-5 w-5 text-gray-400 mr-3" />
                   <input
                     type="text"
@@ -310,7 +310,7 @@ const RobotsPage: React.FC = () => {
               </div>
               
               <div className="flex-1 relative location-input-container">
-                <div className="flex items-center bg-gray-600 rounded-lg px-4 py-3">
+                <div className="flex items-center bg-robot-steel rounded-lg px-4 py-3">
                   <MapPin className="h-5 w-5 text-gray-400 mr-3" />
                   <input
                     type="text"
@@ -324,12 +324,12 @@ const RobotsPage: React.FC = () => {
                 
                 {/* Location Suggestions */}
                 {showLocationSuggestions && locationSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 bg-gray-700 rounded-lg mt-1 z-10 max-h-48 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 bg-robot-steel rounded-lg mt-1 z-10 max-h-48 overflow-y-auto">
                     {locationSuggestions.map((suggestion) => (
                       <button
                         key={suggestion.place_id}
                         onClick={() => handleLocationSelect(suggestion)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-600 text-white border-b border-gray-600 last:border-b-0"
+                        className="w-full text-left px-4 py-3 hover:bg-robot-slate text-white border-b border-primary-900/30 last:border-b-0"
                       >
                         <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
                         <div className="text-sm text-gray-400">{suggestion.structured_formatting.secondary_text}</div>
@@ -341,7 +341,7 @@ const RobotsPage: React.FC = () => {
               
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-500 transition-colors flex items-center ml-3"
+                className="bg-robot-steel text-white px-4 py-3 rounded-lg hover:bg-robot-slate transition-colors flex items-center ml-3"
               >
                 <SlidersHorizontal className="h-5 w-5 mr-2" />
                 Filters
@@ -354,7 +354,7 @@ const RobotsPage: React.FC = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 pt-4 border-t border-gray-600"
+                className="mt-4 pt-4 border-t border-primary-900/30"
               >
                 <div className="grid md:grid-cols-3 gap-4">
                   {/* Distance Filter */}
@@ -371,7 +371,7 @@ const RobotsPage: React.FC = () => {
                     <select
                       value={filters.category || 'all'}
                       onChange={(e) => handleCategoryChange(e.target.value)}
-                      className="w-full bg-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-robot-steel text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       {categories.map(category => (
                         <option key={category.id} value={category.id}>
@@ -390,14 +390,14 @@ const RobotsPage: React.FC = () => {
                         placeholder="Min"
                         value={filters.minPrice || ''}
                         onChange={(e) => handlePriceChange(Number(e.target.value), filters.maxPrice)}
-                        className="flex-1 bg-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 bg-robot-steel text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                       <input
                         type="number"
                         placeholder="Max"
                         value={filters.maxPrice || ''}
                         onChange={(e) => handlePriceChange(filters.minPrice, Number(e.target.value))}
-                        className="flex-1 bg-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 bg-robot-steel text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                   </div>
@@ -406,7 +406,7 @@ const RobotsPage: React.FC = () => {
                   <div className="flex items-end">
                     <button
                       onClick={clearFilters}
-                      className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
+                      className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Clear Filters
@@ -431,7 +431,7 @@ const RobotsPage: React.FC = () => {
         {/* Robots Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold text-white mb-2">
               Searching for robots...
             </h3>
@@ -455,13 +455,13 @@ const RobotsPage: React.FC = () => {
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => setMaxDistance(Math.min(maxDistance * 2, 100))}
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                className="bg-robot-steel text-white px-4 py-2 rounded-lg hover:bg-robot-slate transition-colors"
               >
                 Expand Search Area
               </button>
               <Link
                 to="/create-robot"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
               >
                 List Your Robot
               </Link>
@@ -475,11 +475,11 @@ const RobotsPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                className="bg-robot-slate rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
                 onClick={() => window.location.href = `/robots/${robot.id}`}
               >
                 {/* Robot Image */}
-                <div className="h-48 bg-gray-700 flex items-center justify-center">
+                <div className="h-48 bg-robot-steel flex items-center justify-center">
                   {robot.images && robot.images.length > 0 ? (
                     <img 
                       src={robot.images[0]} 
@@ -500,10 +500,10 @@ const RobotsPage: React.FC = () => {
                   {/* Tags */}
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex gap-2">
-                      <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                      <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded">
                         {robot.category}
                       </span>
-                      <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                      <span className="bg-robot-steel text-white text-xs px-2 py-1 rounded flex items-center gap-1">
                         <DollarSign className="h-3 w-3" />
                         ${robot.price}/day
                       </span>
@@ -518,7 +518,7 @@ const RobotsPage: React.FC = () => {
                     <MapPin className="h-4 w-4 mr-1" />
                     <span>{robot.location}</span>
                     {searchLocationCoordinates && robot.latitude && robot.longitude && (
-                      <span className="ml-2 text-blue-400">
+                      <span className="ml-2 text-primary-400">
                         • {(() => {
                           const distance = distanceService.calculateDistance(
                             searchLocationCoordinates,

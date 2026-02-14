@@ -56,14 +56,14 @@ const LoginPage: React.FC = () => {
         <title>Login - DroidBRB</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gray-900 flex flex-col">
+      <div className="min-h-screen bg-robot-dark flex flex-col">
         {/* Header */}
-        <header className="bg-gray-800 border-b border-gray-700">
+        <header className="bg-robot-slate border-b border-primary-900/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
               <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">DroidBRB</span>
@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
               {/* Back to Home */}
               <Link
                 to="/"
-                className="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors"
+                className="flex items-center space-x-2 text-white hover:text-primary-400 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Home</span>
@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
+            <div className="bg-robot-slate rounded-lg p-8 border border-primary-900/30">
                           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
@@ -118,8 +118,8 @@ const LoginPage: React.FC = () => {
                         message: 'Invalid email address',
                       },
                     })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                      errors.email ? 'border-red-500' : 'border-gray-600'
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-robot-steel text-white placeholder-gray-400 ${
+                      errors.email ? 'border-red-500' : 'border-primary-900/30'
                     }`}
                     placeholder="Enter your email"
                   />
@@ -144,8 +144,8 @@ const LoginPage: React.FC = () => {
                           message: 'Password must be at least 6 characters',
                         },
                       })}
-                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                        errors.password ? 'border-red-500' : 'border-gray-600'
+                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-robot-steel text-white placeholder-gray-400 ${
+                        errors.password ? 'border-red-500' : 'border-primary-900/30'
                       }`}
                       placeholder="Enter your password"
                     />
@@ -172,7 +172,7 @@ const LoginPage: React.FC = () => {
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+                      className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-primary-900/30 rounded bg-robot-steel"
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
                       Remember me
@@ -180,7 +180,7 @@ const LoginPage: React.FC = () => {
                   </div>
 
                   <div className="text-sm">
-                    <Link to="/forgot-password" className="font-medium text-blue-400 hover:text-blue-300">
+                    <Link to="/forgot-password" className="font-medium text-primary-400 hover:text-primary-300">
                       Forgot your password?
                     </Link>
                   </div>
@@ -190,7 +190,7 @@ const LoginPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isLoading ? (
                       <div className="flex items-center">
@@ -206,10 +206,10 @@ const LoginPage: React.FC = () => {
                 {/* Divider */}
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-600" />
+                    <div className="w-full border-t border-primary-900/30" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-gray-800 text-gray-400">Or continue with</span>
+                    <span className="px-2 bg-robot-slate text-gray-400">Or continue with</span>
                   </div>
                 </div>
 
@@ -219,7 +219,7 @@ const LoginPage: React.FC = () => {
                     type="button"
                     onClick={handleGoogleLogin}
                     disabled={isGoogleLoading}
-                    className="w-full flex justify-center items-center px-4 py-2 border border-gray-600 rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full flex justify-center items-center px-4 py-2 border border-primary-900/30 rounded-lg shadow-sm bg-robot-steel text-white hover:bg-robot-steel focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isGoogleLoading ? (
                       <div className="flex items-center">
@@ -243,7 +243,7 @@ const LoginPage: React.FC = () => {
                 <div className="text-center">
                   <p className="text-sm text-gray-400">
                     Don't have an account?{' '}
-                    <Link to="/register" className="font-medium text-blue-400 hover:text-blue-300">
+                    <Link to="/register" className="font-medium text-primary-400 hover:text-primary-300">
                       Sign up
                     </Link>
                   </p>

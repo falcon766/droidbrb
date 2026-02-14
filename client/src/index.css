@@ -172,4 +172,11 @@ code {
 
 .animate-text-glow {
   animation: textGlowPulse 2s ease-in-out infinite;
+}
+
+/* Navbar glass morphism on scroll */
+.navbar-glass {
+  background: rgba(17, 17, 17, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 } 

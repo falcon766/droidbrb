@@ -111,12 +111,18 @@ const RobotDetailPage: React.FC = () => {
               className="bg-robot-slate rounded-lg overflow-hidden shadow-lg"
             >
               {robot.images && robot.images.length > 0 ? (
-                <div className="h-96 bg-robot-steel">
+                <div className="h-96 bg-robot-steel flex items-center justify-center">
                   <img
                     src={robot.images[0]}
                     alt={robot.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
                   />
+                  <Bot className="h-24 w-24 text-gray-500 hidden" />
                 </div>
               ) : (
                 <div className="h-96 bg-robot-steel flex items-center justify-center">

@@ -4,13 +4,13 @@ import { Bot } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 border-t border-gray-800">
+    <footer className="bg-robot-dark border-t border-primary-900/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">DroidBRB</span>
@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+        <div className="border-t border-primary-900/30 mt-8 pt-8 text-center text-gray-400">
           <p>&copy; 2025 DroidBRB. All rights reserved.</p>
         </div>
       </div>

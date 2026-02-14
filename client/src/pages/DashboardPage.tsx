@@ -45,10 +45,10 @@ const DashboardPage: React.FC = () => {
   }, [currentUser]);
 
   const stats = [
-    { label: 'My Robots', value: myRobots.length.toString(), icon: Bot, color: 'text-purple-400' },
-    { label: 'Active Rentals', value: '0', icon: Calendar, color: 'text-blue-400' },
-    { label: 'Total Rentals', value: '0', icon: Calendar, color: 'text-green-400' },
-    { label: 'Messages', value: unreadMessages.toString(), icon: MessageCircle, color: 'text-blue-400' }
+    { label: 'My Robots', value: myRobots.length.toString(), icon: Bot, color: 'text-primary-400' },
+    { label: 'Active Rentals', value: '0', icon: Calendar, color: 'text-primary-400' },
+    { label: 'Total Rentals', value: '0', icon: Calendar, color: 'text-primary-400' },
+    { label: 'Messages', value: unreadMessages.toString(), icon: MessageCircle, color: 'text-primary-400' }
   ];
 
   const tabs = [
@@ -71,7 +71,7 @@ const DashboardPage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-gray-800 rounded-lg p-6"
+                  className="bg-robot-slate rounded-lg p-6"
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -85,14 +85,14 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-robot-slate rounded-lg p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
               <div className="space-y-4">
                 {myRobots.length === 0 ? (
                   <p className="text-gray-400 text-center py-8">No robots listed yet. Create your first robot listing!</p>
                 ) : (
                   myRobots.slice(0, 3).map((robot) => (
-                    <div key={robot.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                    <div key={robot.id} className="flex items-center justify-between p-4 bg-robot-steel rounded-lg">
                       <div>
                         <p className="text-white font-medium">{robot.name}</p>
                         <p className="text-gray-400 text-sm">{robot.category} • ${robot.price}/day</p>
@@ -122,7 +122,7 @@ const DashboardPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-white">My Robots</h3>
               <Link
                 to="/create-robot"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Robot
@@ -138,7 +138,7 @@ const DashboardPage: React.FC = () => {
                   <p className="text-gray-400 mb-4">You haven't listed any robots yet.</p>
                   <Link
                     to="/create-robot"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+                    className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors inline-flex items-center"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     List Your First Robot
@@ -146,7 +146,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               ) : (
                 myRobots.map((robot) => (
-                  <div key={robot.id} className="bg-gray-800 rounded-lg p-6">
+                  <div key={robot.id} className="bg-robot-slate rounded-lg p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h4 className="text-white font-semibold">{robot.name}</h4>
@@ -178,12 +178,12 @@ const DashboardPage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex gap-2 mt-4">
-                      <button className="flex-1 bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                      <button className="flex-1 bg-robot-steel text-white py-2 px-4 rounded-lg hover:bg-robot-steel transition-colors">
                         Edit
                       </button>
                       <Link 
                         to={`/robots/${robot.id}`}
-                        className="flex-1 bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors text-center"
+                        className="flex-1 bg-robot-steel text-white py-2 px-4 rounded-lg hover:bg-robot-steel transition-colors text-center"
                       >
                         View Details
                       </Link>
@@ -199,7 +199,7 @@ const DashboardPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-white">Rental History</h3>
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-robot-slate rounded-lg p-6">
               <p className="text-gray-400 text-center py-8">Rental system coming soon! This will show all your robot rentals and earnings.</p>
             </div>
           </div>
@@ -212,18 +212,18 @@ const DashboardPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-white">Messages</h3>
               <Link
                 to="/messages"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
               >
                 View All Messages
               </Link>
             </div>
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-robot-slate rounded-lg p-6">
               {unreadMessages > 0 ? (
                 <div className="text-center">
                   <p className="text-white mb-2">You have {unreadMessages} unread message{unreadMessages === 1 ? '' : 's'}</p>
                   <Link
                     to="/messages"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
                   >
                     View Messages
                   </Link>
@@ -241,10 +241,10 @@ const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-robot-dark">
       <Navbar />
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-robot-slate border-b border-primary-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
@@ -266,10 +266,10 @@ const DashboardPage: React.FC = () => {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-robot-slate rounded-lg p-6">
               {/* User Info */}
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-robot-steel rounded-full flex items-center justify-center mr-3">
                   <User className="h-6 w-6 text-gray-400" />
                 </div>
                 <div>
@@ -286,8 +286,8 @@ const DashboardPage: React.FC = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        ? 'bg-primary-500 text-white'
+                        : 'text-gray-400 hover:text-white hover:bg-robot-steel'
                     }`}
                   >
                     <tab.icon className="h-5 w-5 mr-3" />
@@ -299,6 +299,13 @@ const DashboardPage: React.FC = () => {
                     )}
                   </button>
                 ))}
+                <Link
+                  to="/profile"
+                  className="w-full flex items-center px-4 py-3 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-robot-steel"
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  <span className="flex-1 text-left">Edit Profile</span>
+                </Link>
               </nav>
             </div>
           </div>

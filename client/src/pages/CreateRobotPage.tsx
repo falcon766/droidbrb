@@ -56,7 +56,27 @@ const CreateRobotPage: React.FC = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setImages([...images, ...files]);
+
+    // Validate file types and sizes
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`"${file.name}" is not an image file`);
+        return false;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`"${file.name}" exceeds 10MB limit`);
+        return false;
+      }
+      return true;
+    });
+
+    const newTotal = images.length + validFiles.length;
+    if (newTotal > 10) {
+      toast.error('Maximum 10 images allowed per robot');
+      return;
+    }
+
+    setImages([...images, ...validFiles]);
   };
 
   const removeImage = (index: number) => {
@@ -197,13 +217,13 @@ const CreateRobotPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-robot-dark">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-robot-slate border-b border-primary-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link 
             to="/dashboard" 
-            className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-4"
+            className="inline-flex items-center text-primary-400 hover:text-primary-300 transition-colors mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
@@ -217,7 +237,7 @@ const CreateRobotPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-gray-800 rounded-lg p-8"
+          className="bg-robot-slate rounded-lg p-8"
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             {/* Basic Information */}
@@ -231,7 +251,7 @@ const CreateRobotPage: React.FC = () => {
                   <input
                     type="text"
                     {...register('name', { required: 'Robot name is required' })}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="e.g., Loona Pet Robot"
                   />
                   {errors.name && (
@@ -245,7 +265,7 @@ const CreateRobotPage: React.FC = () => {
                   </label>
                   <select
                     {...register('category', { required: 'Category is required' })}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="">Select a category</option>
                     {categories.map(category => (
@@ -264,7 +284,7 @@ const CreateRobotPage: React.FC = () => {
                   <textarea
                     {...register('description', { required: 'Description is required' })}
                     rows={4}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Describe your robot, its capabilities, and what makes it special..."
                   />
                   {errors.description && (
@@ -290,7 +310,7 @@ const CreateRobotPage: React.FC = () => {
                         required: 'Price is required',
                         min: { value: 1, message: 'Price must be at least $1' }
                       })}
-                      className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="25"
                     />
                   </div>
@@ -310,19 +330,19 @@ const CreateRobotPage: React.FC = () => {
                       value={locationValue}
                       onChange={(e) => handleLocationChange(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="Start typing city, state, or zipcode..."
                     />
                     
                     {/* Location Suggestions Dropdown */}
                     {showLocationSuggestions && locationSuggestions.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 bg-gray-700 border border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto z-50">
+                      <div className="absolute top-full left-0 right-0 bg-robot-steel border border-primary-900/30 rounded-lg mt-1 max-h-60 overflow-y-auto z-50">
                         {locationSuggestions.map((suggestion, index) => (
                           <button
                             key={index}
                             type="button"
                             onClick={() => handleLocationSelect(suggestion)}
-                            className="w-full text-left px-4 py-3 text-white hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                            className="w-full text-left px-4 py-3 text-white hover:bg-robot-steel transition-colors border-b border-primary-900/30 last:border-b-0"
                           >
                             <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
                             <div className="text-sm text-gray-300">{suggestion.structured_formatting.secondary_text}</div>
@@ -333,21 +353,21 @@ const CreateRobotPage: React.FC = () => {
                   </div>
                   
                   {selectedLocation && (
-                    <p className="text-green-400 text-sm mt-1">
+                    <p className="text-primary-400 text-sm mt-1">
                       ✅ Location selected: {selectedLocation}
                     </p>
                   )}
                   
                   {!selectedLocation && locationValue && (
-                    <p className="text-yellow-400 text-sm mt-1">
+                    <p className="text-gray-400 text-sm mt-1">
                       ⚠️ Please select a location from the suggestions above
                     </p>
                   )}
                   
-                  <p className="text-blue-400 text-sm mt-1">
+                  <p className="text-primary-400 text-sm mt-1">
                     📍 GPS coordinates will be automatically added for distance-based search
                   </p>
-                  <p className="text-yellow-400 text-sm mt-1">
+                  <p className="text-gray-400 text-sm mt-1">
                     💡 Tip: Select specific locations like "Apex, NC" instead of just "Apex" for better accuracy
                   </p>
                   
@@ -369,7 +389,7 @@ const CreateRobotPage: React.FC = () => {
                   <input
                     type="number"
                     {...register('minRental', { min: 1 })}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="1"
                   />
                 </div>
@@ -381,7 +401,7 @@ const CreateRobotPage: React.FC = () => {
                   <input
                     type="number"
                     {...register('maxRental', { min: 1 })}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="30"
                   />
                 </div>
@@ -393,7 +413,7 @@ const CreateRobotPage: React.FC = () => {
                   <input
                     type="text"
                     {...register('pickupTime')}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="9:00 AM - 6:00 PM"
                   />
                 </div>
@@ -405,7 +425,7 @@ const CreateRobotPage: React.FC = () => {
                   <input
                     type="text"
                     {...register('returnTime')}
-                    className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="9:00 AM - 6:00 PM"
                   />
                 </div>
@@ -421,13 +441,13 @@ const CreateRobotPage: React.FC = () => {
                     type="text"
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
-                    className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Add a feature (e.g., Voice Recognition)"
                   />
                   <button
                     type="button"
                     onClick={addFeature}
-                    className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-primary-500 text-white px-4 py-3 rounded-lg hover:bg-primary-600 transition-colors"
                   >
                     <Plus className="h-5 w-5" />
                   </button>
@@ -437,7 +457,7 @@ const CreateRobotPage: React.FC = () => {
                     {features.map((feature, index) => (
                       <span
                         key={index}
-                        className="bg-gray-700 text-white px-3 py-1 rounded-lg flex items-center gap-2"
+                        className="bg-robot-steel text-white px-3 py-1 rounded-lg flex items-center gap-2"
                       >
                         {feature}
                         <button
@@ -458,7 +478,7 @@ const CreateRobotPage: React.FC = () => {
             <div>
               <h2 className="text-xl font-semibold text-white mb-6">Images</h2>
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+                <div className="border-2 border-dashed border-primary-900/30 rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-300 mb-2">Upload robot images</p>
                   <p className="text-gray-500 text-sm mb-4">PNG, JPG up to 10MB each</p>
@@ -472,7 +492,7 @@ const CreateRobotPage: React.FC = () => {
                   />
                   <label
                     htmlFor="image-upload"
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                    className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors cursor-pointer"
                   >
                     Choose Files
                   </label>
@@ -505,7 +525,7 @@ const CreateRobotPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Creating...' : 'List Robot'}
               </button>

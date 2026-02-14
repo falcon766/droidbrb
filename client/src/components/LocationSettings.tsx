@@ -90,7 +90,7 @@ const LocationSettings: React.FC<LocationSettingsProps> = ({ onLocationUpdate })
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
+    <div className="bg-robot-slate rounded-lg p-6">
       <h3 className="text-xl font-semibold text-white mb-4">Location Settings</h3>
       
       <div className="space-y-4">
@@ -106,7 +106,7 @@ const LocationSettings: React.FC<LocationSettingsProps> = ({ onLocationUpdate })
               value={zipcode}
               onChange={(e) => handleZipcodeChange(e.target.value)}
               placeholder="Enter your zipcode"
-              className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
               maxLength={5}
             />
           </div>
@@ -133,7 +133,7 @@ const LocationSettings: React.FC<LocationSettingsProps> = ({ onLocationUpdate })
               value={address}
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder="Enter your street address"
-              className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <p className="text-gray-400 text-sm mt-1">
@@ -143,7 +143,7 @@ const LocationSettings: React.FC<LocationSettingsProps> = ({ onLocationUpdate })
 
         {/* Current Coordinates Display */}
         {coordinates && (
-          <div className="bg-gray-700 rounded-lg p-4">
+          <div className="bg-robot-steel rounded-lg p-4">
             <h4 className="text-white font-medium mb-2">Current Location</h4>
             <p className="text-gray-300 text-sm">
               Latitude: {coordinates.latitude.toFixed(6)}
@@ -158,7 +158,7 @@ const LocationSettings: React.FC<LocationSettingsProps> = ({ onLocationUpdate })
         <button
           onClick={saveLocation}
           disabled={isLoading || !coordinates}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+          className="w-full bg-primary-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-600 disabled:bg-robot-steel disabled:cursor-not-allowed"
         >
           {isLoading ? 'Saving...' : 'Save Location'}
         </button>

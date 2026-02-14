@@ -46,18 +46,18 @@ const AboutPage: React.FC = () => {
         <meta name="description" content="Learn about DroidBRB, the community-driven platform for sharing and renting robots locally." />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-robot-dark">
         <Navbar />
 
         {/* Hero Section */}
-        <section className="bg-gradient-to-b from-gray-800 to-gray-900 py-20 px-4 sm:px-6 lg:px-8">
+        <section className="bg-gradient-to-b from-robot-slate to-robot-dark py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent mb-6">
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary-300 via-primary-400 to-primary-500 bg-clip-text text-transparent mb-6">
                 About DroidBRB
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
@@ -69,14 +69,14 @@ const AboutPage: React.FC = () => {
         </section>
 
         {/* Mission Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-robot-dark">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-gray-800 rounded-lg p-8 md:p-12"
+              className="bg-robot-slate rounded-lg p-8 md:p-12"
             >
               <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
@@ -119,9 +119,9 @@ const AboutPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
+                  className="bg-robot-slate rounded-lg p-6 hover:bg-robot-steel transition-colors"
                 >
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-4">
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
@@ -133,7 +133,7 @@ const AboutPage: React.FC = () => {
         </section>
 
         {/* How It Works */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-robot-slate">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -176,7 +176,7 @@ const AboutPage: React.FC = () => {
                   viewport={{ once: true }}
                   className="flex items-start"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                     {item.step}
                   </div>
                   <div>
@@ -207,13 +207,13 @@ const AboutPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   to="/register"
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
+                  className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors text-lg font-medium"
                 >
                   Get Started Free
                 </Link>
                 <Link
                   to="/robots"
-                  className="bg-gray-700 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors text-lg font-medium"
+                  className="bg-robot-steel text-white px-8 py-3 rounded-lg hover:bg-robot-steel transition-colors text-lg font-medium"
                 >
                   Browse Robots
                 </Link>

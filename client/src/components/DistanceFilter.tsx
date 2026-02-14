@@ -23,7 +23,7 @@ const DistanceFilter: React.FC<DistanceFilterProps> = ({
 
   if (!userLocation) {
     return (
-      <div className="bg-gray-800 rounded-lg p-4">
+      <div className="bg-robot-slate rounded-lg p-4">
         <div className="flex items-center text-gray-400">
           <MapPin className="h-5 w-5 mr-2" />
           <span>Set your location to filter by distance</span>
@@ -33,9 +33,9 @@ const DistanceFilter: React.FC<DistanceFilterProps> = ({
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
+    <div className="bg-robot-slate rounded-lg p-4">
       <div className="flex items-center mb-3">
-        <MapPin className="h-5 w-5 text-blue-500 mr-2" />
+        <MapPin className="h-5 w-5 text-primary-500 mr-2" />
         <h3 className="text-white font-medium">Distance Filter</h3>
       </div>
       
@@ -48,14 +48,14 @@ const DistanceFilter: React.FC<DistanceFilterProps> = ({
               value={option.value}
               checked={maxDistance === option.value}
               onChange={(e) => onDistanceChange(Number(e.target.value))}
-              className="mr-3 text-blue-500 focus:ring-blue-500"
+              className="mr-3 text-primary-500 focus:ring-primary-500"
             />
             <span className="text-white">{option.label}</span>
           </label>
         ))}
       </div>
       
-      <div className="mt-3 pt-3 border-t border-gray-700">
+      <div className="mt-3 pt-3 border-t border-primary-900/30">
         <p className="text-gray-400 text-sm">
           Showing robots within {maxDistance} mile{maxDistance !== 1 ? 's' : ''} of your location
         </p>
