@@ -1,15 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <rect width="64" height="64" rx="12" fill="#111111"/>
-  <!-- Head -->
   <rect x="10" y="16" width="44" height="34" rx="8" fill="#64748b"/>
-  <!-- Left eye (vertical rounded rect) -->
   <rect x="18" y="24" width="8" height="14" rx="4" fill="#1a1a1a"/>
-  <!-- Right eye (vertical rounded rect) -->
   <rect x="38" y="24" width="8" height="14" rx="4" fill="#1a1a1a"/>
-  <!-- Single antenna -->
-  <rect x="28" y="4" width="8" height="14" rx="4" fill="#64748b"/>
-  <!-- Left ear -->
   <rect x="3" y="26" width="8" height="12" rx="4" fill="#64748b"/>
-  <!-- Right ear -->
   <rect x="53" y="26" width="8" height="12" rx="4" fill="#64748b"/>
 </svg>

@@ -52,7 +52,6 @@ const Navbar: React.FC = () => {
                   <rect x="3" y="4" width="18" height="14" rx="3" ry="3" opacity="0.9"/>
                   <rect x="7" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
                   <rect x="14" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
-                  <rect x="10.5" y="0.5" width="3" height="4" rx="1.5"/>
                   <rect x="1" y="8" width="2.5" height="5" rx="1.25"/>
                   <rect x="20.5" y="8" width="2.5" height="5" rx="1.25"/>
                 </svg>
