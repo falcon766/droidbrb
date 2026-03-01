@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  MessageCircle,
-  Send,
-  ArrowLeft,
-  Search,
-  User,
-  Check,
-  CheckCheck
-} from 'lucide-react';
+import { MessageCircle, Send, Search, User, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { messageService } from '../services/messageService';
 import { Message } from '../types';
+import Navbar from '../components/Navbar';
+import { C } from '../design';
 import toast from 'react-hot-toast';
 
 const MessagesPage: React.FC = () => {
@@ -29,18 +21,10 @@ const MessagesPage: React.FC = () => {
   useEffect(() => {
     if (currentUser) {
       fetchConversations();
-
-      // Set up real-time listener for new messages
       const unsubscribe = messageService.subscribeToMessages(currentUser.uid, () => {
-        // Refresh conversations when new messages arrive
         fetchConversations();
-
-        // Also refresh current conversation messages if one is selected
-        if (selectedConversation) {
-          fetchMessages(selectedConversation);
-        }
+        if (selectedConversation) fetchMessages(selectedConversation);
       });
-
       return () => unsubscribe();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,228 +33,128 @@ const MessagesPage: React.FC = () => {
   useEffect(() => {
     if (selectedConversation && currentUser) {
       fetchMessages(selectedConversation);
-
-      // Set up a polling interval to check for new messages in the active conversation
-      const intervalId = setInterval(() => {
-        fetchMessages(selectedConversation);
-      }, 3000); // Poll every 3 seconds
-
+      const intervalId = setInterval(() => fetchMessages(selectedConversation), 3000);
       return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-  };
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages]);
 
   const fetchConversations = async () => {
     if (!currentUser) return;
-    
-    try {
-      const conversations = await messageService.getUserConversations(currentUser.uid);
-      setConversations(conversations);
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
-      toast.error('Failed to load conversations');
-    } finally {
-      setLoading(false);
-    }
+    try { setConversations(await messageService.getUserConversations(currentUser.uid)); }
+    catch { toast.error('Failed to load conversations'); }
+    finally { setLoading(false); }
   };
 
   const fetchMessages = async (otherUserId: string) => {
     if (!currentUser) return;
-    
     try {
-      const messages = await messageService.getConversation(currentUser.uid, otherUserId);
-      setMessages(messages);
-      
-      // Mark conversation as read
+      setMessages(await messageService.getConversation(currentUser.uid, otherUserId));
       await messageService.markConversationAsRead(currentUser.uid, otherUserId);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      toast.error('Failed to load messages');
-    }
+    } catch { toast.error('Failed to load messages'); }
   };
 
   const sendMessage = async () => {
     if (!currentUser || !selectedConversation || !newMessage.trim()) return;
-
     setSending(true);
     try {
-      // Find the conversation to get receiver info
-      const conversation = conversations.find(c => 
-        c.senderId === selectedConversation || c.receiverId === selectedConversation
-      );
-
-      if (!conversation) {
-        toast.error('Conversation not found');
-        return;
-      }
-
-      const receiverId = conversation.senderId === currentUser.uid
-        ? conversation.receiverId
-        : conversation.senderId;
-
-      const receiverName = conversation.senderId === currentUser.uid
-        ? conversation.receiverName
-        : conversation.senderName;
-
-      await messageService.createMessage(
-        currentUser.uid,
-        currentUser.displayName || 'User',
-        {
-          content: newMessage.trim(),
-          receiverId,
-          receiverName,
-          receiverEmail: conversation.receiverEmail || '',
-        }
-      );
-
+      const conversation = conversations.find(c => c.senderId === selectedConversation || c.receiverId === selectedConversation);
+      if (!conversation) { toast.error('Conversation not found'); return; }
+      const receiverId = conversation.senderId === currentUser.uid ? conversation.receiverId : conversation.senderId;
+      const receiverName = conversation.senderId === currentUser.uid ? conversation.receiverName : conversation.senderName;
+      await messageService.createMessage(currentUser.uid, currentUser.displayName || 'User', {
+        content: newMessage.trim(), receiverId, receiverName, receiverEmail: conversation.receiverEmail || '',
+      });
       setNewMessage('');
-      
-      // Refresh messages
       await fetchMessages(selectedConversation);
-      
       toast.success('Message sent!');
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error('Failed to send message');
-    } finally {
-      setSending(false);
-    }
+    } catch { toast.error('Failed to send message'); }
+    finally { setSending(false); }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
-  const getConversationPartner = (message: Message) => {
-    if (message.senderId === currentUser?.uid) {
-      return message.receiverName;
-    }
-    return message.senderName;
-  };
+  const getConversationPartner = (m: Message) => m.senderId === currentUser?.uid ? m.receiverName : m.senderName;
+  const getConversationPartnerId = (m: Message) => m.senderId === currentUser?.uid ? m.receiverId : m.senderId;
 
-  const getConversationPartnerId = (message: Message) => {
-    if (message.senderId === currentUser?.uid) {
-      return message.receiverId;
-    }
-    return message.senderId;
-  };
-
-  const filteredConversations = conversations.filter(conversation => {
-    const partnerName = getConversationPartner(conversation);
-    return partnerName.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+  const filteredConversations = conversations.filter(c => getConversationPartner(c).toLowerCase().includes(searchTerm.toLowerCase()));
 
   const formatTime = (date: Date) => {
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
-    if (diffInHours < 1) {
-      return 'Just now';
-    } else if (diffInHours < 24) {
-      return `${Math.floor(diffInHours)}h ago`;
-    } else {
-      return date.toLocaleDateString();
-    }
+    const h = (Date.now() - date.getTime()) / 3600000;
+    if (h < 1) return 'Just now';
+    if (h < 24) return `${Math.floor(h)}h ago`;
+    return date.toLocaleDateString();
   };
 
   return (
-    <div className="min-h-screen bg-robot-dark">
-      {/* Header */}
-      <div className="bg-robot-slate border-b border-primary-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center text-primary-400 hover:text-primary-300 transition-all mr-4"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Link>
-              <h1 className="text-3xl font-bold text-white">Messages</h1>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black, height: "100vh", display: "flex", flexDirection: "column" }}>
+      <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingTop: 64 }}>
+        {/* Header */}
+        <div style={{ padding: "20px 48px", borderBottom: `1px solid ${C.gray100}`, background: C.white }}>
+          <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em" }}>Messages</h1>
+        </div>
+
+        {/* Chat Layout */}
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "340px 1fr", overflow: "hidden" }}>
           {/* Conversations List */}
-          <div className="lg:col-span-1 bg-robot-slate rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-primary-900/30">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search conversations..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-robot-steel text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                />
+          <div style={{ borderRight: `1px solid ${C.gray100}`, background: C.pureWhite, display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: 16, borderBottom: `1px solid ${C.gray100}` }}>
+              <div style={{ position: "relative" }}>
+                <Search size={16} color={C.gray400} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
+                <input type="text" placeholder="Search conversations..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                  style={{ width: "100%", padding: "10px 14px 10px 38px", background: C.gray50, border: `1px solid ${C.gray100}`, borderRadius: 100, fontSize: 14, fontFamily: "inherit", color: C.black, outline: "none" }} />
               </div>
             </div>
-
-            <div className="overflow-y-auto h-[calc(100%-80px)]">
+            <div style={{ flex: 1, overflowY: "auto" }}>
               {loading ? (
-                <div className="p-4 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+                <div style={{ padding: 32, textAlign: "center" }}>
+                  <div style={{ width: 32, height: 32, border: `3px solid ${C.gray200}`, borderTopColor: C.blue, borderRadius: "50%", margin: "0 auto", animation: "spin 0.8s linear infinite" }} />
+                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                 </div>
               ) : filteredConversations.length === 0 ? (
-                <div className="p-8 text-center">
-                  <MessageCircle className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">No conversations yet</h3>
-                  <p className="text-gray-400">Start a conversation by messaging another user!</p>
+                <div style={{ padding: 32, textAlign: "center" }}>
+                  <MessageCircle size={32} color={C.gray300} style={{ margin: "0 auto 12px" }} />
+                  <h3 style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>No conversations</h3>
+                  <p style={{ fontSize: 13, color: C.gray400 }}>Start by messaging a robot owner!</p>
                 </div>
               ) : (
                 filteredConversations.map((conversation) => {
                   const partnerId = getConversationPartnerId(conversation);
                   const partnerName = getConversationPartner(conversation);
                   const isSelected = selectedConversation === partnerId;
-
+                  const isUnread = !conversation.isRead && conversation.senderId !== currentUser?.uid;
                   return (
-                    <motion.div
-                      key={conversation.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`p-4 border-b border-primary-900/30 cursor-pointer hover:bg-robot-steel transition-all ${
-                        isSelected ? 'bg-robot-steel' : ''
-                      }`}
+                    <div key={conversation.id}
+                      style={{
+                        padding: "14px 16px", borderBottom: `1px solid ${C.gray100}`, cursor: "pointer",
+                        background: isSelected ? C.gray50 : "transparent", transition: "background 0.15s",
+                      }}
                       onClick={() => setSelectedConversation(partnerId)}
+                      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = C.gray50; }}
+                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                            <User className="h-5 w-5 text-white" />
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <User size={16} color={C.gray400} />
                           </div>
-                          <div>
-                            <h4 className="text-white font-medium">{partnerName}</h4>
-                            <p className="text-gray-400 text-sm truncate max-w-[150px]">
-                              {conversation.content}
-                            </p>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: isUnread ? 700 : 500, color: C.black }}>{partnerName}</div>
+                            <div style={{ fontSize: 13, color: C.gray400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>{conversation.content}</div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-gray-400 text-xs">
-                            {formatTime(conversation.createdAt)}
-                          </p>
-                          {!conversation.isRead && conversation.senderId !== currentUser?.uid && (
-                            <div className="w-2 h-2 bg-primary-500 rounded-full mt-1 ml-auto shadow-sm"></div>
-                          )}
+                        <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
+                          <div style={{ fontSize: 11, color: C.gray400 }}>{formatTime(conversation.createdAt)}</div>
+                          {isUnread && <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, marginTop: 4, marginLeft: "auto" }} />}
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })
               )}
@@ -278,98 +162,66 @@ const MessagesPage: React.FC = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="lg:col-span-2 bg-robot-slate rounded-lg overflow-hidden flex flex-col">
+          <div style={{ display: "flex", flexDirection: "column", background: C.white }}>
             {selectedConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-primary-900/30">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
+                <div style={{ padding: "14px 24px", borderBottom: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <User size={16} color={C.gray400} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 500 }}>
+                      {(() => { const c = conversations.find(c => getConversationPartnerId(c) === selectedConversation); return c ? getConversationPartner(c) : 'User'; })()}
                     </div>
-                    <div>
-                      <h3 className="text-white font-medium">
-                        {(() => {
-                          const conv = conversations.find(c =>
-                            getConversationPartnerId(c) === selectedConversation
-                          );
-                          return conv ? getConversationPartner(conv) : 'User';
-                        })()}
-                      </h3>
-                      <p className="text-gray-400 text-sm">Online</p>
-                    </div>
+                    <div style={{ fontSize: 12, color: C.gray400 }}>Online</div>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div style={{ flex: 1, overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
                   {messages.map((message) => {
-                    const isOwnMessage = message.senderId === currentUser?.uid;
-
+                    const isOwn = message.senderId === currentUser?.uid;
                     return (
-                      <motion.div
-                        key={message.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg transition-all ${
-                          isOwnMessage
-                            ? 'bg-primary-500 text-white shadow-md'
-                            : 'bg-robot-steel text-white'
-                        }`}>
-                          <p className="text-sm">{message.content}</p>
-                          <div className={`flex items-center justify-between mt-1 ${
-                            isOwnMessage ? 'text-primary-200' : 'text-gray-400'
-                          }`}>
-                            <span className="text-xs">
-                              {formatTime(message.createdAt)}
-                            </span>
-                            {isOwnMessage && (
-                              <span className="text-xs ml-2">
-                                {message.isRead ? <CheckCheck className="h-3 w-3" /> : <Check className="h-3 w-3" />}
-                              </span>
-                            )}
+                      <div key={message.id} style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start" }}>
+                        <div style={{
+                          maxWidth: 400, padding: "10px 16px", borderRadius: 16,
+                          background: isOwn ? C.blue : C.gray50,
+                          color: isOwn ? C.pureWhite : C.black,
+                        }}>
+                          <p style={{ fontSize: 14, lineHeight: 1.5 }}>{message.content}</p>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4, marginTop: 4 }}>
+                            <span style={{ fontSize: 11, color: isOwn ? "rgba(255,255,255,0.6)" : C.gray400 }}>{formatTime(message.createdAt)}</span>
+                            {isOwn && <span style={{ color: "rgba(255,255,255,0.6)" }}>{message.isRead ? <CheckCheck size={13} /> : <Check size={13} />}</span>}
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Message Input */}
-                <div className="p-4 border-t border-primary-900/30">
-                  <div className="flex space-x-4">
-                    <textarea
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
-                      className="flex-1 bg-robot-steel text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none transition-all"
-                      rows={1}
-                      disabled={sending}
-                    />
-                    <button
-                      onClick={sendMessage}
-                      disabled={!newMessage.trim() || sending}
-                      className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                    >
-                      {sending ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      ) : (
-                        <Send className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
+                {/* Input */}
+                <div style={{ padding: "16px 24px", borderTop: `1px solid ${C.gray100}`, display: "flex", gap: 12, alignItems: "flex-end" }}>
+                  <textarea value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyPress={handleKeyPress}
+                    placeholder="Type your message..." rows={1} disabled={sending}
+                    style={{ flex: 1, padding: "12px 16px", background: C.gray50, border: `1px solid ${C.gray100}`, borderRadius: 100, fontSize: 14, fontFamily: "inherit", color: C.black, outline: "none", resize: "none" }} />
+                  <button onClick={sendMessage} disabled={!newMessage.trim() || sending}
+                    style={{
+                      width: 44, height: 44, borderRadius: "50%", background: (!newMessage.trim() || sending) ? C.gray200 : C.blue,
+                      color: C.pureWhite, border: "none", cursor: (!newMessage.trim() || sending) ? "not-allowed" : "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.25s", flexShrink: 0,
+                    }}>
+                    <Send size={16} />
+                  </button>
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Select a conversation</h3>
-                  <p className="text-gray-400">Choose a conversation from the list to start messaging</p>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ textAlign: "center" }}>
+                  <MessageCircle size={48} color={C.gray300} style={{ margin: "0 auto 16px" }} />
+                  <h3 style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>Select a conversation</h3>
+                  <p style={{ fontSize: 14, color: C.gray400 }}>Choose from the list to start messaging</p>
                 </div>
               </div>
             )}
@@ -380,4 +232,4 @@ const MessagesPage: React.FC = () => {
   );
 };
 
-export default MessagesPage; 
+export default MessagesPage;

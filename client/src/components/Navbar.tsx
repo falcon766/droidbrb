@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, User, LogOut, MessageSquare, Plus, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings } from 'lucide-react';
 import { messageService } from '../services/messageService';
+import { C } from '../design';
+import RobotLogo from './RobotLogo';
 
 const Navbar: React.FC = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, userProfile, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -21,9 +23,9 @@ const Navbar: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const fn = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
   }, []);
 
   useEffect(() => {
@@ -39,115 +41,252 @@ const Navbar: React.FC = () => {
     }
   }, [currentUser]);
 
+  const navColor = scrolled ? C.gray500 : "rgba(255,255,255,0.6)";
+  const navHoverColor = scrolled ? C.black : C.pureWhite;
+  const logoColor = scrolled ? C.black : C.pureWhite;
+
+  const navLinks = currentUser
+    ? [
+        { label: "Explore", to: "/robots" },
+        { label: "List a Robot", to: "/create-robot" },
+        { label: "About", to: "/about" },
+      ]
+    : [
+        { label: "Explore", to: "/robots" },
+        { label: "About", to: "/about" },
+        { label: "List a Robot", to: "/create-robot" },
+      ];
+
   return (
-    <nav className={`sticky top-0 z-50 border-b transition-all duration-300 ${
-      scrolled ? 'navbar-glass border-primary-900/30' : 'bg-robot-dark/95 border-primary-900/20'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2.5 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="3" y="4" width="18" height="14" rx="3" ry="3" opacity="0.9"/>
-                  <rect x="7" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
-                  <rect x="14" y="7" width="3" height="5.5" rx="1.5" fill="#111"/>
-                  <rect x="1" y="8" width="2.5" height="5" rx="1.25"/>
-                  <rect x="20.5" y="8" width="2.5" height="5" rx="1.25"/>
-                </svg>
-              </div>
-              <span className="text-lg font-semibold text-gray-100 tracking-tight">
-                Droid<span className="text-primary-400">BRB</span>
-              </span>
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      padding: "0 48px", height: 64,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
+      backdropFilter: scrolled ? "blur(16px)" : "none",
+      WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
+      borderBottom: scrolled ? `1px solid ${C.gray100}` : "1px solid transparent",
+      transition: "all 0.4s ease",
+    }}>
+      {/* Logo */}
+      <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+        <RobotLogo color={logoColor} />
+        <span style={{
+          fontSize: 14, fontWeight: 700, letterSpacing: "0.12em",
+          textTransform: "uppercase", color: logoColor, transition: "color 0.4s",
+        }}>DroidBRB</span>
+      </Link>
+
+      {/* Desktop Nav */}
+      <div style={{ display: "flex", gap: 32, alignItems: "center" }} className="hidden md:flex">
+        {navLinks.map((link) => (
+          <Link
+            key={link.label}
+            to={link.to}
+            style={{
+              fontSize: 13, fontWeight: 500, letterSpacing: "0.06em",
+              textTransform: "uppercase", color: navColor,
+              cursor: "pointer", transition: "color 0.3s", textDecoration: "none",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = navHoverColor)}
+            onMouseLeave={e => (e.currentTarget.style.color = navColor)}
+          >{link.label}</Link>
+        ))}
+
+        {currentUser ? (
+          <>
+            <Link
+              to="/messages"
+              style={{
+                fontSize: 13, fontWeight: 500, letterSpacing: "0.06em",
+                textTransform: "uppercase", color: navColor,
+                cursor: "pointer", transition: "color 0.3s", textDecoration: "none",
+                position: "relative",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = navHoverColor)}
+              onMouseLeave={e => (e.currentTarget.style.color = navColor)}
+            >
+              Messages
+              {unreadCount > 0 && (
+                <span style={{
+                  position: "absolute", top: -8, right: -14,
+                  background: "#ef4444", color: C.pureWhite,
+                  fontSize: 10, fontWeight: 700, borderRadius: 100,
+                  minWidth: 18, height: 18, padding: "0 4px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </Link>
-          </div>
 
-          <div className="hidden md:flex items-center space-x-1">
-            <Link to="/" className="text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium">Home</Link>
-            <Link to="/robots" className="text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium">Browse</Link>
-
-            {currentUser ? (
-              <>
-                <Link to="/create-robot" className="text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-1.5">
-                  <Plus className="w-3.5 h-3.5" /><span>List Robot</span>
-                </Link>
-                <Link to="/messages" className="relative text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-1.5">
-                  <MessageSquare className="w-3.5 h-3.5" /><span>Messages</span>
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center shadow-sm">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </Link>
-                <div className="relative group ml-2">
-                  <button className="flex items-center space-x-2 text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium">
-                    <div className="w-6 h-6 bg-robot-slate rounded-full flex items-center justify-center border border-primary-900/30">
-                      <User className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="max-w-[120px] truncate">{currentUser.displayName || currentUser.email}</span>
-                  </button>
-                  <div className="absolute right-0 mt-1 w-52 bg-robot-slate border border-primary-900/30 rounded-xl shadow-xl py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <Link to="/dashboard" className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-robot-steel/50">
-                      <User className="w-4 h-4 text-gray-500" /><span>Dashboard</span>
-                    </Link>
-                    <Link to="/profile" className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-robot-steel/50">
-                      <Settings className="w-4 h-4 text-gray-500" /><span>Edit Profile</span>
-                    </Link>
-                    <div className="my-1 border-t border-primary-900/30" />
-                    <button onClick={handleLogout} className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm text-gray-300 hover:text-red-400 hover:bg-robot-steel/50">
-                      <LogOut className="w-4 h-4 text-gray-500" /><span>Logout</span>
-                    </button>
-                  </div>
+            {/* User dropdown */}
+            <div className="relative group" style={{ marginLeft: 8 }}>
+              <button style={{
+                display: "flex", alignItems: "center", gap: 8,
+                fontSize: 13, fontWeight: 500, color: navColor,
+                cursor: "pointer", background: "none", border: "none",
+                fontFamily: "inherit", transition: "color 0.3s",
+              }}
+                onMouseEnter={e => (e.currentTarget.style.color = navHoverColor)}
+                onMouseLeave={e => (e.currentTarget.style.color = navColor)}
+              >
+                <div style={{
+                  width: 28, height: 28, borderRadius: 100,
+                  border: `1.5px solid ${scrolled ? C.gray200 : "rgba(255,255,255,0.2)"}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <User size={14} />
                 </div>
-              </>
-            ) : (
-              <div className="flex items-center space-x-3 ml-2">
-                <Link to="/login" className="text-gray-400 hover:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium">Sign In</Link>
-                <Link to="/register" className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">Get Started</Link>
+                <span style={{ maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {currentUser.displayName?.split(' ')[0] || 'Account'}
+                </span>
+              </button>
+              <div style={{
+                position: "absolute", right: 0, top: "100%", marginTop: 4,
+                width: 200, background: C.pureWhite,
+                border: `1px solid ${C.gray100}`, borderRadius: 12,
+                boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+                padding: "6px 0", opacity: 0, visibility: "hidden" as any,
+                transition: "all 0.2s",
+              }} className="group-hover:!opacity-100 group-hover:!visible">
+                <Link to="/dashboard" style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 16px", fontSize: 14, color: C.gray500,
+                  textDecoration: "none", transition: "all 0.15s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = C.gray50; e.currentTarget.style.color = C.black; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.gray500; }}
+                >
+                  <User size={15} /> Dashboard
+                </Link>
+                <Link to="/profile" style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 16px", fontSize: 14, color: C.gray500,
+                  textDecoration: "none", transition: "all 0.15s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = C.gray50; e.currentTarget.style.color = C.black; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.gray500; }}
+                >
+                  <Settings size={15} /> Edit Profile
+                </Link>
+                {userProfile?.role === 'admin' && (
+                  <Link to="/admin" style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "10px 16px", fontSize: 14, color: C.blue,
+                    textDecoration: "none", transition: "all 0.15s",
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.background = C.gray50; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <Settings size={15} /> Admin Console
+                  </Link>
+                )}
+                <div style={{ margin: "4px 0", borderTop: `1px solid ${C.gray100}` }} />
+                <button onClick={handleLogout} style={{
+                  display: "flex", alignItems: "center", gap: 10, width: "100%",
+                  padding: "10px 16px", fontSize: 14, color: C.gray500,
+                  background: "none", border: "none", cursor: "pointer",
+                  fontFamily: "inherit", transition: "all 0.15s", textAlign: "left",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = C.gray50; e.currentTarget.style.color = "#ef4444"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.gray500; }}
+                >
+                  <LogOut size={15} /> Logout
+                </button>
               </div>
-            )}
-          </div>
-
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-400 hover:text-gray-100 p-2 rounded-lg">
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
+            </div>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            style={{
+              padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500,
+              cursor: "pointer", transition: "all 0.25s", fontFamily: "inherit",
+              textDecoration: "none",
+              ...(scrolled
+                ? { background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}` }
+                : { background: "transparent", color: C.gray300, border: "1.5px solid rgba(255,255,255,0.2)" }
+              ),
+            }}
+            onMouseEnter={e => {
+              if (scrolled) { e.currentTarget.style.background = C.gray50; }
+              else { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }
+            }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+          >Sign In</Link>
+        )}
       </div>
 
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="md:hidden"
+        style={{
+          background: "none", border: "none", cursor: "pointer",
+          color: logoColor, padding: 8,
+        }}
+      >
+        {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-primary-900/30">
-          <div className="px-3 py-3 space-y-1 bg-robot-slate/95 backdrop-blur-lg">
-            <Link to="/" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-            <Link to="/robots" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>Browse Robots</Link>
-            {currentUser ? (
-              <>
-                <Link to="/create-robot" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Plus className="w-4 h-4 text-gray-500" /><span>List Robot</span>
+        <div style={{
+          position: "absolute", top: 64, left: 0, right: 0,
+          background: C.pureWhite, borderBottom: `1px solid ${C.gray100}`,
+          padding: "12px 24px",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+        }} className="md:hidden">
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.to}
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{
+                display: "block", padding: "12px 0",
+                fontSize: 14, fontWeight: 500, color: C.gray500,
+                textDecoration: "none", borderBottom: `1px solid ${C.gray100}`,
+              }}
+            >{link.label}</Link>
+          ))}
+          {currentUser ? (
+            <>
+              <Link to="/messages" onClick={() => setIsMobileMenuOpen(false)}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", fontSize: 14, fontWeight: 500, color: C.gray500, textDecoration: "none", borderBottom: `1px solid ${C.gray100}` }}>
+                Messages
+                {unreadCount > 0 && <span style={{ background: "#ef4444", color: C.pureWhite, fontSize: 10, fontWeight: 700, borderRadius: 100, padding: "2px 8px" }}>{unreadCount}</span>}
+              </Link>
+              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}
+                style={{ display: "block", padding: "12px 0", fontSize: 14, fontWeight: 500, color: C.gray500, textDecoration: "none", borderBottom: `1px solid ${C.gray100}` }}>
+                Dashboard
+              </Link>
+              <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}
+                style={{ display: "block", padding: "12px 0", fontSize: 14, fontWeight: 500, color: C.gray500, textDecoration: "none", borderBottom: `1px solid ${C.gray100}` }}>
+                Edit Profile
+              </Link>
+              {userProfile?.role === 'admin' && (
+                <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}
+                  style={{ display: "block", padding: "12px 0", fontSize: 14, fontWeight: 500, color: C.blue, textDecoration: "none", borderBottom: `1px solid ${C.gray100}` }}>
+                  Admin Console
                 </Link>
-                <Link to="/messages" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <MessageSquare className="w-4 h-4 text-gray-500" /><span>Messages</span>
-                  {unreadCount > 0 && (<span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 ml-auto">{unreadCount > 9 ? '9+' : unreadCount}</span>)}
-                </Link>
-                <Link to="/dashboard" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <User className="w-4 h-4 text-gray-500" /><span>Dashboard</span>
-                </Link>
-                <Link to="/profile" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Settings className="w-4 h-4 text-gray-500" /><span>Edit Profile</span>
-                </Link>
-                <div className="my-1 border-t border-primary-900/30" />
-                <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="w-full text-left text-gray-300 hover:text-red-400 hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2">
-                  <LogOut className="w-4 h-4 text-gray-500" /><span>Logout</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="text-gray-300 hover:text-white hover:bg-robot-steel/50 block px-3 py-2.5 rounded-lg text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
-                <Link to="/register" className="bg-primary-500 hover:bg-primary-600 text-white block px-3 py-2.5 rounded-lg text-sm font-medium text-center shadow-md" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
-              </>
-            )}
-          </div>
+              )}
+              <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 0", fontSize: 14, fontWeight: 500, color: "#ef4444", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}
+              style={{
+                display: "block", marginTop: 12, textAlign: "center",
+                padding: "12px 28px", borderRadius: 100,
+                background: C.blue, color: C.pureWhite,
+                fontSize: 14, fontWeight: 500, textDecoration: "none",
+              }}>
+              Sign In
+            </Link>
+          )}
         </div>
       )}
     </nav>

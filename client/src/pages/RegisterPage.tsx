@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Bot, ArrowLeft, User, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { RegisterForm } from '../types';
+import RobotLogo from '../components/RobotLogo';
+import { C } from '../design';
 import toast from 'react-hot-toast';
 
 const RegisterPage: React.FC = () => {
@@ -14,313 +15,160 @@ const RegisterPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<RegisterForm>();
-
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
   const password = watch('password');
 
   const onSubmit = async (data: RegisterForm) => {
-    if (data.password !== data.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
+    if (data.password !== data.confirmPassword) { toast.error('Passwords do not match'); return; }
     setIsLoading(true);
-    try {
-      await registerUser(data);
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
-    } finally {
-      setIsLoading(false);
-    }
+    try { await registerUser(data); toast.success('Account created!'); navigate('/dashboard'); }
+    catch (error: any) { toast.error(error.message || 'Failed to create account'); }
+    finally { setIsLoading(false); }
   };
 
   const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
-    try {
-      await loginWithGoogle();
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account with Google');
-    } finally {
-      setIsGoogleLoading(false);
-    }
+    try { await loginWithGoogle(); toast.success('Account created!'); navigate('/dashboard'); }
+    catch (error: any) { toast.error(error.message || 'Failed to sign up with Google'); }
+    finally { setIsGoogleLoading(false); }
   };
 
+  const inp: React.CSSProperties = {
+    width: "100%", padding: "12px 16px", background: C.pureWhite,
+    border: `1.5px solid ${C.gray200}`, borderRadius: 10,
+    fontSize: 15, fontFamily: "inherit", fontWeight: 400, color: C.black, outline: "none", transition: "border 0.3s",
+  };
+
+  const labelStyle: React.CSSProperties = { display: "block", fontSize: 14, fontWeight: 500, color: C.black, marginBottom: 8 };
+  const errorStyle: React.CSSProperties = { fontSize: 13, color: "#ef4444", marginTop: 4 };
+
   return (
-    <>
-      <div className="min-h-screen bg-robot-dark flex flex-col">
-        {/* Header */}
-        <header className="bg-robot-slate border-b border-primary-900/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              {/* Logo */}
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">DroidBRB</span>
-              </Link>
+    <div style={{ fontFamily: "'Satoshi', sans-serif", minHeight: "100vh", display: "flex", flexDirection: "column", background: C.white }}>
+      {/* Header */}
+      <header style={{ padding: "0 48px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.gray100}` }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+          <RobotLogo size={20} />
+          <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: C.black }}>DroidBRB</span>
+        </Link>
+        <Link to="/" style={{ fontSize: 14, fontWeight: 500, color: C.gray500, textDecoration: "none" }}>Back to Home</Link>
+      </header>
 
-              {/* Back to Home */}
-              <Link
-                to="/"
-                className="flex items-center space-x-2 text-white hover:text-primary-400 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Home</span>
-              </Link>
-            </div>
+      {/* Form */}
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
+        <div style={{ maxWidth: 420, width: "100%" }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 400, letterSpacing: "-0.02em", marginBottom: 8 }}>Create your account</h1>
+            <p style={{ fontSize: 15, color: C.gray500 }}>Join the DroidBRB community</p>
           </div>
-        </header>
 
-        {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 1.2,
-              ease: [0.16, 1, 0.3, 1] // Custom cubic-bezier for ultra-smooth animation
-            }}
-            className="max-w-md w-full space-y-8"
-          >
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Create your account
-              </h2>
-              <p className="text-gray-400">
-                Join the DroidBRB community and start sharing robots
+          <div style={{ background: C.pureWhite, border: `1px solid ${C.gray100}`, borderRadius: 12, padding: 28 }}>
+            {/* Google */}
+            <button type="button" onClick={handleGoogleSignUp} disabled={isGoogleLoading}
+              style={{
+                width: "100%", padding: "12px 0", borderRadius: 100, fontSize: 14, fontWeight: 500,
+                background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`,
+                cursor: isGoogleLoading ? "not-allowed" : "pointer",
+                fontFamily: "inherit", transition: "all 0.25s", marginBottom: 20,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              }}>
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              {isGoogleLoading ? 'Creating account...' : 'Sign up with Google'}
+            </button>
+
+            {/* Divider */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
+              <div style={{ flex: 1, height: 1, background: C.gray200 }} />
+              <span style={{ fontSize: 13, color: C.gray400 }}>Or create with email</span>
+              <div style={{ flex: 1, height: 1, background: C.gray200 }} />
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>Username</label>
+                <input {...register('username', { required: 'Username is required' })} placeholder="Choose a username" style={inp}
+                  onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                {errors.username && <p style={errorStyle}>{errors.username.message}</p>}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <label style={labelStyle}>First Name</label>
+                  <input {...register('firstName', { required: 'Required' })} placeholder="First name" style={inp}
+                    onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                  {errors.firstName && <p style={errorStyle}>{errors.firstName.message}</p>}
+                </div>
+                <div>
+                  <label style={labelStyle}>Last Name</label>
+                  <input {...register('lastName', { required: 'Required' })} placeholder="Last name" style={inp}
+                    onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                  {errors.lastName && <p style={errorStyle}>{errors.lastName.message}</p>}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>Email Address</label>
+                <input type="email" {...register('email', { required: 'Email is required', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email' } })}
+                  placeholder="Enter your email" style={inp}
+                  onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                {errors.email && <p style={errorStyle}>{errors.email.message}</p>}
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>Password</label>
+                <div style={{ position: "relative" }}>
+                  <input type={showPassword ? 'text' : 'password'}
+                    {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
+                    placeholder="Create a password" style={{ ...inp, paddingRight: 44 }}
+                    onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.gray400 }}>
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.password && <p style={errorStyle}>{errors.password.message}</p>}
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>Confirm Password</label>
+                <div style={{ position: "relative" }}>
+                  <input type={showConfirmPassword ? 'text' : 'password'}
+                    {...register('confirmPassword', { required: 'Confirm password', validate: v => v === password || 'Passwords do not match' })}
+                    placeholder="Confirm your password" style={{ ...inp, paddingRight: 44 }}
+                    onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.gray400 }}>
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p style={errorStyle}>{errors.confirmPassword.message}</p>}
+              </div>
+
+              <button type="submit" disabled={isLoading}
+                style={{
+                  width: "100%", padding: "14px 0", borderRadius: 100, fontSize: 14, fontWeight: 500,
+                  background: isLoading ? C.gray300 : C.blue, color: C.pureWhite,
+                  border: "none", cursor: isLoading ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", transition: "all 0.25s",
+                }}>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </button>
+            </form>
+
+            <div style={{ textAlign: "center", marginTop: 24 }}>
+              <p style={{ fontSize: 14, color: C.gray500 }}>
+                Already have an account? <Link to="/login" style={{ fontWeight: 500, color: C.blue, textDecoration: "none" }}>Sign in</Link>
               </p>
             </div>
-
-            <div className="bg-robot-slate rounded-lg p-8 border border-primary-900/30">
-              {/* Google Sign Up Button */}
-              <div className="mb-6">
-                <button
-                  type="button"
-                  onClick={handleGoogleSignUp}
-                  disabled={isGoogleLoading}
-                  className="w-full flex justify-center items-center px-4 py-3 border border-primary-900/30 rounded-lg shadow-sm bg-robot-steel text-white hover:bg-robot-steel focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isGoogleLoading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Creating account...
-                    </div>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Sign up with Google
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Divider */}
-              <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-primary-900/30" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-robot-slate text-gray-400">Or create account with email</span>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Username */}
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      {...register('username', { required: 'Username is required' })}
-                      type="text"
-                      className="block w-full pl-10 pr-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Choose a username"
-                    />
-                  </div>
-                  {errors.username && (
-                    <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
-                  )}
-                </div>
-
-                {/* First Name */}
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">
-                    First Name
-                  </label>
-                  <input
-                    {...register('firstName', { required: 'First name is required' })}
-                    type="text"
-                    className="block w-full px-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your first name"
-                  />
-                  {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-400">{errors.firstName.message}</p>
-                  )}
-                </div>
-
-                {/* Last Name */}
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">
-                    Last Name
-                  </label>
-                  <input
-                    {...register('lastName', { required: 'Last name is required' })}
-                    type="text"
-                    className="block w-full px-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your last name"
-                  />
-                  {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-400">{errors.lastName.message}</p>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      {...register('email', {
-                        required: 'Email is required',
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: 'Invalid email address',
-                        },
-                      })}
-                      type="email"
-                      className="block w-full pl-10 pr-3 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>
-                  )}
-                </div>
-
-
-
-                {/* Password */}
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      {...register('password', {
-                        required: 'Password is required',
-                        minLength: {
-                          value: 6,
-                          message: 'Password must be at least 6 characters',
-                        },
-                      })}
-                      type={showPassword ? 'text' : 'password'}
-                      className="block w-full pl-10 pr-10 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Create a password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
-                  )}
-                </div>
-
-                {/* Confirm Password */}
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      {...register('confirmPassword', {
-                        required: 'Please confirm your password',
-                        validate: (value) => value === password || 'Passwords do not match',
-                      })}
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      className="block w-full pl-10 pr-10 py-3 border border-primary-900/30 rounded-lg bg-robot-steel text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Confirm your password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-400">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
-                </button>
-              </form>
-
-              {/* Login Link */}
-              <div className="mt-6 text-center">
-                <p className="text-gray-400">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-primary-400 hover:text-primary-300 transition-colors">
-                    Sign in here
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default RegisterPage; 
+export default RegisterPage;

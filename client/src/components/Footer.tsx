@@ -1,86 +1,79 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bot } from 'lucide-react';
+import { C } from '../design';
+import RobotLogo from './RobotLogo';
+
+const footerColumns = [
+  { title: "Explore", links: [
+    { label: "Browse Robots", to: "/robots" },
+    { label: "Categories", to: "/robots" },
+    { label: "Featured", to: "/robots" },
+    { label: "Near Me", to: "/robots" },
+  ]},
+  { title: "Community", links: [
+    { label: "About", to: "/about" },
+    { label: "Blog", to: "/about" },
+    { label: "Events", to: "/about" },
+    { label: "Help", to: "/about" },
+  ]},
+  { title: "Account", links: [
+    { label: "Sign In", to: "/login" },
+    { label: "Sign Up", to: "/register" },
+    { label: "List a Robot", to: "/create-robot" },
+    { label: "Dashboard", to: "/dashboard" },
+  ]},
+];
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-robot-dark border-t border-primary-900/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-3 gap-8">
+    <footer style={{ background: C.gray50, padding: "56px 48px 36px", borderTop: `1px solid ${C.gray100}` }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr", gap: 56, marginBottom: 56 }}>
           {/* Brand */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <Bot className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">DroidBRB</span>
-            </div>
-            <p className="text-gray-400 max-w-md">
-              Connecting robotics enthusiasts to share, learn, and rent robots in their local communities. Building the future of peer-to-peer robotics.
+            <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, textDecoration: "none" }}>
+              <RobotLogo size={18} />
+              <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.black }}>DroidBRB</span>
+            </Link>
+            <p style={{ fontSize: 14, lineHeight: 1.65, fontWeight: 400, color: C.gray500, maxWidth: 260 }}>
+              Peer-to-peer robot sharing. Connect locally, rent by the day, learn hands-on.
             </p>
           </div>
 
-          {/* EXPLORE */}
-          <div>
-            <h3 className="font-semibold text-white mb-4 uppercase">Explore</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <Link to="/robots" className="hover:text-white transition-colors">
-                  Browse Robots
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-white transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link to="/create-robot" className="hover:text-white transition-colors">
-                  List Your Robot
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="hover:text-white transition-colors">
-                  Dashboard
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* CONNECT */}
-          <div>
-            <h3 className="font-semibold text-white mb-4 uppercase">Connect</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <Link to="/messages" className="hover:text-white transition-colors">
-                  Messages
-                </Link>
-              </li>
-              <li>
-                <a href="mailto:hello@droidbrb.com" className="hover:text-white transition-colors">
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <Link to="/login" className="hover:text-white transition-colors">
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link to="/register" className="hover:text-white transition-colors">
-                  Sign Up
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Link Columns */}
+          {footerColumns.map((col) => (
+            <div key={col.title}>
+              <h4 style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: C.gray400, marginBottom: 18, fontWeight: 500 }}>{col.title}</h4>
+              {col.links.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  style={{ display: "block", fontSize: 14, fontWeight: 400, color: C.gray500, padding: "4px 0", textDecoration: "none", transition: "color 0.2s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = C.black)}
+                  onMouseLeave={e => (e.currentTarget.style.color = C.gray500)}
+                >{link.label}</Link>
+              ))}
+            </div>
+          ))}
         </div>
 
-        <div className="border-t border-primary-900/30 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 DroidBRB. All rights reserved.</p>
+        {/* Bottom bar */}
+        <div style={{ borderTop: `1px solid ${C.gray200}`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 13, fontWeight: 400, color: C.gray400 }}>&copy; 2026 DroidBRB</span>
+          <div style={{ display: "flex", gap: 20 }}>
+            {["Privacy", "Terms", "Contact"].map((x) => (
+              <span
+                key={x}
+                style={{ fontSize: 13, fontWeight: 400, color: C.gray400, cursor: "pointer", transition: "color 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.black)}
+                onMouseLeave={e => (e.currentTarget.style.color = C.gray400)}
+              >{x}</span>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
   );
 };
 
-export default Footer; 
+export default Footer;

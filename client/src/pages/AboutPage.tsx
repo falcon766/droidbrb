@@ -1,44 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
-import { Bot, Users, Zap, Shield, Heart, Globe } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { C } from '../design';
+
+const values = [
+  { title: 'Community Driven', desc: 'Connect with robotics enthusiasts in your local area. Share knowledge, experiences, and passion for robotics.' },
+  { title: 'Easy to Use', desc: 'List your robot in minutes. Browse and rent with just a few clicks. Simple, fast, and intuitive.' },
+  { title: 'Safe & Secure', desc: 'Verified users, secure messaging, and trusted community guidelines keep everyone safe.' },
+  { title: 'Passion for Robotics', desc: 'Built by robot enthusiasts, for robot enthusiasts. We understand your love for automation and innovation.' },
+  { title: 'Local Focus', desc: 'Find robots near you. Meet owners in person. Build real connections in your community.' },
+  { title: 'All Types Welcome', desc: 'Educational, industrial, hobby, service robots, and more. Every robot has a place here.' },
+];
+
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 24 }}>{children}</div>
+);
 
 const AboutPage: React.FC = () => {
-  const features = [
-    {
-      icon: Users,
-      title: 'Community Driven',
-      description: 'Connect with robotics enthusiasts in your local area. Share knowledge, experiences, and passion for robotics.'
-    },
-    {
-      icon: Zap,
-      title: 'Easy to Use',
-      description: 'List your robot in minutes. Browse and rent robots with just a few clicks. Simple, fast, and intuitive.'
-    },
-    {
-      icon: Shield,
-      title: 'Safe & Secure',
-      description: 'Verified users, secure messaging, and trusted community guidelines keep everyone safe.'
-    },
-    {
-      icon: Heart,
-      title: 'Passion for Robotics',
-      description: 'Built by robot enthusiasts, for robot enthusiasts. We understand your love for automation and innovation.'
-    },
-    {
-      icon: Globe,
-      title: 'Local Focus',
-      description: 'Find robots near you. Meet owners in person. Build real connections in your community.'
-    },
-    {
-      icon: Bot,
-      title: 'All Types Welcome',
-      description: 'Educational, industrial, hobby, service robots, and more. Every robot has a place here.'
-    }
-  ];
-
   return (
     <>
       <Helmet>
@@ -46,185 +26,119 @@ const AboutPage: React.FC = () => {
         <meta name="description" content="Learn about DroidBRB, the community-driven platform for sharing and renting robots locally." />
       </Helmet>
 
-      <div className="min-h-screen bg-robot-dark">
+      <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black }}>
         <Navbar />
 
-        {/* Hero Section */}
-        <section className="bg-gradient-to-b from-robot-slate to-robot-dark py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary-300 via-primary-400 to-primary-500 bg-clip-text text-transparent mb-6">
-                About DroidBRB
-              </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                We're building the world's first peer-to-peer robotics sharing platform. 
-                A place where robot enthusiasts can connect, share, and explore the fascinating world of robotics together.
-              </p>
-            </motion.div>
+        {/* Hero */}
+        <section style={{ background: C.black, color: C.pureWhite, padding: "160px 48px 100px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <Label>About</Label>
+            <h1 style={{ fontSize: "clamp(44px, 5.5vw, 72px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.03em", marginBottom: 28, maxWidth: 700 }}>
+              We're making robotics accessible to everyone.
+            </h1>
+            <p style={{ fontSize: 18, lineHeight: 1.7, color: C.gray400, maxWidth: 520 }}>
+              The world's first peer-to-peer robotics sharing platform. A place where enthusiasts connect, share, and explore together.
+            </p>
           </div>
         </section>
 
-        {/* Mission Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-robot-dark">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="bg-robot-slate rounded-lg p-8 md:p-12"
-            >
-              <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
-              <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                Robotics should be accessible to everyone. Whether you're a student learning programming, 
-                a hobbyist exploring automation, or a professional testing new technology, you shouldn't 
-                have to spend thousands of dollars to get hands-on experience.
-              </p>
-              <p className="text-gray-300 text-lg leading-relaxed">
-                DroidBRB makes robotics accessible by connecting people who own robots with those who 
-                want to learn, experiment, or simply try before they buy. We're fostering a community 
-                where knowledge and resources are shared freely.
-              </p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Features Grid */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Why Choose DroidBRB?
+        {/* Mission */}
+        <section style={{ background: C.white, padding: "100px 48px", borderBottom: `1px solid ${C.gray100}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <Label>Our Mission</Label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
+              <h2 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em" }}>
+                Hands-on robotics shouldn't cost thousands.
               </h2>
-              <p className="text-xl text-gray-300">
-                Built with the robotics community in mind
-              </p>
-            </motion.div>
+              <div>
+                <p style={{ fontSize: 16, lineHeight: 1.75, color: C.gray500, marginBottom: 20 }}>
+                  Whether you're a student learning programming, a hobbyist exploring automation, or a professional testing new technology — you shouldn't have to spend thousands of dollars to get hands-on experience.
+                </p>
+                <p style={{ fontSize: 16, lineHeight: 1.75, color: C.gray500 }}>
+                  DroidBRB makes robotics accessible by connecting people who own robots with those who want to learn, experiment, or simply try before they buy. We're fostering a community where knowledge and resources are shared freely.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-robot-slate rounded-lg p-6 hover:bg-robot-steel transition-colors"
+        {/* Values Grid */}
+        <section style={{ background: C.gray50, padding: "100px 48px", borderBottom: `1px solid ${C.gray100}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <Label>Why DroidBRB</Label>
+            <h2 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em", marginBottom: 56 }}>Built with the community in mind.</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+              {values.map((v, i) => (
+                <div key={i}
+                  style={{
+                    padding: "28px 24px", borderTop: `1px solid ${C.gray200}`,
+                    borderRight: (i % 3 !== 2) ? `1px solid ${C.gray200}` : "none",
+                    transition: "background 0.25s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = C.pureWhite)}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
-                  <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-                </motion.div>
+                  <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.01em", marginBottom: 8 }}>{v.title}</h3>
+                  <p style={{ fontSize: 14, lineHeight: 1.55, color: C.gray500 }}>{v.desc}</p>
+                </div>
               ))}
             </div>
+            <div style={{ borderTop: `1px solid ${C.gray200}` }} />
           </div>
         </section>
 
         {/* How It Works */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-robot-slate">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                How It Works
-              </h2>
-              <p className="text-xl text-gray-300">
-                Getting started is simple
-              </p>
-            </motion.div>
-
-            <div className="space-y-8">
-              {[
-                {
-                  step: '1',
-                  title: 'Create Your Account',
-                  description: 'Sign up in seconds with your email or Google account.'
-                },
-                {
-                  step: '2',
-                  title: 'List Your Robot or Browse',
-                  description: 'Share your robot with the community or search for robots near you.'
-                },
-                {
-                  step: '3',
-                  title: 'Connect & Arrange',
-                  description: 'Message owners directly to discuss details and arrange meetups or rentals.'
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  className="flex items-start"
-                >
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                    {item.step}
+        <section style={{ background: C.white, padding: "100px 48px", borderBottom: `1px solid ${C.gray100}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <Label>How It Works</Label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
+              <h2 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em" }}>Getting started is simple.</h2>
+              <div>
+                {[
+                  { num: "01", title: "Create your account", body: "Sign up in seconds with your email or Google account." },
+                  { num: "02", title: "List your robot or browse", body: "Share your robot with the community or search for robots near you." },
+                  { num: "03", title: "Connect & arrange", body: "Message owners directly to discuss details and arrange meetups or rentals." },
+                ].map((s, i) => (
+                  <div key={i} style={{ borderTop: `1px solid ${C.gray200}`, padding: "24px 0" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: C.blue, letterSpacing: "0.05em", minWidth: 24 }}>{s.num}</span>
+                      <div>
+                        <h3 style={{ fontSize: 20, fontWeight: 500, letterSpacing: "-0.01em", marginBottom: 6 }}>{s.title}</h3>
+                        <p style={{ fontSize: 15, lineHeight: 1.65, color: C.gray500 }}>{s.body}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                    <p className="text-gray-300">{item.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+                ))}
+                <div style={{ borderTop: `1px solid ${C.gray200}` }} />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Ready to Join the Community?
-              </h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Start sharing and exploring robots today
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/register"
-                  className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors text-lg font-medium"
-                >
-                  Get Started Free
-                </Link>
-                <Link
-                  to="/robots"
-                  className="bg-robot-steel text-white px-8 py-3 rounded-lg hover:bg-robot-steel transition-colors text-lg font-medium"
-                >
-                  Browse Robots
-                </Link>
-              </div>
-            </motion.div>
+        {/* CTA */}
+        <section style={{ background: C.gray50, padding: "100px 48px", borderTop: `1px solid ${C.gray100}` }}>
+          <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+            <h2 style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em", marginBottom: 16 }}>Ready to join the community?</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.7, color: C.gray500, maxWidth: 480, margin: "0 auto 36px" }}>Start sharing and exploring robots today.</p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <Link to="/register" style={{
+                padding: "12px 28px", borderRadius: 100, fontSize: 14, fontWeight: 500,
+                background: C.blue, color: C.pureWhite, border: `1.5px solid ${C.blue}`,
+                textDecoration: "none", transition: "all 0.25s",
+              }}>Get Started Free</Link>
+              <Link to="/robots" style={{
+                padding: "12px 28px", borderRadius: 100, fontSize: 14, fontWeight: 500,
+                background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`,
+                textDecoration: "none", transition: "all 0.25s",
+              }}>Browse Robots</Link>
+            </div>
           </div>
         </section>
+
+        <Footer />
       </div>
     </>
   );
 };
 
 export default AboutPage;
-

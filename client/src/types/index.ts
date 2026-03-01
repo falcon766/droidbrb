@@ -15,6 +15,7 @@ export interface User {
   expertise: Expertise;
   isVerified: boolean;
   isPremium: boolean;
+  role?: 'user' | 'admin';
   rating: number;
   reviewCount: number;
   createdAt: Date;
@@ -53,6 +54,7 @@ export interface Robot {
   };
   images: string[];
   isAvailable: boolean;
+  isFeatured?: boolean;
   rating: number;
   reviewCount: number;
   totalRentals: number;
@@ -326,4 +328,16 @@ export interface Notification {
   userId: string;
   relatedId?: string;
   createdAt: Date;
-} 
+}
+
+// Site Content Types
+export interface HeroImage {
+  url: string;
+  alt: string;
+  order: number;
+}
+
+export interface SiteContent {
+  heroImages: HeroImage[];
+  updatedAt: Date;
+}

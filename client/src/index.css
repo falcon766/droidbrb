@@ -2,150 +2,59 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-/* Custom styles */
-body {
+/* Design System — Satoshi font, grayscale + blue accent */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+}
+
+body {
+  font-family: 'Satoshi', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #111111;
+  background: #FAFAF8;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+::selection {
+  background: rgba(37, 99, 235, 0.08);
+  color: #111111;
 }
 
-/* Custom scrollbar - Grayscale theme */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar — light theme */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #111111;
-  border-left: 1px solid #1a1a1a;
+  background: #F5F5F3;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #525252 0%, #404040 100%);
-  border-radius: 5px;
-  border: 2px solid #111111;
+  background: #DDDDDD;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #737373 0%, #525252 100%);
+  background: #BBBBBB;
 }
 
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Focus styles - Subtle glow */
-.focus-ring:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px #64748b;
-}
-
-/* Subtle glow effects */
-.glow-cyan {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.glow-cyan-sm {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.glow-green {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.text-glow-cyan {
-  text-shadow: none;
-}
-
-.border-glow {
-  border: 1px solid rgba(100, 116, 139, 0.2);
-  box-shadow: none;
-}
-
-/* Custom animations */
+/* Utility animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bounceGentle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-}
-
-@keyframes textGlowPulse {
-  0%, 100% {
-    text-shadow: none;
-  }
-  50% {
-    text-shadow: none;
-  }
-}
-
-/* Utility classes */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -153,30 +62,3 @@ code {
 .animate-slide-up {
   animation: slideUp 0.3s ease-out;
 }
-
-.animate-slide-down {
-  animation: slideDown 0.3s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s ease-out;
-}
-
-.animate-bounce-gentle {
-  animation: bounceGentle 2s infinite;
-}
-
-.animate-glow-pulse {
-  animation: glowPulse 2s ease-in-out infinite;
-}
-
-.animate-text-glow {
-  animation: textGlowPulse 2s ease-in-out infinite;
-}
-
-/* Navbar glass morphism on scroll */
-.navbar-glass {
-  background: rgba(17, 17, 17, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-} 

@@ -1,0 +1,544 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
+import { 
+  Bot, 
+  Search, 
+  MapPin, 
+  Filter,
+  MessageCircle,
+  Calendar,
+  DollarSign,
+  Settings,
+  Gamepad2,
+  Plane,
+  ClipboardCheck,
+  Package,
+  Heart
+} from 'lucide-react';
+import { robotService } from '../services/robotService';
+import { searchService, LocationSuggestion } from '../services/searchService';
+import { Robot } from '../types';
+import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
+
+const HomePage: React.FC = () => {
+  const { currentUser, userProfile } = useAuth();
+  const navigate = useNavigate();
+  const [featuredRobots, setFeaturedRobots] = useState<Robot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [locationValue, setLocationValue] = useState('');
+  const [maxDistance, setMaxDistance] = useState(25); // Default 25 miles
+  const [showDistanceFilter, setShowDistanceFilter] = useState(false);
+
+
+  useEffect(() => {
+    const fetchFeaturedRobots = async () => {
+      // Add a timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        setLoading(false);
+      }, 3000); // 3 second timeout
+
+      try {
+        const robots = await robotService.getFeaturedRobots(6);
+        setFeaturedRobots(robots);
+      } catch (error) {
+        console.error('Error fetching featured robots:', error);
+        // Set empty array on error to show empty state
+        setFeaturedRobots([]);
+      } finally {
+        clearTimeout(timeoutId);
+        setLoading(false);
+      }
+    };
+
+    // Only fetch if we're not already loading
+    if (loading) {
+      fetchFeaturedRobots();
+    }
+  }, [loading]);
+
+  const handleLocationChange = async (value: string) => {
+    console.log('Location input changed:', value);
+    setLocationValue(value);
+    
+    if (value.length >= 3) {
+      console.log('Calling searchService.getLocationSuggestions with:', value);
+      const suggestions = await searchService.getLocationSuggestions(value);
+      console.log('Received suggestions:', suggestions);
+      setLocationSuggestions(suggestions);
+      setShowLocationSuggestions(true);
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const handleLocationSelect = (suggestion: LocationSuggestion) => {
+    setLocationValue(suggestion.description);
+    setShowLocationSuggestions(false);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.location-input-container')) {
+        setShowLocationSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const features = [
+    {
+      icon: Search,
+      title: 'Find the Perfect Robot',
+      description: 'Browse through our extensive catalog of robots. Filter by category, location, or specific capabilities to find exactly what you need.',
+      color: 'bg-primary-500'
+    },
+    {
+      icon: MessageCircle,
+      title: 'Connect with the Owner',
+      description: 'Message directly with robot owners to discuss details, ask questions, and arrange meetups or rentals.',
+      color: 'bg-primary-500'
+    },
+    {
+      icon: Calendar,
+      title: 'Meet Up or Rent',
+      description: 'Schedule a time to meet and see the robot in person, or arrange rental terms if the owner offers rentals.',
+      color: 'bg-primary-500'
+    }
+  ];
+
+
+
+  const categories = [
+    { name: 'Humanoid', icon: Bot, count: 0 },
+    { name: 'Industrial', icon: Settings, count: 0 },
+    { name: 'Educational', icon: MessageCircle, count: 0 },
+    { name: 'Hobby', icon: Gamepad2, count: 0 },
+    { name: 'Drone', icon: Plane, count: 0 },
+    { name: 'Service', icon: ClipboardCheck, count: 0 },
+    { name: 'Medical', icon: Heart, count: 0 },
+    { name: 'Other', icon: Package, count: 0 }
+  ];
+
+
+  return (
+    <>
+      <Helmet>
+        <title>DroidBRB - Connect, Share, and Rent Robots</title>
+        <meta name="description" content="Join the world's largest robotics community. Share, rent, and collaborate around robotic devices." />
+      </Helmet>
+
+      <div className="min-h-screen bg-robot-dark">
+        <Navbar />
+
+        {/* Hero Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+            >
+              <h2 className="text-primary-400 text-lg font-medium mb-4">
+                {currentUser ? `Welcome back, ${userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}!` : 'Welcome to DroidBRB'}
+              </h2>
+              <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-primary-300 via-primary-400 to-primary-500 bg-clip-text text-transparent mb-6 drop-shadow-md">
+                Share. Rent. Innovate.
+              </h1>
+              <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+                {currentUser 
+                  ? `Ready to explore the robotics community, ${userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}? Find robots near you or share your own with fellow enthusiasts.`
+                  : 'The future of robotics is collaborative. DroidBRB connects you with a community of enthusiasts to rent and share robots, fostering innovation and learning.'
+                }
+              </p>
+            </motion.div>
+
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                delay: 0.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              className="bg-robot-slate rounded-lg p-4 mb-8 border border-primary-900/30"
+            >
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const query = formData.get('query') as string;
+                const params = new URLSearchParams();
+                if (query) params.append('query', query);
+                if (locationValue) params.append('location', locationValue);
+                if (maxDistance !== 25) params.append('distance', maxDistance.toString());
+                navigate(`/search?${params.toString()}`);
+              }}>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 flex items-center bg-robot-steel rounded-lg px-4 py-3 border border-primary-900/30">
+                    <Search className="h-5 w-5 text-gray-400 mr-3" />
+                    <input
+                      name="query"
+                      type="text"
+                      placeholder="Search robots..."
+                      className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                    />
+                  </div>
+                  <div className="flex-1 relative location-input-container">
+                    <div className="flex items-center bg-robot-steel rounded-lg px-4 py-3 border border-primary-900/30">
+                      <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                      <input
+                        name="location"
+                        type="text"
+                        placeholder="City, State"
+                        value={locationValue}
+                        onChange={(e) => handleLocationChange(e.target.value)}
+                        onFocus={() => setShowLocationSuggestions(true)}
+                        className="bg-transparent text-white placeholder-gray-400 flex-1 outline-none"
+                        autoComplete="off"
+                        data-google-places-autocomplete="true"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowDistanceFilter(!showDistanceFilter)}
+                        className="text-gray-400 hover:text-white transition-colors ml-3"
+                      >
+                        <Filter className="h-5 w-5" />
+                      </button>
+                    </div>
+                    
+                    {/* Location Suggestions */}
+                    {showLocationSuggestions && locationSuggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 bg-robot-steel rounded-lg mt-1 z-10 max-h-48 overflow-y-auto border border-primary-900/30">
+                        {locationSuggestions.map((suggestion) => (
+                          <button
+                            key={suggestion.place_id}
+                            onClick={() => handleLocationSelect(suggestion)}
+                            className="w-full text-left px-4 py-3 hover:bg-robot-slate text-white border-b border-primary-900/30 last:border-b-0"
+                          >
+                            <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
+                            <div className="text-sm text-gray-400">{suggestion.structured_formatting.secondary_text}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Distance Filter Dropdown */}
+                    {showDistanceFilter && (
+                      <div className="absolute top-full left-0 right-0 bg-robot-steel rounded-lg mt-1 z-10 p-4 border border-primary-900/30">
+                        <h4 className="text-white font-medium mb-3">Distance Filter</h4>
+                        <div className="space-y-2">
+                          {[1, 5, 10, 25, 50, 100].map((distance) => (
+                            <label key={distance} className="flex items-center cursor-pointer">
+                              <input
+                                type="radio"
+                                name="distance"
+                                value={distance}
+                                checked={maxDistance === distance}
+                                onChange={(e) => setMaxDistance(Number(e.target.value))}
+                                className="mr-3 text-primary-500 focus:ring-primary-500"
+                              />
+                              <span className="text-white">{distance} mile{distance !== 1 ? 's' : ''}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <button type="submit" className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl">
+                    Search
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                delay: 0.4,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Link
+                to="/robots"
+                className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl"
+              >
+                Find a Robot
+              </Link>
+              <Link
+                to="/create-robot"
+                className="bg-robot-slate text-white px-8 py-3 rounded-lg border border-primary-900/30 hover:bg-robot-steel transition-all hover:shadow-md"
+              >
+                List Your Robot
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* How DroidBRB Works Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-robot-slate">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">
+                How DroidBRB Works
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Connecting with robot enthusiasts in your area has never been easier
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 1.2,
+                    delay: index * 0.1,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  viewport={{ once: true }}
+                  className="bg-robot-steel rounded-lg p-8 text-center border border-primary-900/30 hover:border-primary-500/30 transition-all hover:shadow-lg"
+                >
+                  <div className={`w-16 h-16 ${feature.color} rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                    <feature.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">{feature.title}</h3>
+                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Robots Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">
+                Featured Robots
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Explore some of the most popular robots available in our community
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 3 }).map((_, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 1.2,
+                      delay: index * 0.1,
+                      ease: [0.16, 1, 0.3, 1]
+                    }}
+                    className="bg-robot-slate rounded-lg overflow-hidden shadow-lg border border-primary-900/30"
+                  >
+                    <div className="h-48 bg-robot-steel flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                    </div>
+                    <div className="p-6">
+                      <div className="h-4 bg-robot-steel rounded mb-4"></div>
+                      <div className="h-3 bg-robot-steel rounded mb-2"></div>
+                      <div className="h-3 bg-robot-steel rounded mb-4"></div>
+                      <div className="h-8 bg-robot-steel rounded"></div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : featuredRobots.length === 0 ? (
+                <div className="col-span-3 text-center py-12">
+                  <Bot className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">Post Your Robot</h3>
+                  <p className="text-gray-400 mb-6">Be the first to share your robot with the community!</p>
+                  <Link
+                    to="/create-robot"
+                    className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    Post Your Robot
+                  </Link>
+                </div>
+              ) : (
+                featuredRobots.map((robot, index) => (
+                  <motion.div
+                    key={robot.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 1.2,
+                      delay: index * 0.1,
+                      ease: [0.16, 1, 0.3, 1]
+                    }}
+                    viewport={{ once: true }}
+                    className="bg-robot-slate rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all cursor-pointer border border-primary-900/30 hover:border-primary-500/30"
+                    onClick={() => window.location.href = `/robots/${robot.id}`}
+                  >
+                    {/* Robot Image */}
+                    <div className="h-48 bg-robot-steel flex items-center justify-center">
+                      {robot.images && robot.images.length > 0 ? (
+                        <img 
+                          src={robot.images[0]} 
+                          alt={robot.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <Bot className={`h-16 w-16 text-gray-500 ${robot.images && robot.images.length > 0 ? 'hidden' : ''}`} />
+                    </div>
+                    
+                    {/* Robot Info */}
+                    <div className="p-6">
+                      {/* Tags */}
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex gap-2">
+                          <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded shadow">
+                            {robot.category}
+                          </span>
+                          <span className="bg-robot-steel text-white text-xs px-2 py-1 rounded flex items-center gap-1 border border-primary-900/30">
+                            <DollarSign className="h-3 w-3" />
+                            ${robot.price}/day
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Robot Details */}
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {robot.name}
+                      </h3>
+                      <div className="flex items-center text-gray-400 text-sm mb-2">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {robot.location}
+                      </div>
+                      <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                        {robot.description}
+                      </p>
+
+                      {/* Rent Button */}
+                      <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Available for Rent
+                      </button>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
+
+            {/* View All Robots Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <Link
+                to="/robots"
+                className="inline-block bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl"
+              >
+                View All Robots
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Explore by Category Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">
+                Explore by Category
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Discover robots of all types, from industrial arms to educational bots
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {categories.map((category, index) => (
+                <motion.div
+                  key={category.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 1.2,
+                    delay: index * 0.1,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  viewport={{ once: true }}
+                  className="bg-robot-slate rounded-lg p-6 text-center cursor-pointer hover:bg-robot-steel transition-all border border-primary-900/30 hover:border-primary-500/30 hover:shadow-lg"
+                  onClick={() => window.location.href = `/robots?category=${category.name.toLowerCase()}`}
+                >
+                  <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <category.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">{category.name}</h3>
+                  <p className="text-gray-400 text-sm">
+                    {category.count === 0 ? 'None available' : `${category.count} robot${category.count === 1 ? '' : 's'}`}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+
+export default HomePage; 

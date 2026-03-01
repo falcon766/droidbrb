@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  Bot, 
-  Plus,
-  Calendar,
-  MessageCircle,
-  LogOut,
-  User,
-  MapPin
-} from 'lucide-react';
+import { Plus, MapPin, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { robotService } from '../services/robotService';
 import { messageService } from '../services/messageService';
 import { Robot } from '../types';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import RobotLogo from '../components/RobotLogo';
+import { C } from '../design';
 
 const DashboardPage: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -29,295 +23,214 @@ const DashboardPage: React.FC = () => {
         try {
           const [robots, unreadCount] = await Promise.all([
             robotService.getRobotsByOwner(currentUser.uid),
-            messageService.getUnreadCount(currentUser.uid)
+            messageService.getUnreadCount(currentUser.uid),
           ]);
           setMyRobots(robots);
           setUnreadMessages(unreadCount);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        } finally {
-          setLoading(false);
-        }
+        } catch (error) { console.error('Error fetching data:', error); }
+        finally { setLoading(false); }
       }
     };
-
     fetchData();
   }, [currentUser]);
 
   const stats = [
-    { label: 'My Robots', value: myRobots.length.toString(), icon: Bot, color: 'text-primary-400' },
-    { label: 'Active Rentals', value: '0', icon: Calendar, color: 'text-primary-400' },
-    { label: 'Total Rentals', value: '0', icon: Calendar, color: 'text-primary-400' },
-    { label: 'Messages', value: unreadMessages.toString(), icon: MessageCircle, color: 'text-primary-400' }
+    { label: 'My Robots', value: myRobots.length.toString() },
+    { label: 'Active Rentals', value: '0' },
+    { label: 'Total Rentals', value: '0' },
+    { label: 'Messages', value: unreadMessages.toString() },
   ];
 
   const tabs = [
-    { id: 'overview', name: 'Overview', icon: Bot },
-    { id: 'my-robots', name: 'My Robots', icon: Bot },
-    { id: 'rentals', name: 'Rentals', icon: Calendar },
-    { id: 'messages', name: 'Messages', icon: MessageCircle }
+    { id: 'overview', name: 'Overview' },
+    { id: 'my-robots', name: 'My Robots' },
+    { id: 'rentals', name: 'Rentals' },
+    { id: 'messages', name: 'Messages' },
   ];
+
+  const cardStyle: React.CSSProperties = { background: C.pureWhite, border: `1px solid ${C.gray100}`, borderRadius: 12, padding: 24 };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-robot-slate rounded-lg p-6"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-400 text-sm">{stat.label}</p>
-                      <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                    </div>
-                    <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                  </div>
-                </motion.div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {/* Stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+              {stats.map((stat) => (
+                <div key={stat.label} style={cardStyle}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: C.gray400, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{stat.label}</div>
+                  <div style={{ fontSize: 28, fontWeight: 700 }}>{stat.value}</div>
+                </div>
               ))}
             </div>
-
-            {/* Recent Activity */}
-            <div className="bg-robot-slate rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-              <div className="space-y-4">
-                {myRobots.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No robots listed yet. Create your first robot listing!</p>
-                ) : (
-                  myRobots.slice(0, 3).map((robot) => (
-                    <div key={robot.id} className="flex items-center justify-between p-4 bg-robot-steel rounded-lg">
+            {/* Recent */}
+            <div style={cardStyle}>
+              <h3 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20, letterSpacing: "-0.01em" }}>Recent Activity</h3>
+              {myRobots.length === 0 ? (
+                <p style={{ fontSize: 14, color: C.gray400, textAlign: "center", padding: "32px 0" }}>No robots listed yet. Create your first listing!</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {myRobots.slice(0, 3).map((robot) => (
+                    <div key={robot.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", background: C.gray50, borderRadius: 10 }}>
                       <div>
-                        <p className="text-white font-medium">{robot.name}</p>
-                        <p className="text-gray-400 text-sm">{robot.category} • ${robot.price}/day</p>
+                        <div style={{ fontSize: 15, fontWeight: 500 }}>{robot.name}</div>
+                        <div style={{ fontSize: 13, color: C.gray400 }}>{robot.category} &middot; ${robot.price}/day</div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-white font-medium">{robot.totalRentals} rentals</p>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          robot.isAvailable 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-orange-600 text-white'
-                        }`}>
-                          {robot.isAvailable ? 'Available' : 'Rented'}
-                        </span>
-                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: robot.isAvailable ? C.blue : C.gray400, padding: "4px 12px", borderRadius: 100, border: `1px solid ${robot.isAvailable ? C.blue : C.gray200}` }}>
+                        {robot.isAvailable ? 'Available' : 'Rented'}
+                      </span>
                     </div>
-                  ))
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         );
 
       case 'my-robots':
         return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">My Robots</h3>
-              <Link
-                to="/create-robot"
-                className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Robot
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.01em" }}>My Robots</h3>
+              <Link to="/create-robot" style={{ padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500, background: C.blue, color: C.pureWhite, border: "none", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Plus size={16} /> Add Robot
               </Link>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              {loading ? (
-                <div className="col-span-2 text-center py-8">
-                  <p className="text-gray-400">Loading your robots...</p>
-                </div>
-              ) : myRobots.length === 0 ? (
-                <div className="col-span-2 text-center py-8">
-                  <p className="text-gray-400 mb-4">You haven't listed any robots yet.</p>
-                  <Link
-                    to="/create-robot"
-                    className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors inline-flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    List Your First Robot
-                  </Link>
-                </div>
-              ) : (
-                myRobots.map((robot) => (
-                  <div key={robot.id} className="bg-robot-slate rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-4">
+            {loading ? (
+              <p style={{ color: C.gray400, textAlign: "center", padding: 32 }}>Loading...</p>
+            ) : myRobots.length === 0 ? (
+              <div style={{ ...cardStyle, textAlign: "center", padding: "48px 24px" }}>
+                <RobotLogo color={C.gray300} size={36} />
+                <p style={{ fontSize: 15, color: C.gray400, marginTop: 16, marginBottom: 20 }}>You haven't listed any robots yet.</p>
+                <Link to="/create-robot" style={{ padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500, background: C.blue, color: C.pureWhite, textDecoration: "none" }}>List Your First Robot</Link>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                {myRobots.map((robot) => (
+                  <div key={robot.id} style={cardStyle}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                       <div>
-                        <h4 className="text-white font-semibold">{robot.name}</h4>
-                        <div className="flex items-center text-gray-400 text-sm mt-1">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {robot.location}
-                        </div>
+                        <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>{robot.name}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, color: C.gray400 }}><MapPin size={12} /> {robot.location}</div>
                       </div>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        robot.isAvailable 
-                          ? 'bg-green-600 text-white' 
-                          : 'bg-orange-600 text-white'
-                      }`}>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: robot.isAvailable ? C.blue : C.gray400, padding: "4px 12px", borderRadius: 100, border: `1px solid ${robot.isAvailable ? C.blue : C.gray200}` }}>
                         {robot.isAvailable ? 'Available' : 'Rented'}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-400">Daily Rate:</span>
-                        <p className="text-white font-medium">${robot.price}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Total Rentals:</span>
-                        <p className="text-white font-medium">{robot.totalRentals}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Category:</span>
-                        <p className="text-white font-medium">{robot.category}</p>
-                      </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, fontSize: 13, marginBottom: 16 }}>
+                      <div><span style={{ color: C.gray400 }}>Rate:</span><div style={{ fontWeight: 500, marginTop: 2 }}>${robot.price}/day</div></div>
+                      <div><span style={{ color: C.gray400 }}>Rentals:</span><div style={{ fontWeight: 500, marginTop: 2 }}>{robot.totalRentals}</div></div>
+                      <div><span style={{ color: C.gray400 }}>Category:</span><div style={{ fontWeight: 500, marginTop: 2 }}>{robot.category}</div></div>
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <button className="flex-1 bg-robot-steel text-white py-2 px-4 rounded-lg hover:bg-robot-steel transition-colors">
-                        Edit
-                      </button>
-                      <Link 
-                        to={`/robots/${robot.id}`}
-                        className="flex-1 bg-robot-steel text-white py-2 px-4 rounded-lg hover:bg-robot-steel transition-colors text-center"
-                      >
-                        View Details
-                      </Link>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button style={{ flex: 1, padding: "10px 0", borderRadius: 100, fontSize: 13, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
+                      <Link to={`/robots/${robot.id}`} style={{ flex: 1, padding: "10px 0", borderRadius: 100, fontSize: 13, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, textDecoration: "none", textAlign: "center" }}>View</Link>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         );
 
       case 'rentals':
         return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-white">Rental History</h3>
-            <div className="bg-robot-slate rounded-lg p-6">
-              <p className="text-gray-400 text-center py-8">Rental system coming soon! This will show all your robot rentals and earnings.</p>
-            </div>
+          <div style={cardStyle}>
+            <h3 style={{ fontSize: 18, fontWeight: 500, marginBottom: 16 }}>Rental History</h3>
+            <p style={{ fontSize: 14, color: C.gray400, textAlign: "center", padding: 32 }}>Rental system coming soon!</p>
           </div>
         );
 
       case 'messages':
         return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">Messages</h3>
-              <Link
-                to="/messages"
-                className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-              >
-                View All Messages
-              </Link>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 500 }}>Messages</h3>
+              <Link to="/messages" style={{ padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500, background: C.blue, color: C.pureWhite, textDecoration: "none" }}>View All</Link>
             </div>
-            <div className="bg-robot-slate rounded-lg p-6">
+            <div style={cardStyle}>
               {unreadMessages > 0 ? (
-                <div className="text-center">
-                  <p className="text-white mb-2">You have {unreadMessages} unread message{unreadMessages === 1 ? '' : 's'}</p>
-                  <Link
-                    to="/messages"
-                    className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-                  >
-                    View Messages
-                  </Link>
+                <div style={{ textAlign: "center", padding: 24 }}>
+                  <p style={{ fontSize: 15, marginBottom: 16 }}>You have {unreadMessages} unread message{unreadMessages === 1 ? '' : 's'}</p>
+                  <Link to="/messages" style={{ fontSize: 14, fontWeight: 500, color: C.blue, textDecoration: "none", borderBottom: `1px solid ${C.blue}`, paddingBottom: 2 }}>View Messages &rarr;</Link>
                 </div>
               ) : (
-                <p className="text-gray-400 text-center">No new messages</p>
+                <p style={{ fontSize: 14, color: C.gray400, textAlign: "center", padding: 24 }}>No new messages</p>
               )}
             </div>
           </div>
         );
 
-      default:
-        return null;
+      default: return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-robot-dark">
+    <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black }}>
       <Navbar />
-      {/* Header */}
-      <div className="bg-robot-slate border-b border-primary-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-              <p className="text-gray-300">Welcome back, {currentUser?.displayName || 'User'}!</p>
-            </div>
-            <button
-              onClick={logout}
-              className="flex items-center text-gray-400 hover:text-white transition-colors"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-4 gap-8">
+      {/* Header */}
+      <section style={{ background: C.white, padding: "100px 48px 40px", borderBottom: `1px solid ${C.gray100}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 16 }}>Dashboard</div>
+            <h1 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, letterSpacing: "-0.025em", lineHeight: 1.15 }}>
+              Welcome back, {currentUser?.displayName?.split(' ')[0] || 'User'}.
+            </h1>
+          </div>
+          <button onClick={logout} style={{ fontSize: 14, fontWeight: 500, color: C.gray500, cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}>Logout</button>
+        </div>
+      </section>
+
+      <section style={{ background: C.gray50, padding: "48px 48px 100px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "220px 1fr", gap: 32 }}>
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-robot-slate rounded-lg p-6">
-              {/* User Info */}
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-robot-steel rounded-full flex items-center justify-center mr-3">
-                  <User className="h-6 w-6 text-gray-400" />
+          <div>
+            <div style={cardStyle}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, paddingBottom: 16, borderBottom: `1px solid ${C.gray100}` }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <User size={18} color={C.gray400} />
                 </div>
                 <div>
-                  <p className="text-white font-medium">{currentUser?.displayName || 'User'}</p>
-                  <p className="text-gray-400 text-sm">{currentUser?.email}</p>
+                  <div style={{ fontSize: 14, fontWeight: 500 }}>{currentUser?.displayName || 'User'}</div>
+                  <div style={{ fontSize: 12, color: C.gray400 }}>{currentUser?.email}</div>
                 </div>
               </div>
-
-              {/* Navigation Tabs */}
-              <nav className="space-y-2">
+              <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === tab.id
-                        ? 'bg-primary-500 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-robot-steel'
-                    }`}
-                  >
-                    <tab.icon className="h-5 w-5 mr-3" />
-                    <span className="flex-1 text-left">{tab.name}</span>
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "10px 14px", borderRadius: 8, fontSize: 14, fontWeight: 500,
+                      background: activeTab === tab.id ? C.gray50 : "transparent",
+                      color: activeTab === tab.id ? C.black : C.gray500,
+                      border: "none", cursor: "pointer", fontFamily: "inherit",
+                      transition: "all 0.15s", textAlign: "left", width: "100%",
+                    }}>
+                    {tab.name}
                     {tab.id === 'messages' && unreadMessages > 0 && (
-                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                        {unreadMessages}
-                      </span>
+                      <span style={{ background: "#ef4444", color: C.pureWhite, fontSize: 10, fontWeight: 700, borderRadius: 100, padding: "2px 8px" }}>{unreadMessages}</span>
                     )}
                   </button>
                 ))}
-                <Link
-                  to="/profile"
-                  className="w-full flex items-center px-4 py-3 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-robot-steel"
-                >
-                  <User className="h-5 w-5 mr-3" />
-                  <span className="flex-1 text-left">Edit Profile</span>
-                </Link>
+                <Link to="/profile" style={{
+                  display: "block", padding: "10px 14px", borderRadius: 8,
+                  fontSize: 14, fontWeight: 500, color: C.gray500,
+                  textDecoration: "none", transition: "all 0.15s",
+                }}>Edit Profile</Link>
               </nav>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {renderTabContent()}
-          </div>
+          {/* Content */}
+          <div>{renderTabContent()}</div>
         </div>
-      </div>
+      </section>
+
+      <Footer />
     </div>
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

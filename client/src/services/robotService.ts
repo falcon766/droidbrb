@@ -196,76 +196,75 @@ export const robotService = {
     }
   },
 
-  // Get featured robots (most popular)
+  // Get featured robots — admin-curated first, then backfill with highest-rated
   async getFeaturedRobots(limitCount: number = 6): Promise<Robot[]> {
     try {
-      // Check if Firebase is initialized
-      if (!db) {
-        console.warn('Firebase not initialized - returning empty robots list');
-        return [];
-      }
+      if (!db) return [];
 
-      // Check if we have valid Firebase config
-      const hasValidConfig = process.env.REACT_APP_FIREBASE_API_KEY && 
+      const hasValidConfig = process.env.REACT_APP_FIREBASE_API_KEY &&
                             process.env.REACT_APP_FIREBASE_PROJECT_ID &&
                             process.env.REACT_APP_FIREBASE_API_KEY !== 'missing-api-key';
-      
-      if (!hasValidConfig) {
-        console.warn('Firebase config invalid - returning empty robots list');
-        return [];
-      }
+      if (!hasValidConfig) return [];
 
-      // First try to get robots ordered by rating
-      let q = query(
-        collection(db, 'robots'),
-        where('isAvailable', '==', true),
-        orderBy('rating', 'desc'),
-        limit(limitCount)
-      );
-      
+      const toRobot = (d: any): Robot => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: d.data().createdAt?.toDate() || new Date(),
+        updatedAt: d.data().updatedAt?.toDate() || new Date(),
+      } as Robot);
+
+      const robots: Robot[] = [];
+
+      // 1. Fetch admin-curated featured robots first
       try {
-        const querySnapshot = await getDocs(q);
-        const robots: Robot[] = [];
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          robots.push({
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
-          } as Robot);
-        });
-        
-        return robots;
-      } catch (orderByError) {
-        // If orderBy fails (e.g., no documents or missing field), try without orderBy
-        console.warn('OrderBy failed, trying without rating sort:', orderByError);
-        
-        q = query(
+        const featuredQ = query(
           collection(db, 'robots'),
+          where('isFeatured', '==', true),
           where('isAvailable', '==', true),
           limit(limitCount)
         );
-        
-        const querySnapshot = await getDocs(q);
-        const robots: Robot[] = [];
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          robots.push({
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
-          } as Robot);
-        });
-        
-        return robots;
+        const featuredSnap = await getDocs(featuredQ);
+        featuredSnap.forEach(d => robots.push(toRobot(d)));
+      } catch {
+        // isFeatured field may not exist yet — that's fine
       }
+
+      // 2. If we have fewer than limitCount, backfill with highest-rated
+      if (robots.length < limitCount) {
+        const remaining = limitCount - robots.length;
+        const featuredIds = new Set(robots.map(r => r.id));
+        try {
+          const ratingQ = query(
+            collection(db, 'robots'),
+            where('isAvailable', '==', true),
+            orderBy('rating', 'desc'),
+            limit(remaining + featuredIds.size) // fetch extra to filter dupes
+          );
+          const ratingSnap = await getDocs(ratingQ);
+          ratingSnap.forEach(d => {
+            if (robots.length < limitCount && !featuredIds.has(d.id)) {
+              robots.push(toRobot(d));
+            }
+          });
+        } catch {
+          // Fallback without orderBy
+          const fallbackQ = query(
+            collection(db, 'robots'),
+            where('isAvailable', '==', true),
+            limit(remaining + featuredIds.size)
+          );
+          const fallbackSnap = await getDocs(fallbackQ);
+          fallbackSnap.forEach(d => {
+            if (robots.length < limitCount && !featuredIds.has(d.id)) {
+              robots.push(toRobot(d));
+            }
+          });
+        }
+      }
+
+      return robots;
     } catch (error) {
       console.error('Error fetching featured robots:', error);
-      // Return empty array instead of throwing error
       return [];
     }
   },

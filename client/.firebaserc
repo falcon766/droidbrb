@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "droidbrb-v3"
+  },
+  "targets": {},
+  "etags": {
+    "droidbrb-v3": {
+      "extensionInstances": {
+        "firestore-send-email": "f6f33aa64cbab267644bf56f458adcdd503103ee5fafae68cfa647ef273d043a"
+      }
+    }
+  }
+}

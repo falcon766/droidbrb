@@ -17,6 +17,7 @@ import CreateRobotPage from './pages/CreateRobotPage';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import AdminPage from './pages/AdminPage';
 import FirebaseDiagnostic from './components/FirebaseDiagnostic';
 
 // Components
@@ -51,6 +52,15 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <Navigate to="/login" replace />;
   }
 
+  return <>{children}</>;
+};
+
+// Admin Route Component
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currentUser, userProfile, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="lg" /></div>;
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (userProfile?.role !== 'admin') return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
 
@@ -149,6 +159,16 @@ const AppContent: React.FC = () => {
               }
             />
             
+            {/* Admin Route */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            />
+
             {/* 404 Route */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
