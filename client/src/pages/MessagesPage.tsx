@@ -94,9 +94,9 @@ const MessagesPage: React.FC = () => {
     <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black, height: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar />
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingTop: 64 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {/* Header */}
-        <div style={{ padding: "20px 48px", background: C.black }}>
+        <div style={{ padding: "84px 48px 20px", background: C.black }}>
           <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em", color: C.pureWhite }}>Messages</h1>
         </div>
 

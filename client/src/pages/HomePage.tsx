@@ -247,7 +247,7 @@ const HomePage: React.FC = () => {
         <Navbar />
 
         {/* HERO */}
-        <section style={{ background: C.black, color: C.pureWhite, minHeight: "100vh", position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "120px 48px 60px" }}>
+        <section style={{ background: C.black, color: C.pureWhite, position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "120px 48px 48px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }}>
             <div>
               <h1 style={{ fontSize: "clamp(44px, 5.5vw, 72px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.03em", marginBottom: 28 }}>
