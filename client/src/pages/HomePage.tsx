@@ -247,7 +247,7 @@ const HomePage: React.FC = () => {
         <Navbar />
 
         {/* HERO */}
-        <section style={{ background: C.black, color: C.pureWhite, minHeight: "100vh", position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "140px 48px 80px" }}>
+        <section style={{ background: C.black, color: C.pureWhite, minHeight: "100vh", position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "120px 48px 60px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }}>
             <div>
               <h1 style={{ fontSize: "clamp(44px, 5.5vw, 72px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.03em", marginBottom: 28 }}>
@@ -277,7 +277,7 @@ const HomePage: React.FC = () => {
             </div>
           </div>
           {/* Stats bar */}
-          <div style={{ maxWidth: 1200, margin: "60px auto 0", width: "100%" }}>
+          <div style={{ maxWidth: 1200, margin: "40px auto 0", width: "100%" }}>
             <div style={{ display: "flex", gap: 0, borderTop: `1px solid ${C.gray700}` }}>
               {stats.map((s, i) => (
                 <div key={i} style={{ flex: 1, padding: "28px 0", borderRight: i < 2 ? `1px solid ${C.gray700}` : "none", paddingRight: i < 2 ? 24 : 0, paddingLeft: i > 0 ? 24 : 0 }}>
@@ -290,7 +290,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* SEARCH */}
-        <section style={{ background: C.white, padding: "80px 48px 100px" }}>
+        <section style={{ background: C.white, padding: "64px 48px" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <Label>Search</Label>
             <h2 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, marginBottom: 40, letterSpacing: "-0.025em" }}>Find robots near you.</h2>
@@ -347,7 +347,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* HOW IT WORKS */}
-        <section style={{ background: C.gray50, padding: "100px 48px", borderTop: `1px solid ${C.gray100}`, borderBottom: `1px solid ${C.gray100}` }}>
+        <section style={{ background: C.gray50, padding: "64px 48px", borderTop: `1px solid ${C.gray100}`, borderBottom: `1px solid ${C.gray100}` }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <Label>How It Works</Label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
@@ -374,7 +374,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* FEATURED ROBOTS */}
-        <section style={{ background: C.white, padding: "100px 48px" }}>
+        <section style={{ background: C.white, padding: "64px 48px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 48 }}>
               <div>
@@ -419,7 +419,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* CATEGORIES */}
-        <section style={{ background: C.gray50, padding: "100px 48px", borderTop: `1px solid ${C.gray100}` }}>
+        <section style={{ background: C.gray50, padding: "64px 48px", borderTop: `1px solid ${C.gray100}` }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 48 }}>
               <div>
@@ -448,7 +448,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* MISSION */}
-        <section style={{ background: C.black, color: C.pureWhite, padding: "100px 48px" }}>
+        <section style={{ background: C.black, color: C.pureWhite, padding: "64px 48px" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <Label>Our Mission</Label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
@@ -463,7 +463,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* CTA */}
-        <section style={{ background: C.white, padding: "100px 48px", borderTop: `1px solid ${C.gray100}` }}>
+        <section style={{ background: C.white, padding: "64px 48px", borderTop: `1px solid ${C.gray100}` }}>
           <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
             <h2 style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em", marginBottom: 16 }}>Ready to get started?</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, fontWeight: 400, color: C.gray500, maxWidth: 480, margin: "0 auto 36px" }}>Join thousands of robotics enthusiasts sharing, renting, and learning together.</p>

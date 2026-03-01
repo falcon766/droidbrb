@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MapPin, User } from 'lucide-react';
+import { Plus, MapPin, User, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { robotService } from '../services/robotService';
 import { messageService } from '../services/messageService';
@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RobotLogo from '../components/RobotLogo';
 import { C } from '../design';
+import toast from 'react-hot-toast';
 
 const DashboardPage: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -16,6 +17,9 @@ const DashboardPage: React.FC = () => {
   const [myRobots, setMyRobots] = useState<Robot[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [editingRobot, setEditingRobot] = useState<Robot | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', description: '', price: '', isAvailable: true });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +37,28 @@ const DashboardPage: React.FC = () => {
     };
     fetchData();
   }, [currentUser]);
+
+  const openEdit = (robot: Robot) => {
+    setEditingRobot(robot);
+    setEditForm({ name: robot.name, description: robot.description, price: String(robot.price), isAvailable: robot.isAvailable });
+  };
+
+  const saveEdit = async () => {
+    if (!editingRobot) return;
+    setSaving(true);
+    try {
+      await robotService.updateRobot(editingRobot.id, {
+        name: editForm.name,
+        description: editForm.description,
+        price: Number(editForm.price),
+        isAvailable: editForm.isAvailable,
+      });
+      setMyRobots(prev => prev.map(r => r.id === editingRobot.id ? { ...r, name: editForm.name, description: editForm.description, price: Number(editForm.price), isAvailable: editForm.isAvailable } : r));
+      setEditingRobot(null);
+      toast.success('Robot updated!');
+    } catch { toast.error('Failed to update robot'); }
+    finally { setSaving(false); }
+  };
 
   const stats = [
     { label: 'My Robots', value: myRobots.length.toString() },
@@ -124,7 +150,7 @@ const DashboardPage: React.FC = () => {
                       <div><span style={{ color: C.gray400 }}>Category:</span><div style={{ fontWeight: 500, marginTop: 2 }}>{robot.category}</div></div>
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
-                      <button style={{ flex: 1, padding: "10px 0", borderRadius: 100, fontSize: 13, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
+                      <button onClick={() => openEdit(robot)} style={{ flex: 1, padding: "10px 0", borderRadius: 100, fontSize: 13, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
                       <Link to={`/robots/${robot.id}`} style={{ flex: 1, padding: "10px 0", borderRadius: 100, fontSize: 13, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, textDecoration: "none", textAlign: "center" }}>View</Link>
                     </div>
                   </div>
@@ -227,6 +253,59 @@ const DashboardPage: React.FC = () => {
           <div>{renderTabContent()}</div>
         </div>
       </section>
+
+      {/* Edit Modal */}
+      {editingRobot && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setEditingRobot(null)}>
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }} />
+          <div style={{ position: "relative", background: C.pureWhite, borderRadius: 16, padding: 32, width: "100%", maxWidth: 480, boxShadow: "0 24px 80px rgba(0,0,0,0.15)" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 500 }}>Edit Robot</h2>
+              <button onClick={() => setEditingRobot(null)} style={{ background: "none", border: "none", cursor: "pointer", color: C.gray400 }}><X size={20} /></button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Name</label>
+                <input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 14px", border: `1.5px solid ${C.gray200}`, borderRadius: 10, fontSize: 15, fontFamily: "inherit", outline: "none" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Description</label>
+                <textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} rows={3}
+                  style={{ width: "100%", padding: "10px 14px", border: `1.5px solid ${C.gray200}`, borderRadius: 10, fontSize: 15, fontFamily: "inherit", outline: "none", resize: "vertical" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Daily Rate ($)</label>
+                <input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 14px", border: `1.5px solid ${C.gray200}`, borderRadius: 10, fontSize: 15, fontFamily: "inherit", outline: "none" }} />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button onClick={() => setEditForm(f => ({ ...f, isAvailable: !f.isAvailable }))}
+                  style={{ width: 40, height: 22, borderRadius: 100, border: "none", cursor: "pointer", position: "relative", transition: "background 0.2s",
+                    background: editForm.isAvailable ? C.blue : C.gray200 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: "50%", background: C.pureWhite, position: "absolute", top: 3, transition: "left 0.2s",
+                    left: editForm.isAvailable ? 21 : 3 }} />
+                </button>
+                <span style={{ fontSize: 14, fontWeight: 500, color: editForm.isAvailable ? C.black : C.gray400 }}>
+                  {editForm.isAvailable ? 'Available' : 'Unavailable'}
+                </span>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 28, justifyContent: "flex-end" }}>
+              <button onClick={() => setEditingRobot(null)}
+                style={{ padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500, background: "transparent", color: C.gray700, border: `1.5px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit" }}>
+                Cancel
+              </button>
+              <button onClick={saveEdit} disabled={saving}
+                style={{ padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500, background: saving ? C.gray300 : C.blue, color: C.pureWhite, border: "none", cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

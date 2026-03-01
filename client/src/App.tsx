@@ -22,7 +22,6 @@ import FirebaseDiagnostic from './components/FirebaseDiagnostic';
 
 // Components
 
-import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
 import DebugInfo from './components/DebugInfo';
 
@@ -173,7 +172,6 @@ const AppContent: React.FC = () => {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );
