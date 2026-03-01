@@ -361,7 +361,7 @@ const AdminPage: React.FC = () => {
       <Navbar />
 
       {/* Header */}
-      <section style={{ background: C.white, padding: "100px 48px 40px", borderBottom: `1px solid ${C.gray100}` }}>
+      <section style={{ background: C.black, color: C.pureWhite, padding: "120px 48px 48px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 16 }}>Admin Console</div>
           <h1 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, letterSpacing: "-0.025em" }}>Site Management</h1>

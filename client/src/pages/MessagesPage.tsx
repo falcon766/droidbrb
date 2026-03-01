@@ -96,8 +96,8 @@ const MessagesPage: React.FC = () => {
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingTop: 64 }}>
         {/* Header */}
-        <div style={{ padding: "20px 48px", borderBottom: `1px solid ${C.gray100}`, background: C.white }}>
-          <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em" }}>Messages</h1>
+        <div style={{ padding: "20px 48px", background: C.black }}>
+          <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em", color: C.pureWhite }}>Messages</h1>
         </div>
 
         {/* Chat Layout */}

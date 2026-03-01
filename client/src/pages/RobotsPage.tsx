@@ -143,8 +143,8 @@ const RobotsPage: React.FC = () => {
 
   const inp: React.CSSProperties = {
     width: "100%", padding: "14px 20px", background: "transparent",
-    border: `1.5px solid ${C.gray200}`, borderRadius: 100,
-    fontSize: 15, fontFamily: "inherit", fontWeight: 400, color: C.black, outline: "none", transition: "border 0.3s",
+    border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: 100,
+    fontSize: 15, fontFamily: "inherit", fontWeight: 400, color: C.pureWhite, outline: "none", transition: "border 0.3s",
   };
 
   return (
@@ -152,7 +152,7 @@ const RobotsPage: React.FC = () => {
       <Navbar />
 
       {/* Search Header */}
-      <section style={{ background: C.white, padding: "120px 48px 60px", borderBottom: `1px solid ${C.gray100}` }}>
+      <section style={{ background: C.black, color: C.pureWhite, padding: "120px 48px 48px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 24 }}>Browse</div>
           <h1 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em", marginBottom: 40 }}>Find robots near you.</h1>
@@ -161,12 +161,12 @@ const RobotsPage: React.FC = () => {
           <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 24 }}>
             <div style={{ flex: 1 }}>
               <input value={filters.query || ''} onChange={e => handleSearchChange(e.target.value)} placeholder="Robot name, type, or keyword" style={inp}
-                onFocus={e => (e.target.style.borderColor = C.black)} onBlur={e => (e.target.style.borderColor = C.gray200)} />
+                onFocus={e => (e.target.style.borderColor = "rgba(255,255,255,0.5)")} onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.2)")} />
             </div>
             <div style={{ flex: 0.5, position: "relative" }} className="location-input-container">
               <input value={filters.location || ''} onChange={e => handleLocationChange(e.target.value)} placeholder="City or zip code" style={inp}
-                onFocus={e => { e.target.style.borderColor = C.black; if (locationSuggestions.length > 0) setShowLocationSuggestions(true); }}
-                onBlur={e => (e.target.style.borderColor = C.gray200)} autoComplete="off" />
+                onFocus={e => { e.target.style.borderColor = "rgba(255,255,255,0.5)"; if (locationSuggestions.length > 0) setShowLocationSuggestions(true); }}
+                onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.2)")} autoComplete="off" />
               {showLocationSuggestions && locationSuggestions.length > 0 && (
                 <div style={{
                   position: "absolute", top: "100%", left: 0, right: 0, marginTop: 4,
@@ -202,14 +202,14 @@ const RobotsPage: React.FC = () => {
                 <span key={cat.id}
                   style={{
                     padding: "7px 16px", borderRadius: 100,
-                    border: `1px solid ${isActive ? C.black : C.gray200}`,
+                    border: `1px solid ${isActive ? C.pureWhite : "rgba(255,255,255,0.2)"}`,
                     fontSize: 13, fontWeight: 500,
-                    color: isActive ? C.black : C.gray500,
+                    color: isActive ? C.pureWhite : C.gray400,
                     cursor: "pointer", transition: "all 0.2s",
-                    background: isActive ? C.gray50 : "transparent",
+                    background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
                   }}
-                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = C.black; e.currentTarget.style.color = C.black; } }}
-                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = C.gray200; e.currentTarget.style.color = C.gray500; } }}
+                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"; e.currentTarget.style.color = C.pureWhite; } }}
+                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = C.gray400; } }}
                   onClick={() => handleCategoryChange(cat.id)}
                 >{cat.name}</span>
               );
@@ -219,9 +219,9 @@ const RobotsPage: React.FC = () => {
           {/* Advanced Filters Toggle */}
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <button onClick={() => setShowFilters(!showFilters)}
-              style={{ fontSize: 13, fontWeight: 500, color: C.gray500, cursor: "pointer", background: "none", border: "none", fontFamily: "inherit", textDecoration: "underline", transition: "color 0.2s" }}
-              onMouseEnter={e => (e.currentTarget.style.color = C.black)}
-              onMouseLeave={e => (e.currentTarget.style.color = C.gray500)}
+              style={{ fontSize: 13, fontWeight: 500, color: C.gray400, cursor: "pointer", background: "none", border: "none", fontFamily: "inherit", textDecoration: "underline", transition: "color 0.2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = C.pureWhite)}
+              onMouseLeave={e => (e.currentTarget.style.color = C.gray400)}
             >{showFilters ? 'Hide Filters' : 'More Filters'}</button>
             {(filters.query || filters.location || filters.category) && (
               <button onClick={clearFilters}
@@ -232,7 +232,7 @@ const RobotsPage: React.FC = () => {
 
           {/* Advanced Filters Panel */}
           {showFilters && (
-            <div style={{ marginTop: 24, padding: 24, border: `1px solid ${C.gray100}`, borderRadius: 12, background: C.pureWhite }}>
+            <div style={{ marginTop: 24, padding: 24, border: `1px solid rgba(255,255,255,0.1)`, borderRadius: 12, background: "rgba(255,255,255,0.05)" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
                 <div>
                   <DistanceFilter maxDistance={maxDistance} onDistanceChange={handleDistanceChange} userLocation={userLocation || undefined} />
@@ -255,7 +255,7 @@ const RobotsPage: React.FC = () => {
 
           {/* Active filters summary */}
           {(filters.query || filters.location) && !loading && (
-            <div style={{ marginTop: 20, fontSize: 14, color: C.gray500 }}>
+            <div style={{ marginTop: 20, fontSize: 14, color: C.gray400 }}>
               {robots.length} robot{robots.length !== 1 ? 's' : ''} found
               {filters.location && maxDistance && ` within ${maxDistance} miles of ${filters.location}`}
             </div>

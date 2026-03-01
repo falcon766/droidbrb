@@ -50,12 +50,12 @@ const RobotDetailPage: React.FC = () => {
 
   if (!robot) {
     return (
-      <div style={{ fontFamily: "'Satoshi', sans-serif", minHeight: "100vh", background: C.white }}>
+      <div style={{ fontFamily: "'Satoshi', sans-serif", minHeight: "100vh", background: C.black }}>
         <Navbar />
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "160px 48px 100px", textAlign: "center" }}>
-          <RobotLogo color={C.gray300} size={48} />
-          <h1 style={{ fontSize: 24, fontWeight: 500, marginTop: 20, marginBottom: 8 }}>Robot not found</h1>
-          <p style={{ fontSize: 15, color: C.gray500, marginBottom: 28 }}>The robot you are looking for does not exist or was removed.</p>
+          <RobotLogo color={C.gray500} size={48} />
+          <h1 style={{ fontSize: 24, fontWeight: 500, marginTop: 20, marginBottom: 8, color: C.pureWhite }}>Robot not found</h1>
+          <p style={{ fontSize: 15, color: C.gray400, marginBottom: 28 }}>The robot you are looking for does not exist or was removed.</p>
           <button onClick={() => navigate(-1)} style={{ fontSize: 14, fontWeight: 500, color: C.blue, cursor: "pointer", background: "none", border: "none", borderBottom: `1px solid ${C.blue}`, paddingBottom: 2, fontFamily: "inherit" }}>Go back</button>
         </div>
         <Footer />
@@ -70,19 +70,19 @@ const RobotDetailPage: React.FC = () => {
       <Navbar />
 
       {/* Header */}
-      <section style={{ background: C.white, padding: "100px 48px 40px", borderBottom: `1px solid ${C.gray100}` }}>
+      <section style={{ background: C.black, color: C.pureWhite, padding: "120px 48px 48px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 16 }}>{robot.category}</div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <h1 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, letterSpacing: "-0.025em", lineHeight: 1.15 }}>{robot.name}</h1>
             <button onClick={() => setIsFavorited(!isFavorited)} style={{
-              background: "none", border: `1.5px solid ${isFavorited ? "#ef4444" : C.gray200}`, borderRadius: 100,
+              background: "none", border: `1.5px solid ${isFavorited ? "#ef4444" : "rgba(255,255,255,0.2)"}`, borderRadius: 100,
               padding: "10px 12px", cursor: "pointer", transition: "all 0.25s",
             }}>
               <Heart size={18} fill={isFavorited ? "#ef4444" : "none"} color={isFavorited ? "#ef4444" : C.gray400} />
             </button>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 14, color: C.gray500 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 14, color: C.gray400 }}>
             <MapPin size={14} /> {robot.location}
           </div>
         </div>

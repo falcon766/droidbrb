@@ -197,7 +197,7 @@ const DashboardPage: React.FC = () => {
       <Navbar />
 
       {/* Header */}
-      <section style={{ background: C.white, padding: "100px 48px 40px", borderBottom: `1px solid ${C.gray100}` }}>
+      <section style={{ background: C.black, color: C.pureWhite, padding: "120px 48px 48px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 16 }}>Dashboard</div>
@@ -205,7 +205,7 @@ const DashboardPage: React.FC = () => {
               Welcome back, {currentUser?.displayName?.split(' ')[0] || 'User'}.
             </h1>
           </div>
-          <button onClick={logout} style={{ fontSize: 14, fontWeight: 500, color: C.gray500, cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}>Logout</button>
+          <button onClick={logout} style={{ fontSize: 14, fontWeight: 500, color: C.gray400, cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}>Logout</button>
         </div>
       </section>
 
