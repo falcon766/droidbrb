@@ -163,7 +163,7 @@ const RobotDetailPage: React.FC = () => {
                 }}
               >{robot.isAvailable ? 'Rent Now' : 'Currently Rented'}</button>
 
-              <button onClick={() => navigate('/messages')}
+              <button onClick={() => navigate(`/messages?to=${robot.ownerId}`)}
                 style={{
                   width: "100%", padding: "14px 0", borderRadius: 100, fontSize: 14, fontWeight: 500,
                   cursor: "pointer", transition: "all 0.25s", fontFamily: "inherit",
@@ -217,7 +217,7 @@ const RobotDetailPage: React.FC = () => {
                       <MapPin size={13} /> {owner.location}
                     </div>
                   )}
-                  <button onClick={() => navigate('/messages')}
+                  <button onClick={() => navigate(`/messages?to=${robot.ownerId}`)}
                     style={{
                       width: "100%", padding: "12px 0", borderRadius: 100, fontSize: 14, fontWeight: 500,
                       cursor: "pointer", background: C.blue, color: C.pureWhite, border: `1.5px solid ${C.blue}`,

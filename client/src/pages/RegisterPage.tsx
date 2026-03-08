@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -44,6 +45,9 @@ const RegisterPage: React.FC = () => {
 
   return (
     <div style={{ fontFamily: "'Satoshi', sans-serif", minHeight: "100vh", display: "flex", flexDirection: "column", background: C.white }}>
+      <Helmet>
+        <title>Create Account - DroidBRB</title>
+      </Helmet>
       {/* Header */}
       <header style={{ padding: "0 48px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.gray100}` }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>

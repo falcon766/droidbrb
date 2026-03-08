@@ -1,22 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, Send, Search, User, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { messageService } from '../services/messageService';
-import { Message } from '../types';
+import { Message, User as UserType } from '../types';
 import Navbar from '../components/Navbar';
 import { C } from '../design';
 import toast from 'react-hot-toast';
 
 const MessagesPage: React.FC = () => {
   const { currentUser } = useAuth();
+
+  // Capture ?to= param once on mount — immune to re-renders and URL changes
+  const [initialRecipientId] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('to');
+  });
+
   const [conversations, setConversations] = useState<Message[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(initialRecipientId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const [recipientInfo, setRecipientInfo] = useState<UserType | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Clean up URL param on mount (cosmetic only — we already captured the value)
+  useEffect(() => {
+    if (initialRecipientId) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [initialRecipientId]);
+
+  // Look up recipient info from Firestore
+  useEffect(() => {
+    if (initialRecipientId) {
+      messageService.getUserById(initialRecipientId).then(user => {
+        if (user) setRecipientInfo(user);
+      });
+    }
+  }, [initialRecipientId]);
+
+  const fetchConversations = useCallback(async () => {
+    if (!currentUser) return;
+    try { setConversations(await messageService.getUserConversations(currentUser.uid)); }
+    catch { toast.error('Failed to load conversations'); }
+    finally { setLoading(false); }
+  }, [currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -41,19 +72,14 @@ const MessagesPage: React.FC = () => {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages]);
 
-  const fetchConversations = async () => {
-    if (!currentUser) return;
-    try { setConversations(await messageService.getUserConversations(currentUser.uid)); }
-    catch { toast.error('Failed to load conversations'); }
-    finally { setLoading(false); }
-  };
-
   const fetchMessages = async (otherUserId: string) => {
     if (!currentUser) return;
     try {
       setMessages(await messageService.getConversation(currentUser.uid, otherUserId));
       await messageService.markConversationAsRead(currentUser.uid, otherUserId);
-    } catch { toast.error('Failed to load messages'); }
+    } catch {
+      // Silently handle — might be a new conversation with no messages yet
+    }
   };
 
   const sendMessage = async () => {
@@ -61,13 +87,29 @@ const MessagesPage: React.FC = () => {
     setSending(true);
     try {
       const conversation = conversations.find(c => c.senderId === selectedConversation || c.receiverId === selectedConversation);
-      if (!conversation) { toast.error('Conversation not found'); return; }
-      const receiverId = conversation.senderId === currentUser.uid ? conversation.receiverId : conversation.senderId;
-      const receiverName = conversation.senderId === currentUser.uid ? conversation.receiverName : conversation.senderName;
+      let receiverId: string;
+      let receiverName: string;
+      let receiverEmail: string;
+
+      if (conversation) {
+        receiverId = conversation.senderId === currentUser.uid ? conversation.receiverId : conversation.senderId;
+        receiverName = conversation.senderId === currentUser.uid ? conversation.receiverName : conversation.senderName;
+        receiverEmail = conversation.receiverEmail || '';
+      } else if (recipientInfo) {
+        receiverId = recipientInfo.id;
+        receiverName = `${recipientInfo.firstName} ${recipientInfo.lastName}`;
+        receiverEmail = recipientInfo.email || '';
+      } else {
+        receiverId = selectedConversation;
+        receiverName = 'User';
+        receiverEmail = '';
+      }
+
       await messageService.createMessage(currentUser.uid, currentUser.displayName || 'User', {
-        content: newMessage.trim(), receiverId, receiverName, receiverEmail: conversation.receiverEmail || '',
+        content: newMessage.trim(), receiverId, receiverName, receiverEmail,
       });
       setNewMessage('');
+      await fetchConversations();
       await fetchMessages(selectedConversation);
       toast.success('Message sent!');
     } catch { toast.error('Failed to send message'); }
@@ -88,6 +130,13 @@ const MessagesPage: React.FC = () => {
     if (h < 1) return 'Just now';
     if (h < 24) return `${Math.floor(h)}h ago`;
     return date.toLocaleDateString();
+  };
+
+  const getSelectedPartnerName = () => {
+    const c = conversations.find(c => getConversationPartnerId(c) === selectedConversation);
+    if (c) return getConversationPartner(c);
+    if (recipientInfo) return `${recipientInfo.firstName} ${recipientInfo.lastName}`;
+    return 'User';
   };
 
   return (
@@ -171,15 +220,21 @@ const MessagesPage: React.FC = () => {
                     <User size={16} color={C.gray400} />
                   </div>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 500 }}>
-                      {(() => { const c = conversations.find(c => getConversationPartnerId(c) === selectedConversation); return c ? getConversationPartner(c) : 'User'; })()}
-                    </div>
+                    <div style={{ fontSize: 15, fontWeight: 500 }}>{getSelectedPartnerName()}</div>
                     <div style={{ fontSize: 12, color: C.gray400 }}>Online</div>
                   </div>
                 </div>
 
                 {/* Messages */}
                 <div style={{ flex: 1, overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {messages.length === 0 && (
+                    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ textAlign: "center" }}>
+                        <MessageCircle size={36} color={C.gray300} style={{ margin: "0 auto 12px" }} />
+                        <p style={{ fontSize: 14, color: C.gray400 }}>Send a message to start the conversation</p>
+                      </div>
+                    </div>
+                  )}
                   {messages.map((message) => {
                     const isOwn = message.senderId === currentUser?.uid;
                     return (
