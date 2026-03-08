@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MessageCircle, Send, Search, User, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { messageService } from '../services/messageService';
@@ -9,11 +10,13 @@ import toast from 'react-hot-toast';
 
 const MessagesPage: React.FC = () => {
   const { currentUser } = useAuth();
+  const location = useLocation();
 
-  // Capture ?to= param once on mount — immune to re-renders and URL changes
+  // Read ?to= from React Router's location (primary) or window.location (fallback)
   const [initialRecipientId] = useState<string | null>(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('to');
+    const fromRouter = new URLSearchParams(location.search).get('to');
+    if (fromRouter) return fromRouter;
+    return new URLSearchParams(window.location.search).get('to');
   });
 
   const [conversations, setConversations] = useState<Message[]>([]);
@@ -147,6 +150,10 @@ const MessagesPage: React.FC = () => {
         {/* Header */}
         <div style={{ padding: "84px 48px 20px", background: C.black }}>
           <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em", color: C.pureWhite }}>Messages</h1>
+          {/* Temporary debug — remove after testing */}
+          <div style={{ fontSize: 11, color: C.gray400, marginTop: 4, fontFamily: "monospace" }}>
+            v2 | recipient: {initialRecipientId || 'none'} | selected: {selectedConversation || 'none'} | convos: {conversations.length} | user: {currentUser?.uid?.slice(0,8) || 'none'}
+          </div>
         </div>
 
         {/* Chat Layout */}
