@@ -185,25 +185,27 @@ const MessagesPage: React.FC = () => {
                     <div key={conversation.id}
                       style={{
                         padding: "14px 16px", borderBottom: `1px solid ${C.gray100}`, cursor: "pointer",
-                        background: isSelected ? C.gray50 : "transparent", transition: "background 0.15s",
+                        background: isSelected ? C.gray50 : (isUnread ? "#f0f7ff" : "transparent"),
+                        borderLeft: isUnread ? "3px solid #3b82f6" : "3px solid transparent",
+                        transition: "background 0.15s",
                       }}
                       onClick={() => setSelectedConversation(partnerId)}
                       onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = C.gray50; }}
-                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isUnread ? "#f0f7ff" : "transparent"; }}
                     >
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <User size={16} color={C.gray400} />
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: isUnread ? "#dbeafe" : C.gray50, border: `1px solid ${isUnread ? "#93c5fd" : C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <User size={16} color={isUnread ? "#3b82f6" : C.gray400} />
                           </div>
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 14, fontWeight: isUnread ? 700 : 500, color: C.black }}>{partnerName}</div>
-                            <div style={{ fontSize: 13, color: C.gray400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>{conversation.content}</div>
+                            <div style={{ fontSize: 13, color: isUnread ? C.gray500 : C.gray400, fontWeight: isUnread ? 500 : 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>{conversation.content}</div>
                           </div>
                         </div>
                         <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
-                          <div style={{ fontSize: 11, color: C.gray400 }}>{formatTime(conversation.createdAt)}</div>
-                          {isUnread && <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, marginTop: 4, marginLeft: "auto" }} />}
+                          <div style={{ fontSize: 11, color: isUnread ? "#3b82f6" : C.gray400, fontWeight: isUnread ? 600 : 400 }}>{formatTime(conversation.createdAt)}</div>
+                          {isUnread && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", marginTop: 4, marginLeft: "auto" }} />}
                         </div>
                       </div>
                     </div>

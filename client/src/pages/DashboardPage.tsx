@@ -22,20 +22,25 @@ const DashboardPage: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (!currentUser) return;
     const fetchData = async () => {
-      if (currentUser) {
-        try {
-          const [robots, unreadCount] = await Promise.all([
-            robotService.getRobotsByOwner(currentUser.uid),
-            messageService.getUnreadCount(currentUser.uid),
-          ]);
-          setMyRobots(robots);
-          setUnreadMessages(unreadCount);
-        } catch (error) { console.error('Error fetching data:', error); }
-        finally { setLoading(false); }
-      }
+      try {
+        const [robots, unreadCount] = await Promise.all([
+          robotService.getRobotsByOwner(currentUser.uid),
+          messageService.getUnreadCount(currentUser.uid),
+        ]);
+        setMyRobots(robots);
+        setUnreadMessages(unreadCount);
+      } catch (error) { console.error('Error fetching data:', error); }
+      finally { setLoading(false); }
     };
     fetchData();
+    // Live update unread count
+    const unsubscribe = messageService.subscribeToMessages(currentUser.uid, async () => {
+      const count = await messageService.getUnreadCount(currentUser.uid);
+      setUnreadMessages(count);
+    });
+    return () => unsubscribe();
   }, [currentUser]);
 
   const openEdit = (robot: Robot) => {
@@ -61,10 +66,10 @@ const DashboardPage: React.FC = () => {
   };
 
   const stats = [
-    { label: 'My Robots', value: myRobots.length.toString() },
-    { label: 'Active Rentals', value: '0' },
-    { label: 'Total Rentals', value: '0' },
-    { label: 'Messages', value: unreadMessages.toString() },
+    { label: 'My Robots', value: myRobots.length.toString(), highlight: false },
+    { label: 'Active Rentals', value: '0', highlight: false },
+    { label: 'Total Rentals', value: '0', highlight: false },
+    { label: 'Unread Messages', value: unreadMessages.toString(), highlight: unreadMessages > 0 },
   ];
 
   const tabs = [
@@ -84,9 +89,16 @@ const DashboardPage: React.FC = () => {
             {/* Stats */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
               {stats.map((stat) => (
-                <div key={stat.label} style={cardStyle}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: C.gray400, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{stat.label}</div>
-                  <div style={{ fontSize: 28, fontWeight: 700 }}>{stat.value}</div>
+                <div key={stat.label} style={{
+                  ...cardStyle,
+                  ...(stat.highlight ? { background: "#fef2f2", border: "1px solid #fecaca" } : {}),
+                  cursor: stat.highlight ? "pointer" : "default",
+                }} onClick={() => { if (stat.highlight) setActiveTab('messages'); }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: stat.highlight ? "#ef4444" : C.gray400, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                    {stat.label}
+                    {stat.highlight && <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#ef4444", marginLeft: 6, verticalAlign: "middle" }} />}
+                  </div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: stat.highlight ? "#ef4444" : C.black }}>{stat.value}</div>
                 </div>
               ))}
             </div>

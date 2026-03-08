@@ -182,14 +182,18 @@ export const messageService = {
   // Get unread messages count for a user
   async getUnreadCount(userId: string): Promise<number> {
     try {
+      // Single-field query to avoid composite index requirement
       const q = query(
         collection(db, 'messages'),
-        where('receiverId', '==', userId),
-        where('isRead', '==', false)
+        where('receiverId', '==', userId)
       );
-      
+
       const querySnapshot = await getDocs(q);
-      return querySnapshot.size;
+      let count = 0;
+      querySnapshot.forEach(doc => {
+        if (doc.data().isRead === false) count++;
+      });
+      return count;
     } catch (error) {
       console.error('Error fetching unread count:', error);
       return 0;
@@ -212,22 +216,25 @@ export const messageService = {
   // Mark all messages in a conversation as read
   async markConversationAsRead(userId1: string, userId2: string): Promise<void> {
     try {
+      // Use the same two-field 'in' query as getConversation, filter isRead client-side
       const q = query(
         collection(db, 'messages'),
         where('senderId', 'in', [userId1, userId2]),
-        where('receiverId', 'in', [userId1, userId2]),
-        where('isRead', '==', false)
+        where('receiverId', 'in', [userId1, userId2])
       );
-      
+
       const querySnapshot = await getDocs(q);
-      const updatePromises = querySnapshot.docs.map(doc => 
-        updateDoc(doc.ref, { isRead: true })
-      );
-      
+      const updatePromises = querySnapshot.docs
+        .filter(doc => {
+          const data = doc.data();
+          // Only mark messages sent TO the current viewer as read
+          return data.isRead === false && data.receiverId === userId1;
+        })
+        .map(doc => updateDoc(doc.ref, { isRead: true }));
+
       await Promise.all(updatePromises);
     } catch (error) {
       console.error('Error marking conversation as read:', error);
-      throw new Error('Failed to mark conversation as read');
     }
   },
 
