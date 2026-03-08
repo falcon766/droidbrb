@@ -25,19 +25,15 @@ const DashboardPage: React.FC = () => {
     if (!currentUser) return;
     const fetchData = async () => {
       try {
-        const [robots, unreadCount] = await Promise.all([
-          robotService.getRobotsByOwner(currentUser.uid),
-          messageService.getUnreadCount(currentUser.uid),
-        ]);
+        const robots = await robotService.getRobotsByOwner(currentUser.uid);
         setMyRobots(robots);
-        setUnreadMessages(unreadCount);
       } catch (error) { console.error('Error fetching data:', error); }
       finally { setLoading(false); }
     };
     fetchData();
-    // Live update unread count
-    const unsubscribe = messageService.subscribeToMessages(currentUser.uid, async () => {
-      const count = await messageService.getUnreadCount(currentUser.uid);
+    // Use real-time snapshot directly for unread count (avoids cache inconsistency)
+    const unsubscribe = messageService.subscribeToMessages(currentUser.uid, (messages) => {
+      const count = messages.filter(m => !m.isRead).length;
       setUnreadMessages(count);
     });
     return () => unsubscribe();

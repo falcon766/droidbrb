@@ -30,14 +30,13 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const fetchUnreadCount = async () => {
-        const count = await messageService.getUnreadCount(currentUser.uid);
+      // Use the real-time snapshot directly to compute unread count
+      // instead of a separate getDocs call (avoids cache inconsistency)
+      const unsubscribe = messageService.subscribeToMessages(currentUser.uid, (messages) => {
+        const count = messages.filter(m => !m.isRead).length;
         setUnreadCount(count);
-      };
-      fetchUnreadCount();
-      const unsubscribe = messageService.subscribeToMessages(currentUser.uid, () => { fetchUnreadCount(); });
-      const intervalId = setInterval(fetchUnreadCount, 10000);
-      return () => { unsubscribe(); clearInterval(intervalId); };
+      });
+      return () => { unsubscribe(); };
     }
   }, [currentUser]);
 
