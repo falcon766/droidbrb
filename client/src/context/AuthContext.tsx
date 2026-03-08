@@ -10,7 +10,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
 import { User, RegisterForm, LoginForm, ProfileForm, Expertise } from '../types';
 
@@ -155,8 +155,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isPremium: false,
           rating: 0,
           reviewCount: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: Timestamp.now() as any,
+          updatedAt: Timestamp.now() as any,
         };
 
         await setDoc(doc(db, 'users', result.user.uid), userProfile);
@@ -194,8 +194,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isPremium: false,
         rating: 0,
         reviewCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: Timestamp.now() as any,
+        updatedAt: Timestamp.now() as any,
       };
 
       await setDoc(doc(db, 'users', user.uid), userProfile);
@@ -252,7 +252,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       await updateDoc(userRef, {
         ...data,
-        updatedAt: new Date(),
+        updatedAt: Timestamp.now(),
       });
 
       // Update local state
