@@ -265,28 +265,22 @@ export const messageService = {
     });
   },
 
-  // Send email notification (using a simple email service)
+  // Send email notification via Netlify function
   async sendEmailNotification(receiverEmail: string, senderName: string, messageContent: string): Promise<void> {
     try {
-      // In a real implementation, you would:
-      // 1. Use a service like SendGrid, Mailgun, or AWS SES
-      // 2. Create a backend endpoint to handle email sending
-      // 3. Include proper email templates
-      
-      // For now, we'll simulate email sending
-      console.log(`Email notification sent to ${receiverEmail}:`);
-      console.log(`From: ${senderName}`);
-      console.log(`Message: ${messageContent}`);
-      
-      // You can integrate with services like:
-      // - SendGrid: https://sendgrid.com/
-      // - Mailgun: https://www.mailgun.com/
-      // - AWS SES: https://aws.amazon.com/ses/
-      // - Resend: https://resend.com/
-      
+      if (!receiverEmail) return;
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: receiverEmail,
+          senderName,
+          messagePreview: messageContent,
+        }),
+      });
     } catch (error) {
       console.error('Error sending email notification:', error);
-      // Don't throw error here as it shouldn't break the message sending
+      // Don't throw — email failure shouldn't break message sending
     }
   },
 

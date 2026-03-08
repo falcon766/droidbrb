@@ -57,17 +57,20 @@ const MessagesPage: React.FC = () => {
       fetchConversations();
       const unsubscribe = messageService.subscribeToMessages(currentUser.uid, () => {
         fetchConversations();
-        if (selectedConversation) fetchMessages(selectedConversation);
+        if (selectedConversation) loadMessages(selectedConversation, false);
       });
       return () => unsubscribe();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
+  // When user clicks/selects a conversation, fetch messages AND mark as read
   useEffect(() => {
     if (selectedConversation && currentUser) {
-      fetchMessages(selectedConversation);
-      const intervalId = setInterval(() => fetchMessages(selectedConversation), 3000);
+      // Initial load: fetch and mark as read
+      loadMessages(selectedConversation, true);
+      // Polling: only fetch messages, do NOT mark as read (so badge stays until user re-selects)
+      const intervalId = setInterval(() => loadMessages(selectedConversation, false), 3000);
       return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,11 +78,13 @@ const MessagesPage: React.FC = () => {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages]);
 
-  const fetchMessages = async (otherUserId: string) => {
+  const loadMessages = async (otherUserId: string, markRead: boolean) => {
     if (!currentUser) return;
     try {
       setMessages(await messageService.getConversation(currentUser.uid, otherUserId));
-      await messageService.markConversationAsRead(currentUser.uid, otherUserId);
+      if (markRead) {
+        await messageService.markConversationAsRead(currentUser.uid, otherUserId);
+      }
     } catch {
       // Silently handle — might be a new conversation with no messages yet
     }
@@ -113,7 +118,7 @@ const MessagesPage: React.FC = () => {
       });
       setNewMessage('');
       await fetchConversations();
-      await fetchMessages(selectedConversation);
+      await loadMessages(selectedConversation, false);
       toast.success('Message sent!');
     } catch { toast.error('Failed to send message'); }
     finally { setSending(false); }
