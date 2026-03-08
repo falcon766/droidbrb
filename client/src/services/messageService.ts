@@ -36,10 +36,11 @@ export const messageService = {
       };
 
       const docRef = await addDoc(collection(db, 'messages'), messageDoc);
-      
-      // Send email notification
-      await this.sendEmailNotification(messageData.receiverEmail, senderName, messageData.content);
-      
+
+      // Email notifications are handled by the Firebase Cloud Function
+      // (checkUnreadMessages) which runs every 5 minutes and emails
+      // recipients of messages that remain unread after 10 minutes.
+
       return docRef.id;
     } catch (error) {
       console.error('Error creating message:', error);

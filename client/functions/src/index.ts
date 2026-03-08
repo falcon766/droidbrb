@@ -3,7 +3,6 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {defineSecret} from "firebase-functions/params";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import sgMail from "@sendgrid/mail";
 
 admin.initializeApp();
 
@@ -34,14 +33,11 @@ export const checkUnreadMessages = onSchedule(
     const cutoff = new Date(Date.now() - 10 * 60 * 1000);
 
     try {
+      // Single-field query to avoid composite index requirement.
+      // Filter createdAt and notificationSent client-side.
       const snapshot = await db
         .collection("messages")
         .where("isRead", "==", false)
-        .where(
-          "createdAt",
-          "<=",
-          admin.firestore.Timestamp.fromDate(cutoff)
-        )
         .get();
 
       if (snapshot.empty) {
@@ -49,9 +45,13 @@ export const checkUnreadMessages = onSchedule(
         return;
       }
 
-      const unnotified = snapshot.docs.filter(
-        (doc) => !doc.data().notificationSent
-      );
+      const unnotified = snapshot.docs.filter((doc) => {
+        const data = doc.data();
+        if (data.notificationSent) return false;
+        const createdAt = data.createdAt?.toDate();
+        if (!createdAt) return false;
+        return createdAt <= cutoff;
+      });
 
       if (unnotified.length === 0) {
         logger.info("All old unread messages already notified.");
@@ -62,6 +62,8 @@ export const checkUnreadMessages = onSchedule(
         `Found ${unnotified.length} unread messages to notify.`
       );
 
+      // Dynamic import to avoid deployment timeout
+      const sgMail = (await import("@sendgrid/mail")).default;
       sgMail.setApiKey(sendgridApiKey.value());
 
       for (const doc of unnotified) {
