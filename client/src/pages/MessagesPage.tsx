@@ -150,10 +150,6 @@ const MessagesPage: React.FC = () => {
         {/* Header */}
         <div style={{ padding: "84px 48px 20px", background: C.black }}>
           <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em", color: C.pureWhite }}>Messages</h1>
-          {/* Temporary debug — remove after testing */}
-          <div style={{ fontSize: 11, color: C.gray400, marginTop: 4, fontFamily: "monospace" }}>
-            v2 | recipient: {initialRecipientId || 'none'} | selected: {selectedConversation || 'none'} | convos: {conversations.length} | user: {currentUser?.uid?.slice(0,8) || 'none'}
-          </div>
         </div>
 
         {/* Chat Layout */}
@@ -236,9 +232,12 @@ const MessagesPage: React.FC = () => {
                 <div style={{ flex: 1, overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
                   {messages.length === 0 && (
                     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ textAlign: "center" }}>
-                        <MessageCircle size={36} color={C.gray300} style={{ margin: "0 auto 12px" }} />
-                        <p style={{ fontSize: 14, color: C.gray400 }}>Send a message to start the conversation</p>
+                      <div style={{ textAlign: "center", padding: 32 }}>
+                        <div style={{ width: 64, height: 64, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                          <MessageCircle size={28} color={C.gray400} />
+                        </div>
+                        <h3 style={{ fontSize: 17, fontWeight: 500, marginBottom: 6 }}>New conversation with {getSelectedPartnerName()}</h3>
+                        <p style={{ fontSize: 14, color: C.gray400, marginBottom: 4 }}>Type your message below to get started</p>
                       </div>
                     </div>
                   )}
