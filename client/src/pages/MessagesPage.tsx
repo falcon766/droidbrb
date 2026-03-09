@@ -83,6 +83,7 @@ const MessagesPage: React.FC = () => {
     try {
       setMessages(await messageService.getConversation(currentUser.uid, otherUserId));
       if (markRead) {
+        console.log('[MessagesPage] Marking conversation as read:', otherUserId);
         await messageService.markConversationAsRead(currentUser.uid, otherUserId);
       }
     } catch {

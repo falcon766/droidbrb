@@ -33,8 +33,13 @@ const Navbar: React.FC = () => {
       // Use the real-time snapshot directly to compute unread count
       // instead of a separate getDocs call (avoids cache inconsistency)
       const unsubscribe = messageService.subscribeToMessages(currentUser.uid, (messages) => {
-        const count = messages.filter(m => !m.isRead).length;
-        setUnreadCount(count);
+        const unread = messages.filter(m => !m.isRead);
+        const read = messages.filter(m => m.isRead);
+        console.log('[Navbar] onSnapshot fired:', messages.length, 'total,', unread.length, 'unread,', read.length, 'read');
+        if (unread.length > 0) {
+          console.log('[Navbar] Unread messages:', unread.map(m => ({ id: m.id, from: m.senderName, isRead: m.isRead })));
+        }
+        setUnreadCount(unread.length);
       });
       return () => { unsubscribe(); };
     }
