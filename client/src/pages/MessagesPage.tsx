@@ -76,7 +76,10 @@ const MessagesPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages]);
+  useEffect(() => {
+    const container = messagesEndRef.current?.parentElement;
+    if (container) container.scrollTop = container.scrollHeight;
+  }, [messages]);
 
   const loadMessages = async (otherUserId: string, markRead: boolean) => {
     if (!currentUser) return;
