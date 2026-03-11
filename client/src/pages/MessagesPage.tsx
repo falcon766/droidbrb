@@ -27,7 +27,9 @@ const MessagesPage: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [recipientInfo, setRecipientInfo] = useState<UserType | null>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Clean up URL param on mount (cosmetic only — we already captured the value)
   useEffect(() => {
@@ -76,10 +78,12 @@ const MessagesPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
 
+  // Only auto-scroll if user is near the bottom (not browsing history)
   useEffect(() => {
-    const container = messagesEndRef.current?.parentElement;
-    if (container) container.scrollTop = container.scrollHeight;
-  }, [messages]);
+    if (shouldAutoScroll && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages, shouldAutoScroll]);
 
   const loadMessages = async (otherUserId: string, markRead: boolean) => {
     if (!currentUser) return;
@@ -121,6 +125,7 @@ const MessagesPage: React.FC = () => {
         content: newMessage.trim(), receiverId, receiverName, receiverEmail,
       });
       setNewMessage('');
+      setShouldAutoScroll(true);
       await fetchConversations();
       await loadMessages(selectedConversation, false);
       toast.success('Message sent!');
@@ -198,7 +203,7 @@ const MessagesPage: React.FC = () => {
                         borderLeft: isUnread ? "3px solid #3b82f6" : "3px solid transparent",
                         transition: "background 0.15s",
                       }}
-                      onClick={() => setSelectedConversation(partnerId)}
+                      onClick={() => { setShouldAutoScroll(true); setSelectedConversation(partnerId); }}
                       onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = C.gray50; }}
                       onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isUnread ? "#f0f7ff" : "transparent"; }}
                     >
@@ -240,7 +245,13 @@ const MessagesPage: React.FC = () => {
                 </div>
 
                 {/* Messages */}
-                <div style={{ flex: 1, overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+                <div ref={messagesContainerRef} onScroll={() => {
+                  const el = messagesContainerRef.current;
+                  if (el) {
+                    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+                    setShouldAutoScroll(nearBottom);
+                  }
+                }} style={{ flex: 1, overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
                   {messages.length === 0 && (
                     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ textAlign: "center", padding: 32 }}>
