@@ -155,14 +155,14 @@ const MessagesPage: React.FC = () => {
     <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black, height: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar />
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
         {/* Header */}
-        <div style={{ padding: "84px 48px 20px", background: C.black }}>
+        <div style={{ padding: "84px 48px 20px", background: C.black, flexShrink: 0 }}>
           <h1 style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.02em", color: C.pureWhite }}>Messages</h1>
         </div>
 
         {/* Chat Layout */}
-        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "340px 1fr", overflow: "hidden" }}>
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "340px 1fr", overflow: "hidden", minHeight: 0 }}>
           {/* Conversations List */}
           <div style={{ borderRight: `1px solid ${C.gray100}`, background: C.pureWhite, display: "flex", flexDirection: "column" }}>
             <div style={{ padding: 16, borderBottom: `1px solid ${C.gray100}` }}>
@@ -225,7 +225,7 @@ const MessagesPage: React.FC = () => {
           </div>
 
           {/* Chat Area */}
-          <div style={{ display: "flex", flexDirection: "column", background: C.white }}>
+          <div style={{ display: "flex", flexDirection: "column", background: C.white, minHeight: 0, overflow: "hidden" }}>
             {selectedConversation ? (
               <>
                 {/* Chat Header */}
