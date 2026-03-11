@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { 
   User as FirebaseUser,
   signInWithEmailAndPassword,
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sessionTimeout, setSessionTimeout] = useState<NodeJS.Timeout | null>(null);
+  const sessionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Add a timeout to prevent infinite loading
@@ -63,22 +63,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Auth state changed:', user ? 'User logged in' : 'No user');
+
+      // Always clear any existing session timeout first
+      if (sessionTimeoutRef.current) {
+        clearTimeout(sessionTimeoutRef.current);
+        sessionTimeoutRef.current = null;
+      }
+
       setCurrentUser(user);
-      
+
       if (user && db) {
-        // Clear any existing session timeout
-        if (sessionTimeout) {
-          clearTimeout(sessionTimeout);
-        }
-        
-        // Set session timeout for 8 hours (28800000 ms)
-        const timeout = setTimeout(() => {
+        // Set session timeout for 8 hours
+        sessionTimeoutRef.current = setTimeout(() => {
           console.log('Session timeout - logging out user');
           logout();
-        }, 8 * 60 * 60 * 1000); // 8 hours
-        
-        setSessionTimeout(timeout);
-        
+        }, 8 * 60 * 60 * 1000);
+
         // Fetch user profile from Firestore
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -93,18 +93,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
-          // Don't let Firestore errors prevent the app from loading
           setUserProfile(null);
         }
       } else {
-        // Clear session timeout when user logs out
-        if (sessionTimeout) {
-          clearTimeout(sessionTimeout);
-          setSessionTimeout(null);
-        }
         setUserProfile(null);
       }
-      
+
       console.log('Setting loading to false');
       setLoading(false);
       clearTimeout(timeoutId);
@@ -112,8 +106,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => {
       clearTimeout(timeoutId);
-      if (sessionTimeout) {
-        clearTimeout(sessionTimeout);
+      if (sessionTimeoutRef.current) {
+        clearTimeout(sessionTimeoutRef.current);
       }
       unsubscribe();
     };
@@ -216,9 +210,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     try {
       // Clear session timeout
-      if (sessionTimeout) {
-        clearTimeout(sessionTimeout);
-        setSessionTimeout(null);
+      if (sessionTimeoutRef.current) {
+        clearTimeout(sessionTimeoutRef.current);
+        sessionTimeoutRef.current = null;
       }
       
       // Sign out from Firebase
