@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { MessageCircle, Send, Search, User, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { messageService } from '../services/messageService';
@@ -158,6 +159,7 @@ const MessagesPage: React.FC = () => {
 
   return (
     <div style={{ fontFamily: "'Satoshi', sans-serif", color: C.black, height: "100vh", display: "flex", flexDirection: "column" }}>
+      <Helmet><title>Messages - DroidBRB</title></Helmet>
       <Navbar />
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
