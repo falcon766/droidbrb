@@ -143,10 +143,20 @@ const MessagesPage: React.FC = () => {
 
   const filteredConversations = conversations.filter(c => getConversationPartner(c).toLowerCase().includes(searchTerm.toLowerCase()));
 
+  // Force re-render every 30 seconds so relative timestamps stay fresh
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 30000);
+    return () => clearInterval(id);
+  }, []);
+
   const formatTime = (date: Date) => {
-    const h = (Date.now() - date.getTime()) / 3600000;
-    if (h < 1) return 'Just now';
-    if (h < 24) return `${Math.floor(h)}h ago`;
+    const diff = Date.now() - date.getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const h = Math.floor(diff / 3600000);
+    if (h < 24) return `${h}h ago`;
     return date.toLocaleDateString();
   };
 
