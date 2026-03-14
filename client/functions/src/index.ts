@@ -64,7 +64,7 @@ export const checkUnreadMessages = onSchedule(
 
       // Dynamic import to avoid deployment timeout
       const sgMail = (await import("@sendgrid/mail")).default;
-      sgMail.setApiKey(sendgridApiKey.value());
+      sgMail.setApiKey(sendgridApiKey.value().trim());
 
       for (const doc of unnotified) {
         const msg = doc.data();
