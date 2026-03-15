@@ -90,7 +90,10 @@ const AdminPage: React.FC = () => {
       await adminService.updateHeroImages(updated.filter(img => img.url));
       setHeroImages(updated.filter(img => img.url));
       toast.success('Image uploaded');
-    } catch { toast.error('Upload failed'); }
+    } catch (err: any) {
+      console.error('Hero image upload error:', err);
+      toast.error(`Upload failed: ${err?.message || 'Unknown error'}`);
+    }
     finally { setUploadingSlot(null); if (fileInputRef.current) fileInputRef.current.value = ''; }
   };
 
