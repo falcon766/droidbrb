@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapPin, Heart, MessageCircle, User } from 'lucide-react';
+import { MapPin, Heart, MessageCircle, User, Flag } from 'lucide-react';
 import { robotService } from '../services/robotService';
-import { Robot, User as UserType } from '../types';
+import { Robot, User as UserType, ReportType } from '../types';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ReportModal from '../components/ReportModal';
 import RobotLogo from '../components/RobotLogo';
 import { C } from '../design';
 
 const RobotDetailPage: React.FC = () => {
+  const { currentUser } = useAuth();
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [robot, setRobot] = useState<Robot | null>(null);
   const [owner, setOwner] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,12 +79,22 @@ const RobotDetailPage: React.FC = () => {
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: C.gray400, marginBottom: 16 }}>{robot.category}</div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <h1 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, letterSpacing: "-0.025em", lineHeight: 1.15 }}>{robot.name}</h1>
-            <button onClick={() => setIsFavorited(!isFavorited)} style={{
-              background: "none", border: `1.5px solid ${isFavorited ? "#ef4444" : "rgba(255,255,255,0.2)"}`, borderRadius: 100,
-              padding: "10px 12px", cursor: "pointer", transition: "all 0.25s",
-            }}>
-              <Heart size={18} fill={isFavorited ? "#ef4444" : "none"} color={isFavorited ? "#ef4444" : C.gray400} />
-            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setIsFavorited(!isFavorited)} style={{
+                background: "none", border: `1.5px solid ${isFavorited ? "#ef4444" : "rgba(255,255,255,0.2)"}`, borderRadius: 100,
+                padding: "10px 12px", cursor: "pointer", transition: "all 0.25s",
+              }}>
+                <Heart size={18} fill={isFavorited ? "#ef4444" : "none"} color={isFavorited ? "#ef4444" : C.gray400} />
+              </button>
+              {currentUser && (
+                <button onClick={() => setShowReport(true)} style={{
+                  background: "none", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: 100,
+                  padding: "10px 12px", cursor: "pointer", transition: "all 0.25s",
+                }} title="Report this robot">
+                  <Flag size={18} color={C.gray400} />
+                </button>
+              )}
+            </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 14, color: C.gray400 }}>
             <MapPin size={14} /> {robot.location}
@@ -244,6 +258,16 @@ const RobotDetailPage: React.FC = () => {
       </section>
 
       <Footer />
+
+      {robot && (
+        <ReportModal
+          isOpen={showReport}
+          onClose={() => setShowReport(false)}
+          targetType={ReportType.ROBOT}
+          targetId={robot.id}
+          targetName={robot.name}
+        />
+      )}
     </div>
   );
 };

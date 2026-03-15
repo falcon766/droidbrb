@@ -341,3 +341,32 @@ export interface SiteContent {
   heroImages: HeroImage[];
   updatedAt: Date;
 }
+
+// Report Types
+export enum ReportType {
+  ROBOT = 'robot',
+  USER = 'user',
+  MESSAGE = 'message',
+}
+
+export enum ReportReason {
+  INAPPROPRIATE_CONTENT = 'inappropriate_content',
+  SCAM_FRAUD = 'scam_fraud',
+  OFFENSIVE_BEHAVIOR = 'offensive_behavior',
+  SPAM = 'spam',
+  OTHER = 'other',
+}
+
+export interface Report {
+  id: string;
+  reporterId: string;
+  reporterName: string;
+  targetType: ReportType;
+  targetId: string;
+  targetName: string;
+  reason: ReportReason;
+  description: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  createdAt: Date;
+  updatedAt: Date;
+}

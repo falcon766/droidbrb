@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Star, Upload, Trash2, Image, Users, Settings } from 'lucide-react';
+import { Star, Upload, Trash2, Image, Users, Settings, Flag, AlertCircle, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { adminService } from '../services/adminService';
-import { Robot, User as UserType, HeroImage } from '../types';
+import { reportService } from '../services/reportService';
+import { Robot, User as UserType, HeroImage, Report } from '../types';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RobotLogo from '../components/RobotLogo';
@@ -28,10 +29,16 @@ const AdminPage: React.FC = () => {
   const [users, setUsers] = useState<UserType[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
 
+  // Reports state
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportFilter, setReportFilter] = useState<string>('all');
+
   useEffect(() => {
     if (activeTab === 'featured' && robotsLoading) fetchRobots();
     if (activeTab === 'images' && imagesLoading) fetchImages();
     if (activeTab === 'users' && usersLoading) fetchUsers();
+    if (activeTab === 'reports' && reportsLoading) fetchReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -53,6 +60,20 @@ const AdminPage: React.FC = () => {
     try { setUsers(await adminService.getAllUsers()); }
     catch { toast.error('Failed to load users'); }
     finally { setUsersLoading(false); }
+  };
+
+  const fetchReports = async () => {
+    try { setReports(await reportService.getReports()); }
+    catch { toast.error('Failed to load reports'); }
+    finally { setReportsLoading(false); }
+  };
+
+  const handleReportAction = async (reportId: string, action: 'reviewed' | 'resolved' | 'dismissed') => {
+    try {
+      await reportService.updateReportStatus(reportId, action);
+      setReports(prev => prev.map(r => r.id === reportId ? { ...r, status: action, updatedAt: new Date() } : r));
+      toast.success(`Report ${action}`);
+    } catch { toast.error('Failed to update report'); }
   };
 
   const handleToggleFeatured = async (robotId: string, current: boolean) => {
@@ -118,10 +139,12 @@ const AdminPage: React.FC = () => {
     } catch { toast.error('Failed to update role'); }
   };
 
+  const pendingCount = reports.filter(r => r.status === 'pending').length;
   const tabs = [
     { id: 'featured', name: 'Featured Robots', icon: <Star size={15} /> },
     { id: 'images', name: 'Homepage Images', icon: <Image size={15} /> },
     { id: 'users', name: 'Users', icon: <Users size={15} /> },
+    { id: 'reports', name: 'Reports', icon: <Flag size={15} />, badge: pendingCount },
   ];
 
   const cardStyle: React.CSSProperties = { background: C.pureWhite, border: `1px solid ${C.gray100}`, borderRadius: 12, padding: 24 };
@@ -370,6 +393,102 @@ const AdminPage: React.FC = () => {
           </div>
         );
 
+      case 'reports': {
+        const statusColors: Record<string, string> = { pending: '#f59e0b', reviewed: C.blue, resolved: '#22c55e', dismissed: C.gray400 };
+        const statusIcons: Record<string, React.ReactNode> = {
+          pending: <AlertCircle size={14} />, reviewed: <Eye size={14} />,
+          resolved: <CheckCircle size={14} />, dismissed: <XCircle size={14} />,
+        };
+        const filtered = reportFilter === 'all' ? reports : reports.filter(r => r.status === reportFilter);
+        const reasonLabels: Record<string, string> = {
+          inappropriate_content: 'Inappropriate content', scam_fraud: 'Scam / fraud',
+          offensive_behavior: 'Offensive behavior', spam: 'Spam', other: 'Other',
+        };
+        return (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.01em", marginBottom: 4 }}>Reports</h3>
+                <p style={{ fontSize: 14, color: C.gray400 }}>Review flagged content from users.</p>
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {['all', 'pending', 'reviewed', 'resolved', 'dismissed'].map(f => (
+                  <button key={f} onClick={() => setReportFilter(f)} style={{
+                    padding: "6px 14px", borderRadius: 100, fontSize: 12, fontWeight: 500,
+                    background: reportFilter === f ? C.black : "transparent",
+                    color: reportFilter === f ? C.pureWhite : C.gray500,
+                    border: `1px solid ${reportFilter === f ? C.black : C.gray200}`,
+                    cursor: "pointer", fontFamily: "inherit", textTransform: "capitalize",
+                  }}>{f}</button>
+                ))}
+              </div>
+            </div>
+
+            {reportsLoading ? (
+              <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
+                <div style={{ width: 32, height: 32, border: `3px solid ${C.gray200}`, borderTopColor: C.blue, borderRadius: "50%", margin: "0 auto", animation: "spin 0.8s linear infinite" }} />
+              </div>
+            ) : filtered.length === 0 ? (
+              <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
+                <Flag size={36} color={C.gray300} />
+                <p style={{ fontSize: 14, color: C.gray400, marginTop: 16 }}>
+                  {reportFilter === 'all' ? 'No reports yet.' : `No ${reportFilter} reports.`}
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {filtered.map(report => (
+                  <div key={report.id} style={{ ...cardStyle, display: "flex", gap: 20 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em",
+                          color: statusColors[report.status], padding: "2px 10px",
+                          borderRadius: 100, border: `1px solid ${statusColors[report.status]}20`,
+                          background: `${statusColors[report.status]}10`,
+                        }}>
+                          {statusIcons[report.status]} {report.status}
+                        </span>
+                        <span style={{ fontSize: 12, color: C.gray400, textTransform: "capitalize" }}>{report.targetType}</span>
+                        <span style={{ fontSize: 12, color: C.gray300 }}>•</span>
+                        <span style={{ fontSize: 12, color: C.gray400 }}>{reasonLabels[report.reason] || report.reason}</span>
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>
+                        Reported: <span style={{ color: C.blue }}>{report.targetName}</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: C.gray500, marginBottom: 8, lineHeight: 1.5 }}>{report.description}</p>
+                      <div style={{ fontSize: 12, color: C.gray400 }}>
+                        By {report.reporterName} • {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                      </div>
+                    </div>
+                    {report.status === 'pending' && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                        <button onClick={() => handleReportAction(report.id, 'reviewed')} style={{
+                          display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 100,
+                          fontSize: 12, fontWeight: 500, background: "transparent", color: C.blue,
+                          border: `1px solid ${C.blue}`, cursor: "pointer", fontFamily: "inherit",
+                        }}><Eye size={13} /> Review</button>
+                        <button onClick={() => handleReportAction(report.id, 'resolved')} style={{
+                          display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 100,
+                          fontSize: 12, fontWeight: 500, background: "transparent", color: "#22c55e",
+                          border: `1px solid #22c55e`, cursor: "pointer", fontFamily: "inherit",
+                        }}><CheckCircle size={13} /> Resolve</button>
+                        <button onClick={() => handleReportAction(report.id, 'dismissed')} style={{
+                          display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 100,
+                          fontSize: 12, fontWeight: 500, background: "transparent", color: C.gray400,
+                          border: `1px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit",
+                        }}><XCircle size={13} /> Dismiss</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
+
       default: return null;
     }
   };
@@ -412,6 +531,13 @@ const AdminPage: React.FC = () => {
                       transition: "all 0.15s", textAlign: "left", width: "100%",
                     }}>
                     {tab.icon} {tab.name}
+                    {tab.badge ? (
+                      <span style={{
+                        marginLeft: "auto", fontSize: 11, fontWeight: 600,
+                        background: "#ef4444", color: C.pureWhite,
+                        borderRadius: 100, padding: "1px 7px", minWidth: 18, textAlign: "center",
+                      }}>{tab.badge}</span>
+                    ) : null}
                   </button>
                 ))}
               </nav>

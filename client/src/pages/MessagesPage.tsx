@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { MessageCircle, Send, Search, User, Check, CheckCheck } from 'lucide-react';
+import { MessageCircle, Send, Search, User, Check, CheckCheck, Flag } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { messageService } from '../services/messageService';
-import { Message, User as UserType } from '../types';
+import { Message, User as UserType, ReportType } from '../types';
 import Navbar from '../components/Navbar';
+import ReportModal from '../components/ReportModal';
 import { C } from '../design';
 import toast from 'react-hot-toast';
 
@@ -29,6 +30,7 @@ const MessagesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [recipientInfo, setRecipientInfo] = useState<UserType | null>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [showReport, setShowReport] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -250,10 +252,16 @@ const MessagesPage: React.FC = () => {
                   <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.gray50, border: `1px solid ${C.gray100}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <User size={16} color={C.gray400} />
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: 500 }}>{getSelectedPartnerName()}</div>
                     <div style={{ fontSize: 12, color: C.gray400 }}>Online</div>
                   </div>
+                  <button onClick={() => setShowReport(true)} title="Report user" style={{
+                    background: "none", border: `1px solid ${C.gray200}`, borderRadius: 8,
+                    padding: "6px 8px", cursor: "pointer", color: C.gray400, transition: "all 0.15s",
+                  }}>
+                    <Flag size={15} />
+                  </button>
                 </div>
 
                 {/* Messages */}
@@ -323,6 +331,16 @@ const MessagesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {selectedConversation && (
+        <ReportModal
+          isOpen={showReport}
+          onClose={() => setShowReport(false)}
+          targetType={ReportType.USER}
+          targetId={selectedConversation}
+          targetName={getSelectedPartnerName()}
+        />
+      )}
     </div>
   );
 };
