@@ -12,7 +12,7 @@ const sendgridApiKey = defineSecret("SENDGRID_API_KEY");
 
 const FROM_EMAIL = "mark@nophster.com";
 const FROM_NAME = "DroidBRB";
-const APP_URL = "https://droidbrb.netlify.app";
+const APP_URL = "https://droidbrb.com";
 
 /**
  * Runs every 5 minutes. Finds messages that:
