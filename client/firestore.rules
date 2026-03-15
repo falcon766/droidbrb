@@ -1,19 +1,31 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own profile
+    // Helper: check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Site content (homepage images etc.) — admin only
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Users can read and write their own profile, admins can update any
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
     }
-    
-    // Robots can be read by anyone, but only owners can write
+
+    // Robots can be read by anyone, owners or admins can write
     match /robots/{robotId} {
       allow read: if true;
-      allow create: if request.auth != null && 
+      allow create: if request.auth != null &&
         request.auth.uid == request.resource.data.ownerId;
-      allow update, delete: if request.auth != null && 
-        request.auth.uid == resource.data.ownerId;
+      allow update, delete: if request.auth != null &&
+        (request.auth.uid == resource.data.ownerId || isAdmin());
     }
     
     // Rentals can be read by participants, created by renters
