@@ -139,6 +139,7 @@ const HomePage: React.FC = () => {
   const [hCard, setHCard] = useState<number | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [heroImages, setHeroImages] = useState<HeroImage[]>([]);
+  const [heroLoaded, setHeroLoaded] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -175,7 +176,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     adminService.getHomepageContent().then(content => {
       if (content.heroImages.length > 0) setHeroImages(content.heroImages);
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setHeroLoaded(true));
   }, []);
 
   const handleLocationChange = async (value: string) => {
@@ -261,7 +262,7 @@ const HomePage: React.FC = () => {
                 <Btn dark to="/create-robot">List Your Robot</Btn>
               </div>
             </div>
-            <div className="hidden md:flex" style={{ justifyContent: "center", alignItems: "center", position: "relative", minHeight: 420 }}>
+            <div className="hidden md:flex" style={{ justifyContent: "center", alignItems: "center", position: "relative", minHeight: 420, opacity: heroLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}>
               <div style={{
                 position: "absolute", top: 50, right: -20, zIndex: 0, willChange: "transform",
                 transform: `rotate(${3 + scrollProgress * 12}deg) translate(${30 + scrollProgress * 60}px, ${-30 - scrollProgress * 120}px) scale(${1 + scrollProgress * 0.18})`,

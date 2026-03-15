@@ -6,10 +6,9 @@ import Footer from '../components/Footer';
 import { C } from '../design';
 
 const values = [
-  { title: 'Community Driven', desc: 'Connect with robotics enthusiasts in your local area. Share knowledge, experiences, and passion for robotics.' },
+  { title: 'Local Community', desc: 'Find robots near you and connect with enthusiasts in your area. Share knowledge, meet owners in person, and build real connections.' },
   { title: 'Easy to Use', desc: 'List your robot in minutes. Browse and rent with just a few clicks. Simple, fast, and intuitive.' },
   { title: 'Passion for Robotics', desc: 'Built by robot enthusiasts, for robot enthusiasts. We understand your love for automation and innovation.' },
-  { title: 'Local Focus', desc: 'Find robots near you. Meet owners in person. Build real connections in your community.' },
   { title: 'Growing Every Day', desc: 'Educational, industrial, hobby, and service robots — our catalog keeps expanding as more owners join the community.' },
 ];
 
