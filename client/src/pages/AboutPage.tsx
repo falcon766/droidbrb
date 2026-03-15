@@ -65,12 +65,12 @@ const AboutPage: React.FC = () => {
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <Label>Why DroidBRB</Label>
             <h2 style={{ fontSize: "clamp(30px, 3.5vw, 44px)", fontWeight: 400, lineHeight: 1.15, letterSpacing: "-0.025em", marginBottom: 56 }}>Built with the community in mind.</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)" }}>
               {values.map((v, i) => (
                 <div key={i}
                   style={{
                     padding: "28px 24px", borderTop: `1px solid ${C.gray200}`,
-                    borderRight: (i % 3 !== 2) ? `1px solid ${C.gray200}` : "none",
+                    borderRight: (i % 2 !== 1) ? `1px solid ${C.gray200}` : "none",
                     transition: "background 0.25s",
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = C.pureWhite)}

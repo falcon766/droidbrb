@@ -174,8 +174,19 @@ const HomePage: React.FC = () => {
   }, [loading]);
 
   useEffect(() => {
-    adminService.getHomepageContent().then(content => {
-      if (content.heroImages.length > 0) setHeroImages(content.heroImages);
+    adminService.getHomepageContent().then(async content => {
+      if (content.heroImages.length > 0) {
+        setHeroImages(content.heroImages);
+        // Preload images so they don't flash fallbacks
+        await Promise.all(content.heroImages.map(img =>
+          new Promise<void>(resolve => {
+            const el = new window.Image();
+            el.onload = () => resolve();
+            el.onerror = () => resolve();
+            el.src = img.url;
+          })
+        ));
+      }
     }).catch(() => {}).finally(() => setHeroLoaded(true));
   }, []);
 
