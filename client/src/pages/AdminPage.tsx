@@ -222,7 +222,7 @@ const AdminPage: React.FC = () => {
               >
                 <Upload size={15} /> {uploading ? 'Uploading...' : 'Upload Image'}
               </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
             </div>
 
             {imagesLoading ? (
@@ -232,14 +232,7 @@ const AdminPage: React.FC = () => {
             ) : heroImages.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
                 <Image size={36} color={C.gray300} />
-                <p style={{ fontSize: 14, color: C.gray400, marginTop: 16, marginBottom: 20 }}>No hero images configured. The homepage will use default images.</p>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500,
-                    background: C.blue, color: C.pureWhite, border: "none", cursor: "pointer", fontFamily: "inherit",
-                  }}
-                >Upload First Image</button>
+                <p style={{ fontSize: 14, color: C.gray400, marginTop: 16 }}>No hero images configured. Use the "Upload Image" button above to add one.</p>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
