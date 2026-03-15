@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Star, Upload, Trash2, ChevronUp, ChevronDown, Image, Users, Settings } from 'lucide-react';
+import { Star, Upload, Trash2, Image, Users, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { adminService } from '../services/adminService';
 import { Robot, User as UserType, HeroImage } from '../types';
@@ -20,8 +20,9 @@ const AdminPage: React.FC = () => {
   // Hero images state
   const [heroImages, setHeroImages] = useState<HeroImage[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const activeSlotRef = useRef<number>(0);
 
   // Users state
   const [users, setUsers] = useState<UserType[]>([]);
@@ -62,22 +63,35 @@ const AdminPage: React.FC = () => {
     } catch { toast.error('Failed to update'); }
   };
 
+  const handleSlotUpload = (slot: number) => {
+    activeSlotRef.current = slot;
+    fileInputRef.current?.click();
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) { toast.error('Please select an image'); return; }
     if (file.size > 10 * 1024 * 1024) { toast.error('Image must be under 10MB'); return; }
 
-    setUploading(true);
+    const slot = activeSlotRef.current;
+    setUploadingSlot(slot);
     try {
+      // Delete old image from storage if replacing
+      if (heroImages[slot]?.url) {
+        try { await adminService.deleteHeroImage(heroImages[slot].url); } catch {}
+      }
       const url = await adminService.uploadHeroImage(file);
-      const newImage: HeroImage = { url, alt: file.name.replace(/\.[^.]+$/, ''), order: heroImages.length };
-      const updated = [...heroImages, newImage];
-      await adminService.updateHeroImages(updated);
-      setHeroImages(updated);
+      const newImage: HeroImage = { url, alt: file.name.replace(/\.[^.]+$/, ''), order: slot };
+      const updated = [...heroImages];
+      updated[slot] = newImage;
+      // Ensure array has no gaps
+      while (updated.length < slot + 1) updated.push({ url: '', alt: '', order: updated.length });
+      await adminService.updateHeroImages(updated.filter(img => img.url));
+      setHeroImages(updated.filter(img => img.url));
       toast.success('Image uploaded');
     } catch { toast.error('Upload failed'); }
-    finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
+    finally { setUploadingSlot(null); if (fileInputRef.current) fileInputRef.current.value = ''; }
   };
 
   const handleDeleteImage = async (index: number) => {
@@ -89,17 +103,6 @@ const AdminPage: React.FC = () => {
       setHeroImages(updated);
       toast.success('Image removed');
     } catch { toast.error('Failed to remove image'); }
-  };
-
-  const handleMoveImage = async (index: number, direction: 'up' | 'down') => {
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= heroImages.length) return;
-    const updated = [...heroImages];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
-    const reordered = updated.map((img, i) => ({ ...img, order: i }));
-    setHeroImages(reordered);
-    try { await adminService.updateHeroImages(reordered); }
-    catch { toast.error('Failed to reorder'); }
   };
 
   const handleRoleChange = async (userId: string, currentRole: string | undefined) => {
@@ -202,70 +205,89 @@ const AdminPage: React.FC = () => {
           </div>
         );
 
-      case 'images':
+      case 'images': {
+        const slots = [
+          { label: 'Front Card Image', description: 'The main featured robot card in the hero section.', index: 0 },
+          { label: 'Back Card Image', description: 'The secondary card shown behind the main card.', index: 1 },
+        ];
         return (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-              <div>
-                <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.01em", marginBottom: 4 }}>Homepage Images</h3>
-                <p style={{ fontSize: 14, color: C.gray400 }}>Manage the hero images shown on the landing page.</p>
-              </div>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "10px 24px", borderRadius: 100, fontSize: 14, fontWeight: 500,
-                  background: uploading ? C.gray300 : C.blue, color: C.pureWhite,
-                  border: "none", cursor: uploading ? "not-allowed" : "pointer", fontFamily: "inherit",
-                }}
-              >
-                <Upload size={15} /> {uploading ? 'Uploading...' : 'Upload Image'}
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.01em", marginBottom: 4 }}>Homepage Images</h3>
+              <p style={{ fontSize: 14, color: C.gray400 }}>Manage the two hero images shown on the landing page.</p>
             </div>
+            <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
 
             {imagesLoading ? (
               <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
                 <div style={{ width: 32, height: 32, border: `3px solid ${C.gray200}`, borderTopColor: C.blue, borderRadius: "50%", margin: "0 auto", animation: "spin 0.8s linear infinite" }} />
               </div>
-            ) : heroImages.length === 0 ? (
-              <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
-                <Image size={36} color={C.gray300} />
-                <p style={{ fontSize: 14, color: C.gray400, marginTop: 16 }}>No hero images configured. Use the "Upload Image" button above to add one.</p>
-              </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {heroImages.map((image, index) => (
-                  <div key={index} style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 20 }}>
-                    <img
-                      src={image.url} alt={image.alt}
-                      style={{ width: 160, height: 100, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.gray100}`, flexShrink: 0 }}
-                    />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{image.alt}</div>
-                      <div style={{ fontSize: 12, color: C.gray400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{image.url}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {slots.map(slot => {
+                  const image = heroImages[slot.index];
+                  const isUploading = uploadingSlot === slot.index;
+                  return (
+                    <div key={slot.index} style={cardStyle}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                        <div>
+                          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 2 }}>{slot.label}</div>
+                          <div style={{ fontSize: 13, color: C.gray400 }}>{slot.description}</div>
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: C.gray400, padding: "3px 10px", borderRadius: 100, border: `1px solid ${C.gray200}` }}>
+                          Slot {slot.index + 1}
+                        </span>
+                      </div>
+                      {image ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                          <img src={image.url} alt={image.alt}
+                            style={{ width: 200, height: 130, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.gray100}`, flexShrink: 0 }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{image.alt}</div>
+                            <div style={{ fontSize: 12, color: C.gray400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 16 }}>{image.url}</div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button onClick={() => handleSlotUpload(slot.index)} disabled={isUploading}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 100, fontSize: 13, fontWeight: 500,
+                                  background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, cursor: isUploading ? "not-allowed" : "pointer", fontFamily: "inherit",
+                                }}>
+                                <Upload size={14} /> {isUploading ? 'Uploading...' : 'Replace'}
+                              </button>
+                              <button onClick={() => handleDeleteImage(slot.index)}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 100, fontSize: 13, fontWeight: 500,
+                                  background: "transparent", color: "#ef4444", border: `1px solid ${C.gray200}`, cursor: "pointer", fontFamily: "inherit",
+                                }}>
+                                <Trash2 size={14} /> Remove
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => !isUploading && handleSlotUpload(slot.index)}
+                          style={{
+                            border: `2px dashed ${C.gray200}`, borderRadius: 10, padding: 40, textAlign: "center",
+                            cursor: isUploading ? "not-allowed" : "pointer", transition: "border-color 0.2s",
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.borderColor = C.blue)}
+                          onMouseLeave={e => (e.currentTarget.style.borderColor = C.gray200)}
+                        >
+                          <Upload size={28} color={C.gray300} style={{ marginBottom: 8 }} />
+                          <p style={{ fontSize: 14, fontWeight: 500, color: C.gray500, marginBottom: 4 }}>
+                            {isUploading ? 'Uploading...' : 'Click to upload image'}
+                          </p>
+                          <p style={{ fontSize: 12, color: C.gray400 }}>JPG, PNG, or WebP — max 10MB</p>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
-                      <button onClick={() => handleMoveImage(index, 'up')} disabled={index === 0}
-                        style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.gray200}`, background: "transparent", cursor: index === 0 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: index === 0 ? C.gray300 : C.gray500 }}>
-                        <ChevronUp size={16} />
-                      </button>
-                      <button onClick={() => handleMoveImage(index, 'down')} disabled={index === heroImages.length - 1}
-                        style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.gray200}`, background: "transparent", cursor: index === heroImages.length - 1 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: index === heroImages.length - 1 ? C.gray300 : C.gray500 }}>
-                        <ChevronDown size={16} />
-                      </button>
-                    </div>
-                    <button onClick={() => handleDeleteImage(index)}
-                      style={{ width: 36, height: 36, borderRadius: 8, border: `1px solid ${C.gray200}`, background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444", flexShrink: 0 }}>
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
         );
+      }
 
       case 'users':
         return (
