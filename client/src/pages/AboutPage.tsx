@@ -8,10 +8,9 @@ import { C } from '../design';
 const values = [
   { title: 'Community Driven', desc: 'Connect with robotics enthusiasts in your local area. Share knowledge, experiences, and passion for robotics.' },
   { title: 'Easy to Use', desc: 'List your robot in minutes. Browse and rent with just a few clicks. Simple, fast, and intuitive.' },
-  { title: 'Safe & Secure', desc: 'Verified users, secure messaging, and trusted community guidelines keep everyone safe.' },
   { title: 'Passion for Robotics', desc: 'Built by robot enthusiasts, for robot enthusiasts. We understand your love for automation and innovation.' },
   { title: 'Local Focus', desc: 'Find robots near you. Meet owners in person. Build real connections in your community.' },
-  { title: 'All Types Welcome', desc: 'Educational, industrial, hobby, service robots, and more. Every robot has a place here.' },
+  { title: 'Growing Every Day', desc: 'Educational, industrial, hobby, and service robots — our catalog keeps expanding as more owners join the community.' },
 ];
 
 const Label = ({ children }: { children: React.ReactNode }) => (
